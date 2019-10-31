@@ -1,0 +1,9 @@
+{
+    "files.associations": {
+        "calculate_eigen_system.h": "c",
+        "calculate_integrated_support_score.h": "c",
+        "calculate_principal_components.h": "c",
+        "calculate_support_degree_matrix.h": "c",
+        "record_stuck_sensor.h": "c"
+    }
+}
