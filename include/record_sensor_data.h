@@ -4,4 +4,4 @@ struct sensorList
     int *values;
     int timestamp;
 };
-int record_stuck_sensor(struct sensorList sensor);
+int record_sensor_data(struct sensorList sensor);

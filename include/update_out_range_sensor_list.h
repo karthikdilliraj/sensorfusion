@@ -4,4 +4,4 @@ struct sensorList
     int *values;
     int timestamp;
 };
-int update_sensor_list(struct sensorList sensor);
+int update_out_range_sensor_list(struct sensorList sensor);
