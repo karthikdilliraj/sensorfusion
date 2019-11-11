@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include "parsing_csv_file.h"
 #include "linked_list.h"
-
+#include "eigensystems.h"
 
 #define INPUT_FILE_NAME "input.csv"
 
@@ -77,6 +77,11 @@ int main(int argc, char *argv[])
     int     lines_read = 1;
     int     end_of_file_reached = 0;
     int     current_time = -1;
+
+    /**
+     * Run testing for eigensystems.c
+     */
+    eigensystems_test();
 
     strncpy(file_name, INPUT_FILE_NAME, MAX_FILE_NAME_SIZE);
     while((opt = getopt(argc, argv, "tl:h:")) != -1)

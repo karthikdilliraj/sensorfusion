@@ -1,7 +1,7 @@
 /**
  * Implementation of the CSV parser.
  */
-#include "../include/parsing_csv_file.h"
+#include "parsing_csv_file.h"
 
 int parser_parse_csv_file(char *file_name,
                           int lines_to_skip,
