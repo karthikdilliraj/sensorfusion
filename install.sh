@@ -1,5 +1,6 @@
 #!/bin/bash
 
+mkdir -p lib
 cd ./lib/
 
 if [ -n "$(ls -A gsl-2.6.tar.gz 2>/dev/null)" ]

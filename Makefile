@@ -23,7 +23,7 @@ GSLINCDIR 	 = lib/gsl/include
 
 CC       = gcc
 # compiling flags here
-CFLAGS   = -std=c99 -Wall
+CFLAGS   = -Wall
 
 LFLAGS   = -L$(GSLLIBDIR) -lgsl -lgslcblas -lm
 
