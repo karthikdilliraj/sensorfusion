@@ -14,6 +14,11 @@ To install:
 ./install.sh
 ```
 
+## For CYGWIN environment, execute below command to append GSL library into PATH environment:
+```
+source ~/.bashrc
+```
+
 ## Build Project:
 ```
 make
