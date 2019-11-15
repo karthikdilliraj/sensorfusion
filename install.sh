@@ -1,4 +1,5 @@
 #!/bin/bash
+mkdir -p ./lib
 
 cd ./lib/
 
@@ -7,22 +8,22 @@ then
   echo "Already download GSL library!"
 else
 	echo "===== Download GSL library ======"
-	if [ "$(uname)" == "Darwin" ]; then
-	    # Do something under Mac OS X platform
-	    echo "This is Mac system"
-	    wget ftp://ftp.gnu.org/gnu/gsl/gsl-2.6.tar.gz
-	elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
-	    # Do something under GNU/Linux platform
-	    echo "This is Linux system"
-	    wget ftp://ftp.gnu.org/gnu/gsl/gsl-2.6.tar.gz 
-	elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW32_NT" ]; then
-	    # Do something under 32 bits Windows NT platform
-	    echo "This is Windows32 system"
-	    curl ftp://ftp.gnu.org/gnu/gsl/gsl-2.6.tar.gz -o gsl-2.6.tar.gz
-	elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW64_NT" ]; then
-	    # Do something under 64 bits Windows NT platform
-	    echo "This is Windows64 system"
-	    curl ftp://ftp.gnu.org/gnu/gsl/gsl-2.6.tar.gz -o gsl-2.6.tar.gz
+
+	if ! [ -x "$(command -v curl)" ]; then
+  		echo "Error: curl is not installed." >&2
+  		if ! [ -x "$(command -v wget)" ]; then
+  			echo "Error: wget is not installed." >&2
+  			echo "Please install wget or curl to continue!"
+  			echo "NOTE:"
+  			echo -e "\tYou can also download GSL package from ftp://ftp.gnu.org/gnu/gsl/gsl-2.6.tar.gz into lib directory."
+  			exit 1
+  		else
+  			echo "===== Downloading using wget ======"
+  			wget ftp://ftp.gnu.org/gnu/gsl/gsl-2.6.tar.gz 
+  		fi
+  	else
+  		echo "===== Downloading using curl ======"
+ 	    curl ftp://ftp.gnu.org/gnu/gsl/gsl-2.6.tar.gz -o gsl-2.6.tar.gz 	
 	fi
 fi
 
@@ -42,7 +43,3 @@ make
 make install
 
 echo "===== Build GSL. Done! ======"
-
-
-
-
