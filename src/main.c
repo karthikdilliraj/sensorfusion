@@ -8,7 +8,12 @@
 #include "linked_list.h"
 #include "eigensystems.h"
 
-#define INPUT_FILE_NAME "input.csv"
+/**
+ * Currently, the exe gets put into sensorfusion/bin directory, but the input
+ * file is in sensorfusion/src, so we will go down one directory, and up into
+ * src to find the file.
+ */
+#define INPUT_FILE_NAME "../src/input.csv"
 
 
 /**
@@ -219,7 +224,7 @@ void do_sensor_fusion_algorithm(void)
     if (test_mode)
     {
         printf("Found all the values from the same time. "
-               "Passing off to Sensor Fustion Calculation\n\n");
+               "Passing off to Sensor Fusion Calculation\n\n");
     }
 
     /**
