@@ -7,6 +7,7 @@
 #include "parsing_csv_file.h"
 #include "linked_list.h"
 #include "eigensystems.h"
+#include "calculate_fusion.h"
 
 /**
  * Currently, the exe gets put into sensorfusion/bin directory, but the input
@@ -84,9 +85,10 @@ int main(int argc, char *argv[])
     int     current_time = -1;
 
     /**
-     * Run testing for eigensystems.c
+     * Run testing for calculate_fusion.c
      */
-    eigensystems_test();
+    double *support_degree_matrix = calculate_support_degree_matrix();
+    calculate_eigensystem(support_degree_matrix);
 
     strncpy(file_name, INPUT_FILE_NAME, MAX_FILE_NAME_SIZE);
     while((opt = getopt(argc, argv, "tl:h:")) != -1)
