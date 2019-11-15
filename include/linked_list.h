@@ -50,6 +50,25 @@ Node_t* append(Node_t *head, int time, char *name, float value);
 
 
 /**
+ * Function:    update
+ *
+ * Parameters:
+ *  *head   [in]    Pointer to the head of a linked list chain
+ *  time    [in]    The time in minutes
+ *  *name   [in]    Sensor name of the node
+ *  value   [in]    Sensor value of the node
+ *
+ * Searches the linked list chain pointed to by *head for the sensor named
+ * *name, if found it updates the node, otherwise it appends a new node with
+ * the specified data to the end of the list.
+ *
+ * Return:
+ *  Pointer to the head node
+ */
+Node_t* update(Node_t *head, int time, char *name, float value);
+
+
+/**
  * Function:    search_sensor_name
  *
  * Parameters:

@@ -54,6 +54,23 @@ Node_t* append(Node_t *head, int time, char *name, float value)
     return head;
 }
 
+Node_t* update(Node_t *head, int time, char *name, float value)
+{
+    Node_t *node = search_sensor_name(head, name);
+
+    if (node == NULL)
+    {
+        /**
+         * No found node, so we will just add the node to the end of the list.
+         */
+        return append(head, time, name, value);
+    }
+
+    node->time_in_minutes = time;
+    node->sensor_value = value;
+    return head;
+}
+
 
 Node_t* search_sensor_name(Node_t *head, char *str)
 {
