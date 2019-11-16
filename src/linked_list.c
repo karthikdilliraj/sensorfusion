@@ -180,6 +180,24 @@ Node_t* remove_node(Node_t *head, Node_t *to_be_removed)
 }
 
 
+int move_node(Node_t **head_move_from, Node_t **head_move_to, Node_t *node)
+{
+    if (node)
+    {
+        *head_move_to = append(*head_move_to,
+                               node->time_in_minutes,
+                               node->sensor_name,
+                               node->sensor_value);
+
+        *head_move_from = remove_node(*head_move_from,
+                                      node);
+        return 1;
+    }
+
+    return 0;
+}
+
+
 void display(Node_t *head)
 {
     Node_t  *node = head;

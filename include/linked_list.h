@@ -3,6 +3,17 @@
 
 #include "parsing_csv_file.h"
 
+/**
+ * The sensor lists are split into three:
+ *  Valid sensors
+ *  Out of range sensor
+ *  Stuck sensors
+ */
+#define MAX_SENSOR_LISTS    3
+#define VALID_SENSOR_LIST   0
+#define OOR_SENSOR_LIST     1
+#define STUCK_SENSOR_LIST   2
+
 
 typedef struct Linked_List_Node
 {
@@ -126,6 +137,26 @@ Node_t* remove_from_back(Node_t *head);
  *  Pointer to the head node.
  */
 Node_t* remove_node(Node_t *head, Node_t *to_be_removed);
+
+
+/**
+ * Function:    move_node
+ *
+ * Parameters:
+ *  **head_move_from    [in/out]    Pointer to the pointer of the head of the 
+ *                                  linked list chain to move the node from
+ *  **head_move_to      [in/out]    Pointer to the pointer of the head of the 
+ *                                  linked list chain to move the node to
+ *  *node               [in]        Pointer to the node to move
+ *
+ * Moves *node from the linked list chain pointed to by **head_move_from to the
+ * linked list chain pointed to by **head_move_to.
+ *
+ * Return:
+ *  True    - Node has been successfully moved
+ *  False   - Node has not been successfully moved
+ */
+int move_node(Node_t **head_move_from, Node_t **head_move_to, Node_t *node);
 
 
 /**

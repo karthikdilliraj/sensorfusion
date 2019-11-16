@@ -8,24 +8,16 @@
 #include "linked_list.h"
 #include "eigensystems.h"
 
+const char *list_name[] = {"Valid",
+                           "Out of Range",
+                           "Stuck"};
+
 /**
  * Currently, the exe gets put into sensorfusion/bin directory, but the input
  * file is in sensorfusion/src, so we will go down one directory, and up into
  * src to find the file.
  */
 #define INPUT_FILE_NAME "../src/input.csv"
-
-
-/**
- * The sensor lists are split into three:
- *  Valid sensors
- *  Out of range sensor
- *  Stuck sensors
- */
-#define MAX_SENSOR_LISTS    3
-#define VALID_SENSOR_LIST   0
-#define OOR_SENSOR_LIST     1
-#define STUCK_SENSOR_LIST   2
 
 
 /* Test mode activated by -t switch. */
@@ -54,21 +46,31 @@ void do_sensor_fusion_algorithm(void);
 
 
 /**
- * Function:    move_node_between_chains
+ * Function:    update_sensor_lists
  *
  * Parameters:
- *  sel_from    [in]    Index of the chain to move from
- *  sel_to      [in]    Index of the chain to move to
- *  *node       [in]    Node to move between chains
+ *  time_in_minutes [in]    Time in minutes, read from the input file
+ *  *sensor_name    [in]    Sensor name, read from the input file
+ *  sensor_value    [in]    Sensor value, read from the input file
+ *  use_high_range  [in]    Whether or not the user has specified a high sensor
+ *                          limit.
+ *  high_range      [in]    The limit the user has specified
+ *  use_low_range   [in]    Whether or not the user has specified a low sensor
+ *                          limit.
+ *  low_range       [in]    The limit the user has specified
  *
- * Removes *node from the linked list pointed to by
- * *sensor_list_head_array[sel_from] and adds it to the linked list pointed to
- * by *sensor_list_head_array[sel_to]
+ * Updates the Valid and Out of Range sensor lists.
  *
  * Return:
- *  Nothing.
+ *  Nothing
  */
-void move_node_between_chains(int sel_from, int sel_to, Node_t *node);
+void update_sensor_lists(int    time_in_minutes,
+                         char   *sensor_name,
+                         float  sensor_value,
+                         int    use_high_range,
+                         int    high_range,
+                         int    use_low_range,
+                         int    low_range);
 
 
 /**
@@ -137,20 +139,18 @@ void run_test_suite(void);
 
 int main(int argc, char *argv[])
 {
-    Node_t  *node = NULL;
     float   sensor_value;
+    float   high_range;
+    float   low_range;
     char    sensor_name[MAX_SENSOR_NAME_SIZE];
     char    file_name[MAX_FILE_NAME_SIZE];
     int     time_in_minutes = 0;
     int     opt;
-    float   high_range;
-    float   low_range;
     int     end_of_file_reached = 0;
     int     use_high_range = 0;
     int     use_low_range = 0;
     int     current_time = -1;
     int     stuck_range;
-    int     list_index;
     int     lines_read = 1;
     int     use_stuck = 0;
 
@@ -253,52 +253,13 @@ int main(int argc, char *argv[])
         }
 
         ++lines_read;
-
-        /**
-         * Check to see if the node already exists. If it does, we will remove
-         * it from the chain it belongs to, it will be re-added in a bit.
-         */
-        node = search_all_chains(sensor_name, &list_index);
-        if (node)
-        {
-            sensor_list_head_array[list_index]
-                = remove_node(sensor_list_head_array[list_index],
-                              node);
-        }
-
-        if ((use_high_range) && (sensor_value > high_range))
-        {
-            /**
-             * Sensor is above the high range, so we dump it into the out of
-             * range list.
-             */
-            sensor_list_head_array[OOR_SENSOR_LIST]
-                = append(sensor_list_head_array[OOR_SENSOR_LIST],
-                         time_in_minutes,
-                         sensor_name,
-                         sensor_value);
-        }
-        else if ((use_low_range) && (sensor_value < low_range))
-        {
-            /**
-             * Sensor is below the low range, so we dump it into the out of
-             * range list.
-             */
-            sensor_list_head_array[OOR_SENSOR_LIST]
-                = append(sensor_list_head_array[OOR_SENSOR_LIST],
-                         time_in_minutes,
-                         sensor_name,
-                         sensor_value);
-        }
-        else
-        {
-            /* Sensor is fine, it gets to go into the valid list. */
-            sensor_list_head_array[VALID_SENSOR_LIST]
-                = append(sensor_list_head_array[VALID_SENSOR_LIST],
-                         time_in_minutes,
-                         sensor_name,
-                         sensor_value);
-        }
+        update_sensor_lists(time_in_minutes,
+                            sensor_name,
+                            sensor_value,
+                            use_high_range,
+                            high_range,
+                            use_low_range,
+                            low_range);
     } while (!end_of_file_reached);
 
     /**
@@ -346,18 +307,61 @@ void do_sensor_fusion_algorithm(void)
 }
 
 
-void move_node_between_chains(int sel_from, int sel_to, Node_t *node)
+void update_sensor_lists(int    time_in_minutes,
+                         char   *sensor_name,
+                         float  sensor_value,
+                         int    use_high_range,
+                         int    high_range,
+                         int    use_low_range,
+                         int    low_range)
 {
+    Node_t  *node = NULL;
+    int     list_index;
+
+    /**
+     * Check to see if the node already exists. If it does, we will remove
+     * it from the chain it belongs to, it will be re-added in a bit.
+     */
+    node = search_all_chains(sensor_name, &list_index);
     if (node)
     {
-        sensor_list_head_array[sel_to] = append(sensor_list_head_array[sel_to],
-                                                node->time_in_minutes,
-                                                node->sensor_name,
-                                                node->sensor_value);
-
-        sensor_list_head_array[sel_from]
-            = remove_node(sensor_list_head_array[sel_from],
+        sensor_list_head_array[list_index]
+            = remove_node(sensor_list_head_array[list_index],
                           node);
+    }
+
+    if ((use_high_range) && (sensor_value > high_range))
+    {
+        /**
+         * Sensor is above the high range, so we dump it into the out of
+         * range list.
+         */
+        sensor_list_head_array[OOR_SENSOR_LIST]
+            = append(sensor_list_head_array[OOR_SENSOR_LIST],
+                     time_in_minutes,
+                     sensor_name,
+                     sensor_value);
+    }
+    else if ((use_low_range) && (sensor_value < low_range))
+    {
+        /**
+         * Sensor is below the low range, so we dump it into the out of
+         * range list.
+         */
+        sensor_list_head_array[OOR_SENSOR_LIST]
+            = append(sensor_list_head_array[OOR_SENSOR_LIST],
+                     time_in_minutes,
+                     sensor_name,
+                     sensor_value);
+    }
+    else
+    {
+        /* Sensor is fine, it gets to go into the valid list. */
+        sensor_list_head_array[VALID_SENSOR_LIST]
+            = append(sensor_list_head_array[VALID_SENSOR_LIST],
+                     time_in_minutes,
+                     sensor_name,
+                     sensor_value);
     }
 }
 
@@ -385,6 +389,7 @@ void determine_if_sensors_are_stuck(int current_time, int stuck_value)
 {
     Node_t  *node = NULL;
     Node_t  *next = NULL;
+    int     rc = 0;
     int     i;
 
     for (i = 0; i < MAX_SENSOR_LISTS; i++)
@@ -413,7 +418,17 @@ void determine_if_sensors_are_stuck(int current_time, int stuck_value)
                  * Sensor has not been updated recently enough and must be
                  * considered stuck. It will be moved to the stuck list.
                  */
-                move_node_between_chains(i, STUCK_SENSOR_LIST, node);
+                rc = move_node(&sensor_list_head_array[i],
+                               &sensor_list_head_array[STUCK_SENSOR_LIST],
+                               node);
+                if (!rc)
+                {
+                    printf("Error: Could not move sensor node \"%s\" from %s "
+                           "list to %s list\n",
+                           node->sensor_name,
+                           list_name[i],
+                           list_name[STUCK_SENSOR_LIST]);
+                }
             }
 
             node = next;
@@ -473,6 +488,7 @@ void run_test_suite(void)
     int     i;
     int     sel_from;
     int     sel_to;
+    int     rc = 0;
 
     while (1)
     {
@@ -594,7 +610,17 @@ void run_test_suite(void)
                                           str);
                 if (node)
                 {
-                    move_node_between_chains(sel_from, sel_to, node);
+                    rc = move_node(&sensor_list_head_array[sel_from],
+                                   &sensor_list_head_array[sel_to],
+                                   node);
+                    if (!rc)
+                    {
+                        printf("Error: Could not move sensor node \"%s\" from %s "
+                               "list to %s list\n",
+                               node->sensor_name,
+                               list_name[sel_from],
+                               list_name[STUCK_SENSOR_LIST]);
+                    }
                 }
                 break;
             case 7:
