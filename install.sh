@@ -61,7 +61,19 @@ echo "===== Build GSL. Done! ======"
 case "$(uname -s)" in
 	CYGWIN*|MINGW32*|MINGW64*|MSYS*)
 		echo "Configuring PATH for CYGWIN"
-		echo 'export PATH=$PATH:'"$CUR_DIR/gsl/bin"  >> ~/.bashrc
+		echo 'export PATH='"$CUR_DIR/gsl/bin"':$PATH'  >> ~/.bashrc
+		source ~/.bashrc
+		;;
+	Darwin)
+		echo 'Mac OS X'
+		echo "Configuring LD_LIBRARY_PATH for MACOS"
+		echo 'export LD_LIBRARY_PATH='"$CUR_DIR/gsl/lib"  >> ~/.bashrc
+		source ~/.bashrc
+		;;
+	Linux)
+		echo 'Linux'
+		echo "Configuring LD_LIBRARY_PATH for Ubuntu"
+		echo 'export LD_LIBRARY_PATH='"$CUR_DIR/gsl/lib"  >> ~/.bashrc
 		source ~/.bashrc
 		;;
 	*)
