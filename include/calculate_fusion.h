@@ -29,7 +29,7 @@ struct support_degree_matrix calculate_support_degree_matrix(void);
  * Parameters:
  *  Structure support_degree_matrix
  *
- * Calculate eigen value and vectors of the support degree matrix
+ * Calculate eigen values and vectors of the support degree matrix
  *
  * Return:
  *  Structure eigen_systems.
