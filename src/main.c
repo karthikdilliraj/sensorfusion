@@ -6,7 +6,6 @@
 #include <stdlib.h>
 #include "parsing_csv_file.h"
 #include "linked_list.h"
-#include "eigensystems.h"
 #include "calculate_fusion.h"
 
 /**
@@ -16,29 +15,25 @@
  */
 #define INPUT_FILE_NAME "../src/input.csv"
 
-
 /**
  * The sensor lists are split into three:
  *  Valid sensors
  *  Out of range sensor
  *  Stuck sensors
  */
-#define MAX_SENSOR_LISTS    3
-#define VALID_SENSOR_LIST   0
-#define OOR_SENSOR_LIST     1
-#define STUCK_SENSOR_LIST   2
-
+#define MAX_SENSOR_LISTS 3
+#define VALID_SENSOR_LIST 0
+#define OOR_SENSOR_LIST 1
+#define STUCK_SENSOR_LIST 2
 
 /* Test mode activated by -t switch. */
 static int test_mode = 0;
-
 
 /**
  * Head pointers to three linked lists used for storing three types of sensors
  * retrieved from the specified input file.
  */
-Node_t  *sensor_list_head_array[MAX_SENSOR_LISTS] = {NULL};
-
+Node_t *sensor_list_head_array[MAX_SENSOR_LISTS] = {NULL};
 
 /**
  * Function:    do_sensor_fusion_algorithm
@@ -52,7 +47,6 @@ Node_t  *sensor_list_head_array[MAX_SENSOR_LISTS] = {NULL};
  *  Nothing.
  */
 void do_sensor_fusion_algorithm(void);
-
 
 /**
  * Function:    move_node_between_chains
@@ -71,7 +65,6 @@ void do_sensor_fusion_algorithm(void);
  */
 void move_node_between_chains(int sel_from, int sel_to, Node_t *node);
 
-
 /**
  * Function:    search_all_chains
  *
@@ -86,8 +79,7 @@ void move_node_between_chains(int sel_from, int sel_to, Node_t *node);
  * Return:
  *  Pointer to the matching node, if no node is found, returns NULL.
  */
-Node_t* search_all_chains(char *str, int *list_index);
-
+Node_t *search_all_chains(char *str, int *list_index);
 
 /**
  * Function:    determine_if_sensors_are_stuck
@@ -106,7 +98,6 @@ Node_t* search_all_chains(char *str, int *list_index);
  */
 void determine_if_sensors_are_stuck(int current_time, int stuck_value);
 
-
 /**
  * Function:    dump_current_lists
  *
@@ -119,7 +110,6 @@ void determine_if_sensors_are_stuck(int current_time, int stuck_value);
  *  Nothing.
  */
 void dump_current_lists(void);
-
 
 /**
  * Function:    run_test_suite
@@ -135,78 +125,80 @@ void dump_current_lists(void);
  */
 void run_test_suite(void);
 
-
 int main(int argc, char *argv[])
 {
-    Node_t  *node = NULL;
-    float   sensor_value;
-    char    sensor_name[MAX_SENSOR_NAME_SIZE];
-    char    file_name[MAX_FILE_NAME_SIZE];
-    int     time_in_minutes = 0;
-    int     opt;
-    float   high_range;
-    float   low_range;
-    int     end_of_file_reached = 0;
-    int     use_high_range = 0;
-    int     use_low_range = 0;
-    int     current_time = -1;
-    int     stuck_range;
-    int     list_index;
-    int     lines_read = 1;
-    int     use_stuck = 0;
+    Node_t *node = NULL;
+    float sensor_value;
+    char sensor_name[MAX_SENSOR_NAME_SIZE];
+    char file_name[MAX_FILE_NAME_SIZE];
+    int time_in_minutes = 0;
+    int opt;
+    float high_range;
+    float low_range;
+    int end_of_file_reached = 0;
+    int use_high_range = 0;
+    int use_low_range = 0;
+    int current_time = -1;
+    int stuck_range;
+    int list_index;
+    int lines_read = 1;
+    int use_stuck = 0;
 
     /**
      * Run testing for calculate_fusion.c
      */
-    double *support_degree_matrix = calculate_support_degree_matrix();
-    calculate_eigensystem(support_degree_matrix);
+    struct support_degree_matrix spd = calculate_support_degree_matrix();
+    struct eigen_systems eigen = calculate_eigensystem(spd);
+    double *contribution_rate = calculate_contribution_rate(eigen, spd.no_of_sensors);
+    int no_of_contribution_rates_to_use = determine_contribution_rates_to_use(contribution_rate, 0.5, spd.no_of_sensors);
+    double **principal_components_matrix = calculate_principal_components(spd, eigen.eigen_vector, no_of_contribution_rates_to_use);
 
     strncpy(file_name, INPUT_FILE_NAME, MAX_FILE_NAME_SIZE);
-    while((opt = getopt(argc, argv, "tl:h:s:f:")) != -1)
+    while ((opt = getopt(argc, argv, "tl:h:s:f:")) != -1)
     {
-        switch(opt)
+        switch (opt)
         {
-            case 't':
-                /* Activate the testing mode */
-                printf("Testing mode activated\n");
-                test_mode = 1;
-                break;
-            case 'l':
-                /**
+        case 't':
+            /* Activate the testing mode */
+            printf("Testing mode activated\n");
+            test_mode = 1;
+            break;
+        case 'l':
+            /**
                  * Specifies the low edge of the valid sensor range. If the
                  * sensor value is below this, it goes into the out of range
                  * sensor list.
                  */
-                low_range = strtod(optarg, NULL);
-                use_low_range = 1;
-                break;
-            case 'h':
-                /**
+            low_range = strtod(optarg, NULL);
+            use_low_range = 1;
+            break;
+        case 'h':
+            /**
                  * Specifies the high edge of the valid sensor range. If the
                  * sensor value is above this, it goes into the out of range
                  * sensor list.
                  */
-                high_range = strtod(optarg, NULL);
-                use_high_range = 1;
-                break;
-            case 's':
-                /**
+            high_range = strtod(optarg, NULL);
+            use_high_range = 1;
+            break;
+        case 's':
+            /**
                  * Specifies how long (in minutes) beyond which, the sensor is
                  * considered to be stuck, and no longer valid.
                  */
-                stuck_range = strtod(optarg, NULL);
-                use_stuck = 1;
-                break;
-            case 'f':
-                /**
+            stuck_range = strtod(optarg, NULL);
+            use_stuck = 1;
+            break;
+        case 'f':
+            /**
                  * Specifies a non-default input file to use for the sensor
                  * input data.
                  */
-                strncpy(file_name, optarg, MAX_FILE_NAME_SIZE);
-                break;
-            default:
-                printf("unknown option: %c\n", opt);
-                break;
+            strncpy(file_name, optarg, MAX_FILE_NAME_SIZE);
+            break;
+        default:
+            printf("unknown option: %c\n", opt);
+            break;
         }
     }
 
@@ -263,9 +255,8 @@ int main(int argc, char *argv[])
         node = search_all_chains(sensor_name, &list_index);
         if (node)
         {
-            sensor_list_head_array[list_index]
-                = remove_node(sensor_list_head_array[list_index],
-                              node);
+            sensor_list_head_array[list_index] = remove_node(sensor_list_head_array[list_index],
+                                                             node);
         }
 
         if ((use_high_range) && (sensor_value > high_range))
@@ -274,11 +265,10 @@ int main(int argc, char *argv[])
              * Sensor is above the high range, so we dump it into the out of
              * range list.
              */
-            sensor_list_head_array[OOR_SENSOR_LIST]
-                = append(sensor_list_head_array[OOR_SENSOR_LIST],
-                         time_in_minutes,
-                         sensor_name,
-                         sensor_value);
+            sensor_list_head_array[OOR_SENSOR_LIST] = append(sensor_list_head_array[OOR_SENSOR_LIST],
+                                                             time_in_minutes,
+                                                             sensor_name,
+                                                             sensor_value);
         }
         else if ((use_low_range) && (sensor_value < low_range))
         {
@@ -286,20 +276,18 @@ int main(int argc, char *argv[])
              * Sensor is below the low range, so we dump it into the out of
              * range list.
              */
-            sensor_list_head_array[OOR_SENSOR_LIST]
-                = append(sensor_list_head_array[OOR_SENSOR_LIST],
-                         time_in_minutes,
-                         sensor_name,
-                         sensor_value);
+            sensor_list_head_array[OOR_SENSOR_LIST] = append(sensor_list_head_array[OOR_SENSOR_LIST],
+                                                             time_in_minutes,
+                                                             sensor_name,
+                                                             sensor_value);
         }
         else
         {
             /* Sensor is fine, it gets to go into the valid list. */
-            sensor_list_head_array[VALID_SENSOR_LIST]
-                = append(sensor_list_head_array[VALID_SENSOR_LIST],
-                         time_in_minutes,
-                         sensor_name,
-                         sensor_value);
+            sensor_list_head_array[VALID_SENSOR_LIST] = append(sensor_list_head_array[VALID_SENSOR_LIST],
+                                                               time_in_minutes,
+                                                               sensor_name,
+                                                               sensor_value);
         }
     } while (!end_of_file_reached);
 
@@ -328,7 +316,6 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-
 void do_sensor_fusion_algorithm(void)
 {
     if (test_mode)
@@ -347,7 +334,6 @@ void do_sensor_fusion_algorithm(void)
      */
 }
 
-
 void move_node_between_chains(int sel_from, int sel_to, Node_t *node)
 {
     if (node)
@@ -357,17 +343,15 @@ void move_node_between_chains(int sel_from, int sel_to, Node_t *node)
                                                 node->sensor_name,
                                                 node->sensor_value);
 
-        sensor_list_head_array[sel_from]
-            = remove_node(sensor_list_head_array[sel_from],
-                          node);
+        sensor_list_head_array[sel_from] = remove_node(sensor_list_head_array[sel_from],
+                                                       node);
     }
 }
 
-
-Node_t* search_all_chains(char *str, int *list_index)
+Node_t *search_all_chains(char *str, int *list_index)
 {
-    Node_t  *node = NULL;
-    int     i;
+    Node_t *node = NULL;
+    int i;
 
     for (i = 0; i < MAX_SENSOR_LISTS; i++)
     {
@@ -382,12 +366,11 @@ Node_t* search_all_chains(char *str, int *list_index)
     return NULL;
 }
 
-
 void determine_if_sensors_are_stuck(int current_time, int stuck_value)
 {
-    Node_t  *node = NULL;
-    Node_t  *next = NULL;
-    int     i;
+    Node_t *node = NULL;
+    Node_t *next = NULL;
+    int i;
 
     for (i = 0; i < MAX_SENSOR_LISTS; i++)
     {
@@ -423,11 +406,10 @@ void determine_if_sensors_are_stuck(int current_time, int stuck_value)
     }
 }
 
-
 void dump_current_lists(void)
 {
-    Node_t  *node = NULL;
-    int     i;
+    Node_t *node = NULL;
+    int i;
 
     for (i = 0; i < MAX_SENSOR_LISTS; i++)
     {
@@ -436,22 +418,22 @@ void dump_current_lists(void)
         {
             switch (i)
             {
-                case VALID_SENSOR_LIST:
-                    printf("Valid - ");
-                    break;
+            case VALID_SENSOR_LIST:
+                printf("Valid - ");
+                break;
 
-                case OOR_SENSOR_LIST:
-                    printf("  OOR - ");
-                    break;
+            case OOR_SENSOR_LIST:
+                printf("  OOR - ");
+                break;
 
-                case STUCK_SENSOR_LIST:
-                    printf("Stuck - ");
-                    break;
+            case STUCK_SENSOR_LIST:
+                printf("Stuck - ");
+                break;
 
-                default:
-                    printf("Invalid list\n");
-                    return;
-                    break;
+            default:
+                printf("Invalid list\n");
+                return;
+                break;
             }
 
             printf("Time: %d, Value: %f, Name: %s\n",
@@ -463,18 +445,17 @@ void dump_current_lists(void)
     }
 }
 
-
 void run_test_suite(void)
 {
-    Node_t  *node = NULL;
-    int     ch;
-    char    str[MAX_SENSOR_NAME_SIZE];
-    float   value;
-    int     c;
-    int     selection;
-    int     i;
-    int     sel_from;
-    int     sel_to;
+    Node_t *node = NULL;
+    int ch;
+    char str[MAX_SENSOR_NAME_SIZE];
+    float value;
+    int c;
+    int selection;
+    int i;
+    int sel_from;
+    int sel_to;
 
     while (1)
     {
@@ -492,138 +473,135 @@ void run_test_suite(void)
         scanf("%d", &ch);
         switch (ch)
         {
-            case 1:
-                printf("Select list:\n"
-                       "  1 - Valid Sensor List\n"
-                       "  2 - Out of Range Sensor List\n"
-                       "  3 - Stuck Sensor List\n");
-                scanf("%d", &selection);
+        case 1:
+            printf("Select list:\n"
+                   "  1 - Valid Sensor List\n"
+                   "  2 - Out of Range Sensor List\n"
+                   "  3 - Stuck Sensor List\n");
+            scanf("%d", &selection);
 
-                --selection;
-                if (selection < MAX_SENSOR_LISTS)
-                {
-                    c = count(sensor_list_head_array[selection]);
-                    printf("There are %d elements in this list\n", c);
-                }
-                break;
-            case 2:
-                printf("\n Enter time (in minutes): ");
-                scanf("%d", &ch);
-                printf("\n Enter sensor name: ");
-                scanf("%s", &str[0]);
-                printf("\n Enter sensor value: ");
-                scanf("%f", &value);
+            --selection;
+            if (selection < MAX_SENSOR_LISTS)
+            {
+                c = count(sensor_list_head_array[selection]);
+                printf("There are %d elements in this list\n", c);
+            }
+            break;
+        case 2:
+            printf("\n Enter time (in minutes): ");
+            scanf("%d", &ch);
+            printf("\n Enter sensor name: ");
+            scanf("%s", &str[0]);
+            printf("\n Enter sensor value: ");
+            scanf("%f", &value);
 
-                printf("Select list:\n"
-                       "  1 - Valid Sensor List\n"
-                       "  2 - Out of Range Sensor List\n"
-                       "  3 - Stuck Sensor List\n");
-                scanf("%d", &selection);
-                --selection;
-                if (selection < MAX_SENSOR_LISTS)
-                {
-                    sensor_list_head_array[selection]
-                        = append(sensor_list_head_array[selection],
-                                 ch,
-                                 str,
-                                 value);
-                }
-                break;
-            case 3:
-                printf("Select list:\n"
-                       "  1 - Valid Sensor List\n"
-                       "  2 - Out of Range Sensor List\n"
-                       "  3 - Stuck Sensor List\n");
-                scanf("%d", &selection);
-                --selection;
-                if (selection < MAX_SENSOR_LISTS)
-                {
-                    display(sensor_list_head_array[selection]);
-                }
-                break;
-            case 4:
-                printf("\n Enter sensor name to search: ");
-                scanf("%s", &str[0]);
+            printf("Select list:\n"
+                   "  1 - Valid Sensor List\n"
+                   "  2 - Out of Range Sensor List\n"
+                   "  3 - Stuck Sensor List\n");
+            scanf("%d", &selection);
+            --selection;
+            if (selection < MAX_SENSOR_LISTS)
+            {
+                sensor_list_head_array[selection] = append(sensor_list_head_array[selection],
+                                                           ch,
+                                                           str,
+                                                           value);
+            }
+            break;
+        case 3:
+            printf("Select list:\n"
+                   "  1 - Valid Sensor List\n"
+                   "  2 - Out of Range Sensor List\n"
+                   "  3 - Stuck Sensor List\n");
+            scanf("%d", &selection);
+            --selection;
+            if (selection < MAX_SENSOR_LISTS)
+            {
+                display(sensor_list_head_array[selection]);
+            }
+            break;
+        case 4:
+            printf("\n Enter sensor name to search: ");
+            scanf("%s", &str[0]);
 
-                for (i = 0; i < MAX_SENSOR_LISTS; i++)
-                {
-                    node = search_sensor_name(sensor_list_head_array[i], str);
-                    if (node)
-                    {
-                        printf("Node found\n");
-                        display_node(node);
-                    }
-                }
-                break;
-            case 5:
-                printf("\n Enter sensor name to delete: ");
-                scanf("%s", &str[0]);
-
-                for (i = 0; i < MAX_SENSOR_LISTS; i++)
-                {
-                    node = search_sensor_name(sensor_list_head_array[i], str);
-                    if (node)
-                    {
-                        sensor_list_head_array[i]
-                            = remove_node(sensor_list_head_array[i], node);
-                        display(sensor_list_head_array[i]);
-                        break;
-                    }
-                }
-                break;
-            case 6:
-                printf("\n Enter sensor name to move: ");
-                scanf("%s", &str[0]);
-
-                printf("Select list to move from:\n"
-                       "  1 - Valid Sensor List\n"
-                       "  2 - Out of Range Sensor List\n"
-                       "  3 - Stuck Sensor List\n");
-                scanf("%d", &sel_from);
-
-                printf("Select list to move to:\n");
-                scanf("%d", &sel_to);
-
-                --sel_from;
-                --sel_to;
-                if (sel_from == sel_to)
-                {
-                    printf("Cannot move to and from same list\n");
-                    break;
-                }
-
-                node = search_sensor_name(sensor_list_head_array[sel_from],
-                                          str);
+            for (i = 0; i < MAX_SENSOR_LISTS; i++)
+            {
+                node = search_sensor_name(sensor_list_head_array[i], str);
                 if (node)
                 {
-                    move_node_between_chains(sel_from, sel_to, node);
+                    printf("Node found\n");
+                    display_node(node);
                 }
-                break;
-            case 7:
-                printf("\n Enter sensor name to update: ");
-                scanf("%s", &str[0]);
+            }
+            break;
+        case 5:
+            printf("\n Enter sensor name to delete: ");
+            scanf("%s", &str[0]);
 
-                printf("\n Enter time (in minutes): ");
-                scanf("%d", &ch);
-                printf("\n Enter sensor value: ");
-                scanf("%f", &value);
-
-                for (i = 0; i < MAX_SENSOR_LISTS; i++)
+            for (i = 0; i < MAX_SENSOR_LISTS; i++)
+            {
+                node = search_sensor_name(sensor_list_head_array[i], str);
+                if (node)
                 {
-                    node = search_sensor_name(sensor_list_head_array[i], str);
-                    if (node)
-                    {
-                        sensor_list_head_array[i]
-                            = update(sensor_list_head_array[i], ch, str, value);
-                        display(sensor_list_head_array[i]);
-                        break;
-                    }
+                    sensor_list_head_array[i] = remove_node(sensor_list_head_array[i], node);
+                    display(sensor_list_head_array[i]);
+                    break;
                 }
+            }
+            break;
+        case 6:
+            printf("\n Enter sensor name to move: ");
+            scanf("%s", &str[0]);
+
+            printf("Select list to move from:\n"
+                   "  1 - Valid Sensor List\n"
+                   "  2 - Out of Range Sensor List\n"
+                   "  3 - Stuck Sensor List\n");
+            scanf("%d", &sel_from);
+
+            printf("Select list to move to:\n");
+            scanf("%d", &sel_to);
+
+            --sel_from;
+            --sel_to;
+            if (sel_from == sel_to)
+            {
+                printf("Cannot move to and from same list\n");
                 break;
-            case 10:
-                return;
-            default:
-                printf("\n Invalid option\n");
+            }
+
+            node = search_sensor_name(sensor_list_head_array[sel_from],
+                                      str);
+            if (node)
+            {
+                move_node_between_chains(sel_from, sel_to, node);
+            }
+            break;
+        case 7:
+            printf("\n Enter sensor name to update: ");
+            scanf("%s", &str[0]);
+
+            printf("\n Enter time (in minutes): ");
+            scanf("%d", &ch);
+            printf("\n Enter sensor value: ");
+            scanf("%f", &value);
+
+            for (i = 0; i < MAX_SENSOR_LISTS; i++)
+            {
+                node = search_sensor_name(sensor_list_head_array[i], str);
+                if (node)
+                {
+                    sensor_list_head_array[i] = update(sensor_list_head_array[i], ch, str, value);
+                    display(sensor_list_head_array[i]);
+                    break;
+                }
+            }
+            break;
+        case 10:
+            return;
+        default:
+            printf("\n Invalid option\n");
         }
     }
 }
