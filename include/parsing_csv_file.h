@@ -13,6 +13,8 @@
 
 #define INPUT_MODE  "r"
 
+#define OUTPUT_MODE  "a"
+
 /**
  * Function:    parser_parse_csv_file
  *

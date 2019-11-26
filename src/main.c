@@ -19,6 +19,8 @@ const char *list_name[] = {"Valid",
  */
 #define INPUT_FILE_NAME "../src/input.csv"
 
+#define OUTPUT_FILE_NAME "../sensor_fusion_report.txt"
+
 
 /* Test mode activated by -t switch. */
 static int test_mode = 0;
@@ -40,9 +42,9 @@ Node_t  *sensor_list_head_array[MAX_SENSOR_LISTS] = {NULL};
  * Entry point to the Fused Sensor Algorithm
  *
  * Return:
- *  Nothing.
+ *  The fused sensor value after, the algorithm has been run.
  */
-void do_sensor_fusion_algorithm(void);
+float do_sensor_fusion_algorithm(void);
 
 
 /**
@@ -137,13 +139,26 @@ void dump_current_lists(void);
 void run_test_suite(void);
 
 
+void write_output_file(char     *file_name,
+                       int      use_high_range,
+                       float    high_range,
+                       int      use_low_range,
+                       float    low_range,
+                       int      use_stuck,
+                       int      stuck_range,
+                       int      current_time,
+                       float    fused_sensor_value);
+
+
 int main(int argc, char *argv[])
 {
     float   sensor_value;
     float   high_range;
     float   low_range;
+    float   fused_sensor_value;
     char    sensor_name[MAX_SENSOR_NAME_SIZE];
-    char    file_name[MAX_FILE_NAME_SIZE];
+    char    in_file_name[MAX_FILE_NAME_SIZE];
+    char    out_file_name[MAX_FILE_NAME_SIZE];
     int     time_in_minutes = 0;
     int     opt;
     int     end_of_file_reached = 0;
@@ -159,7 +174,9 @@ int main(int argc, char *argv[])
      */
     eigensystems_test();
 
-    strncpy(file_name, INPUT_FILE_NAME, MAX_FILE_NAME_SIZE);
+    strncpy(in_file_name, INPUT_FILE_NAME, MAX_FILE_NAME_SIZE);
+    strncpy(out_file_name, OUTPUT_FILE_NAME, MAX_FILE_NAME_SIZE);
+
     while((opt = getopt(argc, argv, "tl:h:s:f:")) != -1)
     {
         switch(opt)
@@ -200,7 +217,7 @@ int main(int argc, char *argv[])
                  * Specifies a non-default input file to use for the sensor
                  * input data.
                  */
-                strncpy(file_name, optarg, MAX_FILE_NAME_SIZE);
+                strncpy(in_file_name, optarg, MAX_FILE_NAME_SIZE);
                 break;
             default:
                 printf("unknown option: %c\n", opt);
@@ -210,7 +227,7 @@ int main(int argc, char *argv[])
 
     do
     {
-        end_of_file_reached = parser_parse_csv_file(file_name,
+        end_of_file_reached = parser_parse_csv_file(in_file_name,
                                                     lines_read,
                                                     &time_in_minutes,
                                                     &sensor_name[0],
@@ -247,7 +264,17 @@ int main(int argc, char *argv[])
                     dump_current_lists();
                 }
 
-                do_sensor_fusion_algorithm();
+                fused_sensor_value = do_sensor_fusion_algorithm();
+                write_output_file(out_file_name,
+                                  use_high_range,
+                                  high_range,
+                                  use_low_range,
+                                  low_range,
+                                  use_stuck,
+                                  stuck_range,
+                                  current_time,
+                                  fused_sensor_value);
+
                 current_time = -1;
             }
         }
@@ -277,18 +304,26 @@ int main(int argc, char *argv[])
         dump_current_lists();
     }
 
-    do_sensor_fusion_algorithm();
+    fused_sensor_value = do_sensor_fusion_algorithm();
+    write_output_file(out_file_name,
+                      use_high_range,
+                      high_range,
+                      use_low_range,
+                      low_range,
+                      use_stuck,
+                      stuck_range,
+                      time_in_minutes,
+                      fused_sensor_value);
 
     if (test_mode)
     {
         run_test_suite();
     }
-
     return 0;
 }
 
 
-void do_sensor_fusion_algorithm(void)
+float do_sensor_fusion_algorithm(void)
 {
     if (test_mode)
     {
@@ -304,6 +339,9 @@ void do_sensor_fusion_algorithm(void)
      * calculate_support_degree_matrix(c,
      *    sensor_list_head_array[VALID_SENSOR_LIST]);
      */
+
+    /* Return the fused sensor value. */
+    return 0;
 }
 
 
@@ -474,6 +512,105 @@ void dump_current_lists(void)
             node = node->next;
         }
     }
+}
+
+void write_output_file(char     *file_name,
+                       int      use_high_range,
+                       float    high_range,
+                       int      use_low_range,
+                       float    low_range,
+                       int      use_stuck,
+                       int      stuck_range,
+                       int      current_time,
+                       float    fused_sensor_value)
+{
+    Node_t  *node;
+    FILE    *fp;
+    int     minutes;
+    int     hours;
+    int     i = 0;
+
+    fp = fopen(file_name, OUTPUT_MODE);
+    if (fp == NULL)
+    {
+        /**
+         * If we fail to open the file, then we need to abort the program,
+         * there is nothing to be done.
+         */
+        printf("Can't open output file %s\n", file_name);
+        printf("Error - %s\n", strerror(errno));
+        return;
+    }
+
+    hours = current_time / 60;
+    minutes = current_time % 60;
+
+    fprintf(fp, "\n\n");
+    fprintf(fp, "--------------------------------------------------------------"
+            "------------------\n");
+    fprintf(fp, "Fused Sensor Algorithm run for sensors reporting at:"
+            " %02d%02dH\n\n",
+            hours,
+            minutes);
+    fprintf(fp, "Sensor Parameters\n");
+    fprintf(fp, "High Limit --------- ");
+    use_high_range ? fprintf(fp, "%0.4f\n", high_range) : fprintf(fp, "N/A\n");
+
+    fprintf(fp, "Low Limit ---------- ");
+    use_low_range ? fprintf(fp, "%0.4f\n", low_range) : fprintf(fp, "N/A\n");
+
+    fprintf(fp, "Stuck Interval ----- ");
+    use_stuck ? fprintf(fp, "%02d\n", stuck_range) : fprintf(fp, "N/A\n");
+
+    fprintf(fp, "Fused Sensor Value - %0.4f\n", fused_sensor_value);
+
+    fprintf(fp, "\n");
+    fprintf(fp, "Sensor Statistics:\n");
+    fprintf(fp, "--------+--------+------------+------\n");
+    fprintf(fp, " Update | Status |   Value    | Name \n");
+    fprintf(fp, "--------+--------+------------+------\n");
+    for (i = 0; i < MAX_SENSOR_LISTS; i++)
+    {
+
+
+        node = sensor_list_head_array[i];
+        while (node)
+        {
+
+            hours = node->time_in_minutes / 60;
+            minutes = node->time_in_minutes % 60;
+            fprintf(fp, " %02d%02dH  |" , hours, minutes);
+
+            switch (i)
+            {
+                case VALID_SENSOR_LIST:
+                    fprintf(fp, " Valid  |");
+                    break;
+
+                case OOR_SENSOR_LIST:
+                    fprintf(fp, " OOR    |");
+                    break;
+
+                case STUCK_SENSOR_LIST:
+                    fprintf(fp, " Stuck  |");
+                    break;
+
+                default:
+                    fprintf(fp, " ERROR |");
+                    break;
+            }
+
+            fprintf(fp,
+                    " %10.04f | %s\n",
+                    node->sensor_value,
+                    node->sensor_name);
+            node = node->next;
+        }
+    }
+    fprintf(fp, "--------+--------+------------+------\n");
+
+    fclose(fp);
+    return;
 }
 
 
