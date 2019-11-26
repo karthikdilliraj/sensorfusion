@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
+#include <string.h>
 #include <gsl/gsl_math.h>
 #include <gsl/gsl_eigen.h>
 #include "calculate_fusion.h"
@@ -115,7 +116,11 @@ int determine_contribution_rates_to_use(double *contribution_rate, float paramet
     int m;
     for (int k = 0; k < length; k++)
     {
-        sum += contribution_rate[k];
+        for (int j = 0; j <= k; j++)
+        {
+            sum += contribution_rate[j];
+        }
+
         if (sum <= parameter)
         {
             m = k - 1;
@@ -163,7 +168,7 @@ double **calculate_principal_components(struct support_degree_matrix spd, double
             }
         }
     }
-    printf("Principal components of D matrix\n");
+    printf("Principal components of D matrix, row:%d, col:%d\n", m, n);
     for (int i = 0; i < m; i++)
     {
         for (int j = 0; j < n; j++)
@@ -173,4 +178,119 @@ double **calculate_principal_components(struct support_degree_matrix spd, double
     }
     free(arrptr);
     return principal_components_matrix;
+}
+
+double *calculate_integrated_support_degree_matrix(double **principle_components,
+    double *contribution_rate, int no_of_contribution_rates_to_use,
+    int no_of_sensors)
+{
+    int n_contribute = no_of_contribution_rates_to_use;
+    int n_sensors = no_of_sensors;
+
+    if ((principle_components == NULL) || (contribution_rate == NULL)
+        || (n_contribute == 0) || (n_sensors == 0))
+    {
+        printf("%s: Incorrect Input\n", __func__);
+        return NULL;
+    }
+
+    double *arr = (double *)malloc(n_sensors * sizeof(double));
+    if (arr == NULL)
+    {
+        printf("%s: Unable to allocate memory!\n", __func__);
+        return NULL;
+    }
+
+    /* Calculate integrated support degree score */
+    for (int i = 0; i < n_sensors; i++)
+    {
+        for (int j = 0; j < n_contribute; j++)
+        {
+            printf("sensors: %d-%f, contri: %d-%f\n", i, principle_components[i][j], j, contribution_rate[i]);
+            arr[i] += principle_components[i][j] * contribution_rate[i];
+        }
+    }
+
+    return arr;
+}
+
+int eliminate_incorrect_data(double *integrate_support_degree_matrix,
+    double fault_tolerance, int no_of_sensors)
+{
+    int i, n_sensors = no_of_sensors;
+    double mean_z = 0;
+    double sum = 0;
+    double *arr = integrate_support_degree_matrix;
+
+    if ((arr == NULL) || (n_sensors == 0))
+    {
+        printf("%s: Incorrect Input\n", __func__);
+        return -1;
+    }
+
+    for (i = 0; i < n_sensors; i++)
+    {
+        sum += arr[i];
+    }
+
+    mean_z = sum / (i+1);
+
+    for (int i = 0; i < n_sensors; i++)
+    {
+        if (fabs(arr[i]) < fabs(fault_tolerance * mean_z))
+        {
+            arr[i] = 0;
+        }
+    }
+
+    return 0;
+}
+
+double *calculate_weight_coefficient(double *integrate_support_degree_matrix,
+    int no_of_sensors)
+{
+    int n_sensors = no_of_sensors;
+    double *integrate_matrix = integrate_support_degree_matrix;
+    double sum = 0;
+
+    if ((integrate_matrix == NULL) || (n_sensors == 0))
+    {
+        printf("%s: Incorrect Input\n", __func__);
+        return NULL;
+    }
+
+    double *arr = (double *)malloc(n_sensors * sizeof(double));
+    if (arr == NULL)
+    {
+        printf("%s: Unable to allocate memory!\n", __func__);
+        return NULL;
+    }
+
+    memset(arr, 0, n_sensors * sizeof(double));
+
+    for (int i = 0; i < n_sensors; i++)
+    {
+        sum += integrate_matrix[i];
+    }
+
+    for (int i = 0; i < n_sensors; i++)
+    {
+        arr[i] = integrate_matrix[i] / sum;
+    }
+
+    return arr;
+}
+
+double calculate_fused_output(double *weight_cofficienet, double *sensor_data,
+    int no_of_sensors)
+{
+    double fused_value = 0;
+    int n_sensors = no_of_sensors;
+
+    for (int i = 0; i < n_sensors; i++)
+    {
+        fused_value += weight_cofficienet[i] * sensor_data[i];
+    }
+
+    return fused_value;
 }
