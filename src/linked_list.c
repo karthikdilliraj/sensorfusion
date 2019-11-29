@@ -1,7 +1,7 @@
 /**
  * Implementation of the linked list.
  */
-#include "../include/linked_list.h"
+#include "linked_list.h"
 
 
 Node_t* create(int time, char *name, float value, Node_t *next)
@@ -76,8 +76,20 @@ Node_t* search_sensor_name(Node_t *head, char *str)
 {
     Node_t  *node = head;
 
+    if (!str)
+    {
+        /**
+         * Was given an invalid string to search, so we must abort.
+         */
+        return NULL;
+    }
+
     while (node)
     {
+        /**
+         * Iterate over all nodes to see if there is a node that has the same
+         * name as what we are searching for.
+         */
         if (strcmp(node->sensor_name, str) == 0)
         {
             return node;
@@ -96,6 +108,9 @@ Node_t* remove_from_front(Node_t *head)
 
     if (!head)
     {
+        /**
+         * No list to even remove from, we can return and empty list.
+         */
         return NULL;
     }
 
@@ -104,6 +119,9 @@ Node_t* remove_from_front(Node_t *head)
 
     if (node == head)
     {
+        /**
+         * We have removed the only entry in the list.
+         */
         head = NULL;
     }
 
@@ -119,6 +137,9 @@ Node_t* remove_from_back(Node_t *head)
 
     if (!head)
     {
+        /**
+         * We've been provided an invalid list, so we can just return NULL.
+         */
         return NULL;
     }
 
@@ -161,6 +182,10 @@ Node_t* remove_node(Node_t *head, Node_t *to_be_removed)
 
     while (node)
     {
+        /**
+         * If the node we want to remove isn't the front or last, we can run
+         * through the list to see if any node matches what we want to remove.
+         */
         if (node->next == to_be_removed)
         {
             break;
@@ -180,7 +205,7 @@ Node_t* remove_node(Node_t *head, Node_t *to_be_removed)
 }
 
 
-int move_node(Node_t **head_move_from, Node_t **head_move_to, Node_t *node)
+Boolean move_node(Node_t **head_move_from, Node_t **head_move_to, Node_t *node)
 {
     if (node)
     {
@@ -191,10 +216,10 @@ int move_node(Node_t **head_move_from, Node_t **head_move_to, Node_t *node)
 
         *head_move_from = remove_node(*head_move_from,
                                       node);
-        return 1;
+        return TRUE;
     }
 
-    return 0;
+    return FALSE;
 }
 
 

@@ -143,9 +143,9 @@ Node_t* remove_node(Node_t *head, Node_t *to_be_removed);
  * Function:    move_node
  *
  * Parameters:
- *  **head_move_from    [in/out]    Pointer to the pointer of the head of the 
+ *  **head_move_from    [in/out]    Pointer to the pointer of the head of the
  *                                  linked list chain to move the node from
- *  **head_move_to      [in/out]    Pointer to the pointer of the head of the 
+ *  **head_move_to      [in/out]    Pointer to the pointer of the head of the
  *                                  linked list chain to move the node to
  *  *node               [in]        Pointer to the node to move
  *
@@ -156,7 +156,7 @@ Node_t* remove_node(Node_t *head, Node_t *to_be_removed);
  *  True    - Node has been successfully moved
  *  False   - Node has not been successfully moved
  */
-int move_node(Node_t **head_move_from, Node_t **head_move_to, Node_t *node);
+Boolean move_node(Node_t **head_move_from, Node_t **head_move_to, Node_t *node);
 
 
 /**

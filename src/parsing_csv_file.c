@@ -3,17 +3,17 @@
  */
 #include "parsing_csv_file.h"
 
-int parser_parse_csv_file(char *file_name,
-                          int lines_to_skip,
-                          int *time_in_minutes,
-                          char *sensor_name,
-                          float *sensor_value)
+Boolean parser_parse_csv_file(char *file_name,
+                              int lines_to_skip,
+                              int *time_in_minutes,
+                              char *sensor_name,
+                              float *sensor_value)
 {
+    Boolean end_of_file;
     float   time;
     FILE    *ifp;
     char    buf[MAX_ROW_LIMIT];
     char    *field;
-    int     end_of_file;
     int     field_count = 0;
     int     remainder;
     int     row_count = 0;
