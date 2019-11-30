@@ -1,27 +1,17 @@
-# sensorfusion
-Sensor Fusion Algorithm - Measures Data from different sensors to assure correctness
+# SensorFusion
 
-## Prerequisite:
-1. GCC
+SensorFusion is a software that measures sensor data from different sensors in order to assure precise estimates of value.
 
+SensorFusion implements the algorithm described in:
 
-## Install Library:
-_In this project, we used [*GSL*](https://www.gnu.org/software/gsl/doc/html/index.html#) library_
+G. Hongyan, “A simple multi-sensor data fusion algorithm based on principal component analysis,” in 2009 ISECS International Colloquium on Computing, Communication, Control, and Management, Sanya, China, 2009, pp. 423–426.
 
-To install:
+# Authors
 
-```
-./install.sh
-```
+- Karthik Dilliraj - karthikdilliraj@cmail.carleton.ca - Carleton University
+- Nhat Hieu Le - nhathieule@cmail.carleton.ca - Carleton University
+- Jason Miller - jasonmiller@cmail.carleton.ca - Carleton University
 
-## Execute below command to append GSL library into PATH environment:
-```
-source ~/.bashrc
-```
+# Installation
 
-## Build Project:
-```
-make
-```
-
-Binary will be placed at `bin` directory
+Installation steps are mentioned in [INSTALL.md](https://github.com/karthikdilliraj/sensorfusion/blob/dev/INSTALL.md)

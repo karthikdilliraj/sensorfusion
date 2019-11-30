@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "parsing_csv_file.h"
-#include "eigensystems.h"
+#include "calculate_fusion.h"
 #include "sensor.h"
 /**
  * Uncomment this and the function call start_automated_testing once the test
@@ -22,7 +22,6 @@
 #define INPUT_FILE_NAME "src/input.csv"
 #define OUTPUT_FILE_NAME "sensor_fusion_report.txt"
 
-
 int main(int argc, char *argv[])
 {
     Boolean use_high_range = FALSE;
@@ -36,16 +35,92 @@ int main(int argc, char *argv[])
     int     stuck_range;
 
     /**
-     * Run testing for eigensystems.c
+     * Run testing for calculate_fusion.c
      */
-    eigensystems_test();
+    
+    struct support_degree_matrix spd = calculate_support_degree_matrix();
+    struct eigen_systems eigen = calculate_eigensystem(spd);
+    double *contribution_rate = calculate_contribution_rate(eigen, spd.no_of_sensors);
+    int no_of_contribution_rates_to_use = determine_contribution_rates_to_use(contribution_rate, 0.5, spd.no_of_sensors);
+    double **principal_components_matrix = calculate_principal_components(spd, eigen.eigen_vector, no_of_contribution_rates_to_use);
+
+    /**
+     * Run testing for step 6 to step 9
+     */
+    double contribution_rate_test[] = {0.1, 0.2, 0.3, 0.4};
+    double n_sensor_t = 4;
+    double n_contri_rate_t = 3;
+
+    double **principal_components_matrix_test = (double **)malloc(n_sensor_t * sizeof(double *)); 
+    for (int i = 0; i < n_sensor_t; i++)
+    {
+         principal_components_matrix_test[i] = (double *)malloc(n_sensor_t * sizeof(double)); 
+    }
+
+    double count = 0; 
+    for (int i = 0; i < n_sensor_t; i++)
+    {
+      for (int j = 0; j < n_sensor_t; j++)
+      {
+         principal_components_matrix_test[i][j] = ++count;
+      }
+    }
+
+    printf("calculate_integrated_support_degree_matrix\n");
+    double *integrate_support_matrix =
+        calculate_integrated_support_degree_matrix(principal_components_matrix_test,
+            contribution_rate_test, n_contri_rate_t, n_sensor_t);
+
+    if (integrate_support_matrix == NULL)
+    {
+        goto calculate_done;
+    }
+
+    printf("integrate_support_matrix: ");
+    for (int idx = 0; idx < n_sensor_t; idx++)
+    {
+        printf(" %f", integrate_support_matrix[idx]);
+    }
+    printf("\n");
+
+    int res = eliminate_incorrect_data(integrate_support_matrix, 0.7, n_sensor_t);
+    if (res != 0) {
+        printf("Fail to eliminate incorrect data\n");
+        goto calculate_done;
+    }
+
+    printf("Eliminated integrate_support_matrix: ");
+    for (int idx = 0; idx < n_sensor_t; idx++)
+    {
+        printf(" %f", integrate_support_matrix[idx]);
+    }
+    printf("\n");
+
+    double *weight_coff = calculate_weight_coefficient(integrate_support_matrix, n_sensor_t);
+    if (weight_coff == NULL)
+    {
+        goto calculate_done;
+    }
+
+    printf("Weight Coefficient: ");
+    for (int idx = 0; idx < n_sensor_t; idx++)
+    {
+        printf(" %f", weight_coff[idx]);
+    }
+    printf("\n");
+
+    double sensor_data_t[] = {10, 1, 4 ,5};
+    double fused_value = calculate_fused_output(weight_coff, sensor_data_t, n_sensor_t);
+    printf("Fused value:%f\n", fused_value);
+
+calculate_done:
 
     strncpy(in_file_name, INPUT_FILE_NAME, MAX_FILE_NAME_SIZE);
     strncpy(out_file_name, OUTPUT_FILE_NAME, MAX_FILE_NAME_SIZE);
 
     while((opt = getopt(argc, argv, "htl:u:s:f:")) != -1)
     {
-        switch(opt)
+        switch (opt)
         {
             case 'h':
                 printf("\n\n");
@@ -132,6 +207,3 @@ int main(int argc, char *argv[])
 
     return 0;
 }
-
-
-
