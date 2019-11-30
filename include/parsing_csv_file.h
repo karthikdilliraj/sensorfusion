@@ -7,11 +7,24 @@
 #include <unistd.h>
 #include <string.h>
 
+#ifndef Boolean
+    #define Boolean int
+#endif
+
+#ifndef TRUE
+    #define TRUE 1
+#endif
+
+#ifndef FALSE
+    #define FALSE 0
+#endif
+
 #define MAX_ROW_LIMIT           1024
 #define MAX_SENSOR_NAME_SIZE    255
 #define MAX_FILE_NAME_SIZE      255
 
 #define INPUT_MODE  "r"
+#define OUTPUT_MODE  "a"
 
 /**
  * Function:    parser_parse_csv_file
@@ -30,10 +43,10 @@
  * Return:
  *  Whether or not the parser has hit the end of the file
  */
-int parser_parse_csv_file(char  *file_name,
-                          int   lines_to_skip,
-                          int   *time_in_minutes,
-                          char  *sensor_name,
-                          float *sensor_value);
+Boolean parser_parse_csv_file(char  *file_name,
+                              int   lines_to_skip,
+                              int   *time_in_minutes,
+                              char  *sensor_name,
+                              float *sensor_value);
 
 #endif
