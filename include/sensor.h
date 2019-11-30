@@ -1,3 +1,9 @@
+/**
+ * @file sensor.h
+ *
+ * @brief A collection of functions related to the manipulation of sensors.
+ */
+ 
 #ifndef SENSOR_H
 #define SENSOR_H
 
@@ -5,28 +11,26 @@
 
 
 /**
- * Function:    run_main_sensor_algorithm
+ * @brief Starts the sensor fusion algorithm by parsing the CSV
  *
- * Parameters:
- *  *in_file_name   [in]    Pointer to the filename of the file that contains
- *                          the data to run the sensor fusion algorithm on.
- *  *out_file_name  [in]    Pointer to the filename of the file that will
- *                          contain the output data from the sensor fusion
- *                          algorithm.
- *  high_range      [in]    The high limit the user has specified.
- *  use_high_range  [in]    Whether or not the user has specified a high sensor
- *                          limit.
- *  low_range       [in]    The low limit the user has specified
- *  use_low_range   [in]    Whether or not the user has specified a low sensor
- *                          limit.
- *  stuck_range     [in]    The stuck interval the user has specified
- *  use_stuck       [in]    Whether or not the user has specified a stuck limit.
+ * @param[in] *in_file_name    Pointer to the filename of the file that 
+ *                             contains the data to run the sensor fusion
+ *                             algorithm on.
+ * @param[in] *out_file_name   Pointer to the filename of the file that will
+ *                             contain the output data from the sensor fusion
+ *                             algorithm.
+ * @param[in] high_range       The high limit the user has specified.
+ * @param[in] use_high_range   Whether or not the user has specified a high 
+ *                             sensor limit.
+ * @param[in] low_range        The low limit the user has specified
+ * @param[in] use_low_range    Whether or not the user has specified a low 
+ *                             sensor limit.
+ * @param[in] stuck_range      The stuck interval the user has specified
+ * @param[in] use_stuck        Whether or not the user has specified a stuck
+ *                             limit.
  *
- * Starts off the sensor algorithm by reading in the values from the CSV file
- * specified by *in_file_name.
- *
- * Return:
- *  Nothing
+ * @details Starts off the sensor algorithm by reading in the values from the 
+ * CSV file specified by *in_file_name.
  */
 void run_main_sensor_algorithm(char     *in_file_name,
                                char     *out_file_name,
@@ -39,23 +43,19 @@ void run_main_sensor_algorithm(char     *in_file_name,
 
 
 /**
- * Function:    update_sensor_lists
+ * @brief Updates sensors in linked lists
  *
- * Parameters:
- *  time_in_minutes [in]    Time in minutes, read from the input file
- *  *sensor_name    [in]    Sensor name, read from the input file
- *  sensor_value    [in]    Sensor value, read from the input file
- *  use_high_range  [in]    Whether or not the user has specified a high sensor
- *                          limit.
- *  high_range      [in]    The limit the user has specified
- *  use_low_range   [in]    Whether or not the user has specified a low sensor
- *                          limit.
- *  low_range       [in]    The limit the user has specified
+ * @param[in] time_in_minutes  Time in minutes, read from the input file
+ * @param[in] *sensor_name     Sensor name, read from the input file
+ * @param[in] sensor_value     Sensor value, read from the input file
+ * @param[in] use_high_range   Whether or not the user has specified a high 
+ *                             sensor limit.
+ * @param[in] high_range       The limit the user has specified
+ * @param[in] use_low_range    Whether or not the user has specified a low 
+ *                             sensor limit.
+ * @param[in] low_range        The limit the user has specified
  *
- * Updates the Valid and Out of Range sensor lists.
- *
- * Return:
- *  Nothing
+ * @details Updates the Valid and Out of Range sensor lists.
  */
 void update_sensor_lists(int    time_in_minutes,
                          char   *sensor_name,
@@ -67,79 +67,65 @@ void update_sensor_lists(int    time_in_minutes,
 
 
 /**
- * Function:    search_all_chains
+ * @brief Search all lists for a node with a name of *str
  *
- * Parameters:
- *  *str        [in]    Sensor name to search for
- *  *list_index [out]   Index of the chain that str was found in.
+ * @param[in]   *str        Sensor name to search for
+ * @param[out]  *list_index Index of the chain that str was found in.
  *
- * Searches all linked list chains for a node containing a sensor name of *str.
- * If found, will put the list index in which the node was found into
+ * @details Searches all linked list chains for a node containing a sensor name 
+ * of *str. If found, will put the list index in which the node was found into
  * *list_index and return a valid Node_t object.
  *
- * Return:
- *  Pointer to the matching node, if no node is found, returns NULL.
+ * @return Pointer to the matching node, if no node is found, returns NULL.
  */
 Node_t* search_all_chains(char *str, int *list_index);
 
 
 /**
- * Function:    determine_if_sensors_are_stuck
+ * @brief Moves sensors into stuck list if needed
  *
- * Parameters:
- *  current_time    [in]    The current time with respect to where the parser
+ * @param[in] current_time  The current time with respect to where the parser
  *                          is within the input.csv file.
- *  stuck_value     [in]    User specified limit for determining stuck sensors.
+ * @param[in] stuck_value   User specified limit for determining stuck sensors.
  *
- * Iterates through the valid sensor list and the out of range sensor list to
- * see if any sensors have not been updated within an interval of stuck_value.
- * If so, will move that node from its current list into the stuck sensor list.
- *
- * Return:
- *  Nothing.
+ * @details Iterates through the valid sensor list and the out of range sensor 
+ * list to see if any sensors have not been updated within an interval of 
+ * stuck_value.If so, will move that node from its current list into the stuck
+ * sensor list.
  */
 void determine_if_sensors_are_stuck(int current_time, int stuck_value);
 
 
 /**
- * Function:    dump_current_lists
+ * @brief Display contents of all nodes
  *
- * Parameters:
- *  Nothing
- *
- * A compact dump of all the nodes contained within all the linked lists.
- *
- * Return:
- *  Nothing.
+ * @details A compact dump of all the nodes contained within all the linked
+ * lists.
  */
 void dump_current_lists(void);
 
 
 /**
- * Function:    write_output_file
+ * @brief Writes output file
  *
- * Parameters:
- *  *file_name          [in]    Pointer to the filename of the file that will
- *                              contain the output data from the sensor fusion
- *                              algorithm.
- *  use_high_range      [in]    Whether or not the user has specified a high
- *                              sensor limit.
- *  high_range          [in]    The high limit the user has specified.
- *  use_low_range       [in]    Whether or not the user has specified a low
- *                              sensor limit.
- *  low_range           [in]    The low limit the user has specified
- *  use_stuck           [in]    Whether or not the user has specified a stuck
- *                              limit.
- *  stuck_range         [in]    The stuck interval the user has specified
- *` current_time        [in]    The time within the CSV the parser is currently
- *                              looking at.
- *  fused_sensor_value  [in]    The final fused sensor value returned by the
- *                              sensor fusion algorithm.
+ * @param[in] *file_name            Pointer to the filename of the file that 
+ *                                  will contain the output data from the 
+ *                                  sensor fusion algorithm.
+ * @param[in] use_high_range        Whether or not the user has specified a 
+ *                                  high sensor limit.
+ * @param[in] high_range            The high limit the user has specified.
+ * @param[in] use_low_range         Whether or not the user has specified a low
+ *                                  sensor limit.
+ * @param[in] low_range             The low limit the user has specified
+ * @param[in] use_stuck             Whether or not the user has specified a 
+ *                                  stuck limit.
+ * @param[in] stuck_range           The stuck interval the user has specified
+ *`@param[in] current_time          The time within the CSV the parser is 
+ *                                  currently looking at.
+ * @param[in] fused_sensor_value    The final fused sensor value returned by 
+ *                                  the sensor fusion algorithm.
  *
- * Writes the final sensor fusion report to file.
- *
- * Return:
- *  Nothing
+ * @details Writes the final sensor fusion report to file.
  */
 void write_output_file(char     *file_name,
                        int      use_high_range,
@@ -153,15 +139,11 @@ void write_output_file(char     *file_name,
 
 
 /**
- * Function:    do_sensor_fusion_algorithm
+ * @brief Starts the sensor fusion algorithm
  *
- * Parameters:
- *  None
+ * @details Entry point to the Fused Sensor Algorithm
  *
- * Entry point to the Fused Sensor Algorithm
- *
- * Return:
- *  The fused sensor value after, the algorithm has been run.
+ * @return The fused sensor value after, the algorithm has been run.
  */
 float do_sensor_fusion_algorithm(void);
 

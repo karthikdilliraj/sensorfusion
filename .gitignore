@@ -54,8 +54,7 @@ dkms.conf
 # Backup files
 *~
 
-# File within lib directory
+# Files within lib, bin and doc directory
 /lib/*
-
-# File within bin directory
 /bin/*
+/doc/*
