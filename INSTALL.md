@@ -6,7 +6,7 @@ GCC Compiler
 
 ## Dependency Library
 
-In this project, we used [_GSL_](https://www.gnu.org/software/gsl/doc/html/index.html#) library
+_To run the project, you have to install the [\_GSL_](https://www.gnu.org/software/gsl/doc/html/index.html#) library\_
 
 To install run the follwing command:
 

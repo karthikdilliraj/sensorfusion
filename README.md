@@ -14,4 +14,4 @@ G. Hongyan, “A simple multi-sensor data fusion algorithm based on principal co
 
 # Installation
 
-Installation steps are mentioned in INSTALL.md
+Installation steps are mentioned in [_INSTALL.md_](https://github.com/karthikdilliraj/sensorfusion/blob/dev/INSTALL.md)
