@@ -1,5 +1,15 @@
+/**
+ * @brief A collection of functions related to the calculation of fused output.
+ */
+
 #ifndef CALCULATE_FUSION_H
 #define CALCULATE_FUSION_H
+
+/**
+ * @brief Structure to store support_degree_matrix
+ *
+ * @details Structure support_degree_matrix stores pointer to double of sd_matrix and int no_of_sensors
+ */
 
 struct support_degree_matrix
 {
@@ -7,6 +17,11 @@ struct support_degree_matrix
     int no_of_sensors;
 };
 
+/**
+ * @brief Structure to store eigen_systems
+ *
+ * @details Structure eigen_systems stores pointer to double of eigen_value and pointer to pointer to double of eigen_vector
+ */
 struct eigen_systems
 {
     double *eigen_value;
@@ -14,121 +29,94 @@ struct eigen_systems
 };
 
 /**
- * Function:    calculate_support_degree_matrix
+ * @brief Calculate Support degree matrix D for the set of sensor values
  *
- * Parameters:
- *  None
- *
- * Calculate Support degree matrix D for the set of sensor values
- *
- * Return:
- *  Structure support_degree_matrix.
+ *  @param[in]   Node_t *node Linked list containing sensor values
+ * 
+ *  @return Structure support_degree_matrix, if no node is found, returns NULL.
+ * 
  */
+
 struct support_degree_matrix calculate_support_degree_matrix(void);
 
 /**
- * Function:    calculate_eigensystem
+ * @brief Calculate eigen values and eigen vectors of the support degree matrix
  *
- * Parameters:
- *  Structure support_degree_matrix
+ * @param[in] Structure support_degree_matrix spd
  *
- * Calculate eigen values and vectors of the support degree matrix
- *
- * Return:
- *  Structure eigen_systems.
+ * @return Structure eigen_systems, if input is invalid, returns NULL.
  */
+
 struct eigen_systems calculate_eigensystem(struct support_degree_matrix spd);
 
 /**
- * Function:    calculate_contribution_rate
+ * @brief Calculate contribute rate of Principal component
  *
- * Parameters:
- *  Structure eigen_systems, int no_of_sensors
+ * @param[in] Structure eigen_systems eigen, int no_of_sensors
  *
- * Calculate contribute rate of Principal component
- *
- * Return:
- *  double * contribution_rate.
+ * @return pointer to double of contribution_rate, if input is invalid, returns NULL.
  */
+
 double *calculate_contribution_rate(struct eigen_systems eigen, int no_of_sensors);
 
 /**
- * Function:    determine_contribution_rates_to_use
+ * @brief Determine the number of contribution_rate to use
  *
- * Parameters:
- *  double * contribution_rate, float parameter, int no_of_sensors
+ * @param[in] pointer to double of contribution_rate, float parameter, int no_of_sensors
  *
- * Determine the number of contribution_rate to use
- *
- * Return:
- *  int no_of_contribution_rates_to_use.
+ * @return int no_of_contribution_rates_to_use, if input is invalid, returns NULL.
  */
+
 int determine_contribution_rates_to_use(double *contribution_rate, float parameter, int no_of_sensors);
 
 /**
- * Function:    calculate_principal_components
+ * @brief Calculate the Principal components of the D Matrix
  *
- * Parameters:
- *  Structure support_degree_matrix, double ** eigen_vector, int no_of_contribution_rates_to_use
+ * @param[in] Structure support_degree_matrix spd, pointer to pointer to double of eigen_vector, int no_of_contribution_rates_to_use
  *
- * Calculate the Principal components of the D Matrix
- *
- * Return:
- *  double ** principal_components_matrix.
+ * @return pointer to pointer to double of principal_components_matrix, if input is invalid, returns NULL.
  */
+
 double **calculate_principal_components(struct support_degree_matrix spd, double **eigen_vector, int no_of_contribution_rates_to_use);
 
-
 /**
- * Function:    calculate_integrated_support_degree_matrix
+ * @brief Calculate the Integrated Support Degree Score for all sensors
  *
- * Parameters:
- *  Structure principle_components, int no_of_contribution_rates_to_use, int no_of_sensors
+ * @param[in] pointer to pointer to double of principle_components, pointer to double of contribution_rate, int no_of_contribution_rates_to_use, int no_of_sensors
  *
- * Calculate the Integrated Support Degree Score for all sensors
- *
- * Return:
- *  double *calculate_integrated_support_degree_matrix.
+ * @return pointer to double of calculate_integrated_support_degree_matrix, if input is invalid, returns NULL.
  */
+
 double *calculate_integrated_support_degree_matrix(double **principle_components, double *contribution_rate, int no_of_contribution_rates_to_use, int no_of_sensors);
 
 /**
- * Function:    eliminate_incorrect_data
+ * @brief Eliminate the incorrect sensor data
  *
- * Parameters:
- *  Double integrate_support_degree_matrix, double fault tolerance, int no_of_sensors
+ * @param[in] pointer to double of integrate_support_degree_matrix, double fault_tolerance, int no_of_sensors
  *
- * Calculate the Integrated Support Degree Score for all sensors
- *
- * Return:
- *  int integrate_support_degree_matrix.
+ * @return int integrate_support_degree_matrix, if input is invalid, returns NULL.
  */
+
 int eliminate_incorrect_data(double *integrate_support_degree_matrix, double fault_tolerance, int no_of_sensors);
 
 /**
- * Function:    calculate_weight_coefficient
+ * @brief Calculate the weight coefficients for all sensors
  *
- * Parameters:
- *  Double integrate_support_degree_matrix, int no_of_sensors
+ * @param[in] pointer to double of integrate_support_degree_matrix, int no_of_sensors
  *
- * Eliminate incorrect sensor data
- *
- * Return:
- *  double *calculate_weight_coefficient.
+ * @return pointer to double of calculate_weight_coefficient, if input is invalid, returns NULL.
  */
+
 double *calculate_weight_coefficient(double *integrate_support_degree_matrix, int no_of_sensors);
 
 /**
- * Function:    calculate_fused_output
+ * @brief Calculate the fused output
  *
- * Parameters:
- *  Double weight_cofficienet, double sensor_data int no_of_sensors
+ * @param[in] pointer to double of weight_coefficient, pointer to double of sensor_data, int no_of_sensors
  *
- * Calculate fused output
- *
- * Return:
- *  double calculate_fused_output.
+ * @return double calculate_fused_output, if input is invalid, returns NULL.
  */
-double calculate_fused_output(double *weight_cofficienet, double *sensor_data, int no_of_sensors);
+
+double calculate_fused_output(double *weight_coefficient, double *sensor_data, int no_of_sensors);
 
 #endif // CALCULATE_FUSION_H

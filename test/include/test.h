@@ -3,7 +3,7 @@
  *
  * @brief Implementation of automated unit tests.
  */
- 
+
 #ifndef TEST_H
 #define TEST_H
 
@@ -14,7 +14,7 @@
 #include <string.h>
 
 #include "sensor.h"
-
+#include "calculate_fusion.h"
 
 /**
  * @brief Starts automated testing
@@ -22,7 +22,6 @@
  * @details Entry point into the automated test script
  */
 void start_automated_testing(void);
-
 
 /**
  * @brief Automated unit testing of linked list subsystem
@@ -39,7 +38,6 @@ void start_automated_testing(void);
  */
 void automated_testing_linked_list(void);
 
-
 /**
  * @brief Automated testing of CSV parser
  *
@@ -48,7 +46,6 @@ void automated_testing_linked_list(void);
  */
 void automated_testing_csv_parsing(void);
 
-
 /**
  * @brief Automated unit testing of sensor manipulation subsystem
  *
@@ -56,5 +53,45 @@ void automated_testing_csv_parsing(void);
  * whole test CSV and determining what list it belongs into.
  */
 void automated_sensor_manipulation(void);
+
+/**
+ * @brief Automated unit testing of calculate_support_degree_matrix
+ *
+ * @details Automatically tests the support degree matrix calculation by parsing the 
+ * the sensor values
+ */
+void automated_calculate_support_degree_matrix(void);
+
+/**
+ * @brief Automated unit testing of calculate_eigensystem
+ *
+ * @details Automatically tests the eigensystem calculation by the input of 
+ * support degree matrix
+ */
+void automated_calculate_eigensystem(void);
+
+/**
+ * @brief Automated unit testing of calculate_contribution_rate
+ *
+ * @details Automatically tests the contribute rate calculation by the input of 
+ * eigensystem values and number of sensors
+ */
+void automated_calculate_contribution_rate(void);
+
+/**
+ * @brief Automated unit testing of determine_contribution_rates_to_use
+ *
+ * @details Automatically tests the contribute rates to be used calculation by the input of 
+ * contribution rate, parameter and number of sensors
+ */
+void automated_determine_contribution_rates_to_use(void);
+
+/**
+ * @brief Automated unit testing of calculate_principal_components
+ *
+ * @details Automatically tests the principal components calculation by the input of 
+ * support_degree_matrix, eigenvector and number of contribution rates to use
+ */
+void automated_calculate_principal_components(void);
 
 #endif

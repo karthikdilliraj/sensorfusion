@@ -338,7 +338,7 @@ double *calculate_weight_coefficient(double *integrate_support_degree_matrix,
     return arr;
 }
 
-double calculate_fused_output(double *weight_cofficienet, double *sensor_data,
+double calculate_fused_output(double *weight_coefficient, double *sensor_data,
                               int no_of_sensors)
 {
     double fused_value = 0;
@@ -346,7 +346,7 @@ double calculate_fused_output(double *weight_cofficienet, double *sensor_data,
 
     for (int i = 0; i < n_sensors; i++)
     {
-        fused_value += weight_cofficienet[i] * sensor_data[i];
+        fused_value += weight_coefficient[i] * sensor_data[i];
     }
 
     return fused_value;
