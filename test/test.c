@@ -350,42 +350,47 @@ void automated_sensor_manipulation(void)
 void automated_calculate_support_degree_matrix(void)
 {
     struct support_degree_matrix spd_test = calculate_support_degree_matrix();
-    ASSERT_TEST(spd_test.no_of_sensors != 0 && spd_test.sd_matrix != NULL )
-    free(spd_test);
-    spd_test = NULL;
+    ASSERT_TEST(spd_test.no_of_sensors != 0 && spd_test.sd_matrix != NULL)
+    // free(spd_test);
+    // spd_test = NULL;
 }
 
 void automated_calculate_eigensystem(void)
 {
     struct support_degree_matrix spd_test;
     spd_test.no_of_sensors = 2;
-    spd_test.sd_matrix = {1.0,0.000045,0.000045,1.0};
+    int sd_matrix[] = {1.0, 0.000045, 0.000045, 1.0};
+    spd_test.sd_matrix = &sd_matrix;
     struct eigen_systems eigen_test = calculate_eigensystem(spd_test);
-    ASSERT_TEST(eigen_test.eigen_value != NULL && eigen_test.eigen_vector != NULL )
-    free(spd_test);
-    spd_test = NULL;
-    free(eigen_test);
-    eigen_test = NULL;
+    ASSERT_TEST(eigen_test.eigen_value != NULL && eigen_test.eigen_vector != NULL)
+    // free(spd_test);
+    // spd_test = NULL;
+    // free(eigen_test);
+    // eigen_test = NULL;
 }
 
 void automated_calculate_contribution_rate(void)
 {
     struct eigen_systems eigen_test;
-    eigen_test.eigen_value = {1.00005, 0.999955};
-    eigen_test.eigen_vector = {{0.707107,0.707107},{-0.707107,0.707107}};
-    int n=2;
-    double *contribution_rate = calculate_contribution_rates(eigen_test,n);
+    int eigen_value[] = {1.00005, 0.999955};
+    eigen_test.eigen_value = &eigen_value;
+    int eigen_vector[][2] = {{0.707107, 0.707107}, {-0.707107, 0.707107}};
+    eigen_test.eigen_vector = &eigen_vector;
+    int n = 2;
+    double *contribution_rate = calculate_contribution_rates(eigen_test, n);
     ASSERT_TEST(contribution_rate != NULL)
-    free(eigen_test);
-    eigen_test = NULL;
+    // free(eigen_test);
+    // eigen_test = NULL;
     free(contribution_rate);
 }
 
 void automated_determine_contribution_rates_to_use(void)
 {
-    double *contribution_rate = {0.500023,0.499977}
+    double c_rate[] = {0.500023, 0.499977};
+    double *contribution_rate = &c_rate;
     int no_of_sensors = 2;
-    int to_use = determine_contribution_rates_to_use(contribution_rate, no_of_sensors);
+    float parameter = 0.5;
+    int to_use = determine_contribution_rates_to_use(contribution_rate, parameter, no_of_sensors);
     ASSERT_TEST(to_use != 0)
     free(contribution_rate);
 }
@@ -394,13 +399,15 @@ void automated_calculate_principal_components(void)
 {
     struct support_degree_matrix spd_test;
     spd_test.no_of_sensors = 2;
-    spd_test.sd_matrix = {1.0,0.000045,0.000045,1.0}; 
-    double **eigen_vector = {{0.707107,0.707107},{-0.707107,0.707107}};
+    double sd_matrix[] = {1.0, 0.000045, 0.000045, 1.0};
+    spd_test.sd_matrix = &sd_matrix;
+    double e_vector[][2] = {{0.707107, 0.707107}, {-0.707107, 0.707107}};
+    double **eigen_vector = &e_vector;
     int to_use = 2;
-    double ** principal_components_matrix = calculate_principal_components(spd_test,eigen_vector,to_use);
+    double **principal_components_matrix = calculate_principal_components(spd_test, eigen_vector, to_use);
     ASSERT_TEST(principal_components_matrix != NULL)
-    free(spd_test);
-    spd_test = NULL;
+    // free(spd_test);
+    // spd_test = NULL;
     free(eigen_vector);
     free(principal_components_matrix);
 }
