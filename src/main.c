@@ -7,12 +7,7 @@
 #include "parsing_csv_file.h"
 #include "calculate_fusion.h"
 #include "sensor.h"
-/**
- * Uncomment this and the function call start_automated_testing once the test
- *  Makefile has been made
- *
- * #include "test.h"
- */
+#include "test.h"
 
 /**
  * Currently, the exe gets put into sensorfusion/bin directory, but the input
@@ -148,12 +143,8 @@ calculate_done:
                 printf("Running automated unit testing\n");
                 printf("\n\nAUTOMATED TESTING NOT YET IMPLEMENTED. MAKEFILE IS "
                        "REQUIRED\n\n");
-                /**
-                 * Uncomment this once the test Makefile has been created. Also
-                 * uncomment the includes on line 12.
-                 *
-                 * start_automated_testing();
-                 */
+
+                start_automated_testing();
                 printf("Automated testing has completed\n");
                 return 0;
                 break;
