@@ -205,7 +205,7 @@ Node_t* remove_node(Node_t *head, Node_t *to_be_removed)
 }
 
 
-Boolean move_node(Node_t **head_move_from, Node_t **head_move_to, Node_t *node)
+Boolean move_node(Node_t *node, Node_t **head_move_from, Node_t **head_move_to)
 {
     if (node)
     {

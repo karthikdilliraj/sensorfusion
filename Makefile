@@ -38,7 +38,7 @@ rm       = rm -f
 
 $(BINDIR)/$(TARGET): $(OBJECTS1) $(OBJECTS2)
 	@mkdir -p $(BINDIR)
-	@$(CC) $(OBJECTS) $(LFLAGS) -o $@
+	@$(CC) $(OBJECTS1) $(OBJECTS2) $(LFLAGS) -o $@
 	@echo "Linking complete!"
 
 $(OBJECTS1): $(OBJDIR)/%.o : $(SRCDIR)/%.c

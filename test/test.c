@@ -377,7 +377,7 @@ void automated_calculate_contribution_rate(void)
     int eigen_vector[][2] = {{0.707107, 0.707107}, {-0.707107, 0.707107}};
     eigen_test.eigen_vector = &eigen_vector;
     int n = 2;
-    double *contribution_rate = calculate_contribution_rates(eigen_test, n);
+    double *contribution_rate = calculate_contribution_rate(eigen_test, n);
     ASSERT_TEST(contribution_rate != NULL)
     // free(eigen_test);
     // eigen_test = NULL;
