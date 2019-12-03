@@ -38,7 +38,14 @@ int main(int argc, char *argv[])
     double *contribution_rate = calculate_contribution_rate(eigen, spd->no_of_sensors);
     int no_of_contribution_rates_to_use = determine_contribution_rates_to_use(contribution_rate, 0.5, spd->no_of_sensors);
     double **principal_components_matrix = calculate_principal_components(spd, eigen->eigen_vector, no_of_contribution_rates_to_use);
-
+    printf("Principal components of D matrix, row:%d, col:%d\n", no_of_contribution_rates_to_use, spd->no_of_sensors);
+    for (int i = 0; i < no_of_contribution_rates_to_use; i++)
+    {
+        for (int j = 0; j < spd->no_of_sensors; j++)
+        {
+            printf("%f\n", principal_components_matrix[i][j]);
+        }
+    }
     /**
      * Run testing for step 6 to step 9
      */

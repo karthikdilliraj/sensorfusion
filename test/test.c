@@ -351,43 +351,53 @@ void automated_calculate_support_degree_matrix(void)
 {
     struct support_degree_matrix *spd_test = calculate_support_degree_matrix();
     ASSERT_TEST(spd_test->no_of_sensors != 0 && spd_test->sd_matrix != NULL)
-    // free(spd_test);
-    // spd_test = NULL;
+    free(spd_test);
 }
 
 void automated_calculate_eigensystem(void)
 {
     struct support_degree_matrix *spd_test;
+    spd_test = (struct support_degree_matrix *)malloc(sizeof(struct support_degree_matrix));
     spd_test->no_of_sensors = 2;
-    int sd_matrix[] = {1.0, 0.000045, 0.000045, 1.0};
-    spd_test->sd_matrix = &sd_matrix;
+    spd_test->sd_matrix = (double *)malloc(sizeof(double) * 4);
+    spd_test->sd_matrix[0] = 1.0;
+    spd_test->sd_matrix[1] = 0.000045;
+    spd_test->sd_matrix[2] = 0.000045;
+    spd_test->sd_matrix[3] = 1.0;
     struct eigen_systems *eigen_test = calculate_eigensystem(spd_test);
     ASSERT_TEST(eigen_test->eigen_value != NULL && eigen_test->eigen_vector != NULL)
-    // free(spd_test);
-    // spd_test = NULL;
-    // free(eigen_test);
-    // eigen_test = NULL;
+    free(spd_test);
+    free(eigen_test);
 }
 
 void automated_calculate_contribution_rate(void)
 {
-    struct eigen_systems eigen_test;
-    int eigen_value[] = {1.00005, 0.999955};
-    eigen_test.eigen_value = &eigen_value;
-    int eigen_vector[][2] = {{0.707107, 0.707107}, {-0.707107, 0.707107}};
-    eigen_test.eigen_vector = &eigen_vector;
+    struct eigen_systems *eigen_test;
+    eigen_test = (struct eigen_systems *)malloc(sizeof(struct eigen_systems));
+    eigen_test->eigen_value = (double *)malloc(sizeof(double) * 2);
+    eigen_test->eigen_value[0] = 1.00005;
+    eigen_test->eigen_value[1] = 0.999955;
+    eigen_test->eigen_vector = (double **)malloc(2 * sizeof(double *));
+    for (int i = 0; i < 2; i++)
+    {
+        eigen_test->eigen_vector[i] = (double *)malloc(2 * sizeof(double));
+    }
+    eigen_test->eigen_vector[0][0] = 0.707107;
+    eigen_test->eigen_vector[0][1] = 0.707107;
+    eigen_test->eigen_vector[1][0] = -0.707107;
+    eigen_test->eigen_vector[1][1] = 0.707107;
     int n = 2;
     double *contribution_rate = calculate_contribution_rate(eigen_test, n);
     ASSERT_TEST(contribution_rate != NULL)
-    // free(eigen_test);
-    // eigen_test = NULL;
+    free(eigen_test);
     free(contribution_rate);
 }
 
 void automated_determine_contribution_rates_to_use(void)
 {
-    double c_rate[] = {0.500023, 0.499977};
-    double *contribution_rate = &c_rate;
+    double *contribution_rate = (double *)malloc(2 * sizeof(double));
+    contribution_rate[0] = 0.500023;
+    contribution_rate[1] = 0.499977;
     int no_of_sensors = 2;
     float parameter = 0.5;
     int to_use = determine_contribution_rates_to_use(contribution_rate, parameter, no_of_sensors);
@@ -398,16 +408,26 @@ void automated_determine_contribution_rates_to_use(void)
 void automated_calculate_principal_components(void)
 {
     struct support_degree_matrix *spd_test;
+    spd_test = (struct support_degree_matrix *)malloc(sizeof(struct support_degree_matrix));
+    spd_test->sd_matrix = (double *)malloc(sizeof(double) * 4);
+    spd_test->sd_matrix[0] = 1.0;
+    spd_test->sd_matrix[1] = 0.000045;
+    spd_test->sd_matrix[2] = 0.000045;
+    spd_test->sd_matrix[3] = 1.0;
     spd_test->no_of_sensors = 2;
-    double sd_matrix[] = {1.0, 0.000045, 0.000045, 1.0};
-    spd_test->sd_matrix = &sd_matrix;
-    double e_vector[][2] = {{0.707107, 0.707107}, {-0.707107, 0.707107}};
-    double **eigen_vector = &e_vector;
+    double **eigen_vector = (double **)malloc(2 * sizeof(double *));
+    for (int i = 0; i < 2; i++)
+    {
+        eigen_vector[i] = (double *)malloc(2 * sizeof(double));
+    }
+    eigen_vector[0][0] = 0.707107;
+    eigen_vector[0][1] = 0.707107;
+    eigen_vector[1][0] = -0.707107;
+    eigen_vector[1][1] = 0.707107;
     int to_use = 2;
     double **principal_components_matrix = calculate_principal_components(spd_test, eigen_vector, to_use);
     ASSERT_TEST(principal_components_matrix != NULL)
-    // free(spd_test);
-    // spd_test = NULL;
+    free(spd_test);
     free(eigen_vector);
     free(principal_components_matrix);
 }

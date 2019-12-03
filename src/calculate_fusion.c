@@ -228,14 +228,6 @@ double **calculate_principal_components(struct support_degree_matrix *spd, doubl
             }
         }
     }
-    printf("Principal components of D matrix, row:%d, col:%d\n", m, n);
-    for (int i = 0; i < m; i++)
-    {
-        for (int j = 0; j < n; j++)
-        {
-            printf("%f\n", principal_components_matrix[i][j]);
-        }
-    }
     free(arrptr);
     return principal_components_matrix;
 }
