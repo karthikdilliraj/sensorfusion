@@ -33,38 +33,38 @@ struct eigen_systems
  *
  *  @param[in]   Node_t *node Linked list containing sensor values
  * 
- *  @return Structure support_degree_matrix, if no node is found, returns NULL.
+ *  @return pointer to Structure support_degree_matrix, if no node is found, returns NULL.
  * 
  */
 
-struct support_degree_matrix calculate_support_degree_matrix(void);
+struct support_degree_matrix *calculate_support_degree_matrix(void);
 
 /**
  * @brief Calculate eigen values and eigen vectors of the support degree matrix
  *
- * @param[in] Structure support_degree_matrix spd
+ * @param[in] pointer to Structure support_degree_matrix spd
  *
- * @return Structure eigen_systems, if input is invalid, returns NULL.
+ * @return pointer to Structure eigen_systems, if input is invalid, returns NULL.
  */
 
-struct eigen_systems calculate_eigensystem(struct support_degree_matrix spd);
+struct eigen_systems *calculate_eigensystem(struct support_degree_matrix *spd);
 
 /**
  * @brief Calculate contribute rate of Principal component
  *
- * @param[in] Structure eigen_systems eigen, int no_of_sensors
+ * @param[in] pointer to Structure eigen_systems eigen, int no_of_sensors
  *
  * @return pointer to double of contribution_rate, if input is invalid, returns NULL.
  */
 
-double *calculate_contribution_rate(struct eigen_systems eigen, int no_of_sensors);
+double *calculate_contribution_rate(struct eigen_systems *eigen, int no_of_sensors);
 
 /**
  * @brief Determine the number of contribution_rate to use
  *
  * @param[in] pointer to double of contribution_rate, float parameter, int no_of_sensors
  *
- * @return int no_of_contribution_rates_to_use, if input is invalid, returns NULL.
+ * @return int no_of_contribution_rates_to_use, if input is invalid, returns -1.
  */
 
 int determine_contribution_rates_to_use(double *contribution_rate, float parameter, int no_of_sensors);
@@ -72,12 +72,12 @@ int determine_contribution_rates_to_use(double *contribution_rate, float paramet
 /**
  * @brief Calculate the Principal components of the D Matrix
  *
- * @param[in] Structure support_degree_matrix spd, pointer to pointer to double of eigen_vector, int no_of_contribution_rates_to_use
+ * @param[in] pointer to Structure support_degree_matrix spd, pointer to pointer to double of eigen_vector, int no_of_contribution_rates_to_use
  *
  * @return pointer to pointer to double of principal_components_matrix, if input is invalid, returns NULL.
  */
 
-double **calculate_principal_components(struct support_degree_matrix spd, double **eigen_vector, int no_of_contribution_rates_to_use);
+double **calculate_principal_components(struct support_degree_matrix *spd, double **eigen_vector, int no_of_contribution_rates_to_use);
 
 /**
  * @brief Calculate the Integrated Support Degree Score for all sensors

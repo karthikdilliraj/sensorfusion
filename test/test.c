@@ -349,20 +349,20 @@ void automated_sensor_manipulation(void)
 
 void automated_calculate_support_degree_matrix(void)
 {
-    struct support_degree_matrix spd_test = calculate_support_degree_matrix();
-    ASSERT_TEST(spd_test.no_of_sensors != 0 && spd_test.sd_matrix != NULL)
+    struct support_degree_matrix *spd_test = calculate_support_degree_matrix();
+    ASSERT_TEST(spd_test->no_of_sensors != 0 && spd_test->sd_matrix != NULL)
     // free(spd_test);
     // spd_test = NULL;
 }
 
 void automated_calculate_eigensystem(void)
 {
-    struct support_degree_matrix spd_test;
-    spd_test.no_of_sensors = 2;
+    struct support_degree_matrix *spd_test;
+    spd_test->no_of_sensors = 2;
     int sd_matrix[] = {1.0, 0.000045, 0.000045, 1.0};
-    spd_test.sd_matrix = &sd_matrix;
-    struct eigen_systems eigen_test = calculate_eigensystem(spd_test);
-    ASSERT_TEST(eigen_test.eigen_value != NULL && eigen_test.eigen_vector != NULL)
+    spd_test->sd_matrix = &sd_matrix;
+    struct eigen_systems *eigen_test = calculate_eigensystem(spd_test);
+    ASSERT_TEST(eigen_test->eigen_value != NULL && eigen_test->eigen_vector != NULL)
     // free(spd_test);
     // spd_test = NULL;
     // free(eigen_test);
@@ -397,10 +397,10 @@ void automated_determine_contribution_rates_to_use(void)
 
 void automated_calculate_principal_components(void)
 {
-    struct support_degree_matrix spd_test;
-    spd_test.no_of_sensors = 2;
+    struct support_degree_matrix *spd_test;
+    spd_test->no_of_sensors = 2;
     double sd_matrix[] = {1.0, 0.000045, 0.000045, 1.0};
-    spd_test.sd_matrix = &sd_matrix;
+    spd_test->sd_matrix = &sd_matrix;
     double e_vector[][2] = {{0.707107, 0.707107}, {-0.707107, 0.707107}};
     double **eigen_vector = &e_vector;
     int to_use = 2;
