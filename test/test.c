@@ -432,6 +432,167 @@ void automated_calculate_principal_components(void)
     free(principal_components_matrix);
 }
 
+void automated_calculate_integrated_support_degree_matrix(void)
+{
+    double contribution_rate_test[] = {0.1, 0.2, 0.3, 0.4};
+    double n_sensor_t = 4;
+    double n_contri_rate_t = 3;
+    double principal_components_matrix_test[4][4]= {
+        {1, 1, 1, 1},
+        {2, 2, 2, 2},
+        {3, 3, 3, 3},
+        {4, 4, 4, 4}
+    };
+
+    double expected_support_matrix[4]={1.0, 2.0, 3.0, 4.0};
+    double *calculated_support_matrix;
+
+    printf("\n\n");
+    printf("-------------------\n");
+    printf("INTEGRATED SUPPORT DEGREE MATRIX TESTING\n");
+    printf("-------------------\n");
+
+    calculated_support_matrix =
+        calculate_integrated_support_degree_matrix(
+            principal_components_matrix_test,
+            contribution_rate_test,
+            n_contri_rate_t, n_sensor_t);
+
+    printf("Ensure correctness of caculation ---\n");
+    for (int i = 0; i < n_sensor_t; i++)
+    {
+        if (expected_support_matrix[i] != calculated_support_matrix[i])
+        {
+            ASSERT_TEST(expected_support_matrix[i]
+                == calculated_support_matrix[i]);
+            printf("Expected:%f --- Caculated:%f\n", expected_support_matrix[i]
+                , calculated_support_matrix[i]);
+
+            free(calculated_support_matrix);
+            return;
+        }
+    }
+
+    printf("PASSED!\n");
+    free(calculated_support_matrix);
+}
+
+void automated_eliminate_incorrect_data(void)
+{
+    double n_sensor_t = 4;
+    double parameter = 0.7;
+    int res;
+
+    printf("\n\n");
+    printf("-------------------\n");
+    printf("ELMIMINATE INCORRECT DATA TESTING\n");
+    printf("-------------------\n");
+
+    double expected_elminated_matrix[4] = {10.0, 0.0, 0.0, 1.0};
+    double input_integrated_support_matrix[4] = {10.0, 1.0, 3.0, 5.0};
+
+    res = eliminate_incorrect_data(input_integrated_support_matrix,
+        parameter, n_sensor_t);
+    if (res < 0)
+    {
+        printf("Unable to call eliminate_incorrect_data\n");
+        ASSERT_TEST(res == 0);
+    }
+    printf("Ensure correctness of elminination ---\n");
+
+    for (int i = 0; i < n_sensor_t; i++)
+    {
+        if (expected_elminated_matrix[i] !=
+            input_integrated_support_matrix[i])
+        {
+            printf("Expected:%f --- Caculated:%f\n", expected_elminated_matrix[i]
+                , input_integrated_support_matrix[i]);
+            ASSERT_TEST(expected_elminated_matrix[i]
+                == input_integrated_support_matrix[i]);
+            return;
+        }
+    }
+
+    printf("PASSED!\n");
+}
+
+void automated_calculate_weight_coefficient(void)
+{
+    double n_sensor_t = 4;
+
+    printf("\n\n");
+    printf("-------------------\n");
+    printf("CALCULATE WEIGHT COFFICIENT TESTING\n");
+    printf("-------------------\n");
+
+    double expected_elminated_matrix[4] = {0.5, 0.0, 0.25, 0.25};
+    double input_integrated_support_matrix[4] = {10.0, 0.0, 5.0, 5.0};
+    double *caclulated_weight_coefficient;
+
+    caclulated_weight_coefficient = calculate_weight_coefficient(input_integrated_support_matrix,
+        n_sensor_t);
+    if (caclulated_weight_coefficient == NULL)
+    {
+        printf("Unable to call calculate_weight_coefficient\n");
+        ASSERT_TEST(caclulated_weight_coefficient != NULL);
+    }
+    printf("Ensure correctness of elminination ---\n");
+
+    for (int i = 0; i < n_sensor_t; i++)
+    {
+        if (expected_elminated_matrix[i] !=
+            input_integrated_support_matrix[i])
+        {
+            printf("Expected:%f --- Caculated:%f\n", expected_elminated_matrix[i]
+                , caclulated_weight_coefficient[i]);
+            ASSERT_TEST(expected_elminated_matrix[i]
+                == caclulated_weight_coefficient[i]);
+
+            free(caclulated_weight_coefficient);
+            return;
+        }
+    }
+
+    free(caclulated_weight_coefficient);
+    printf("PASSED!\n");
+}
+
+void automated_calculate_fused_output(void)
+{
+    double n_sensor_t = 4;
+    int res;
+
+    printf("\n\n");
+    printf("-------------------\n");
+    printf("CALCULATE FUSED OUTPUT TESTING\n");
+    printf("-------------------\n");
+
+    double expected_fused_output = 7.5;
+    double input_sensor_data[] = {10, 1, 5, 5};
+    double weight_coefficient[4] = {0.5, 0.0, 0.3, 0.2};
+    double caclulated_fused_output;
+
+    res = calculate_fused_output(weight_coefficient,
+        input_sensor_data, n_sensor_t, &caclulated_fused_output);
+    if (res < 0)
+    {
+        printf("Unable to call calculate_fused_output\n");
+        ASSERT_TEST(res == 0
+            );
+    }
+    printf("Ensure correctness of elminination ---\n");
+
+    if (expected_fused_output != caclulated_fused_output)
+    {
+            printf("Expected:%f --- Caculated:%f\n", expected_fused_output,
+                caclulated_fused_output);
+            ASSERT_TEST(expected_fused_output == caclulated_fused_output);
+            return;
+    }
+
+    printf("PASSED!\n");
+}
+
 void start_automated_testing(void)
 {
     automated_testing_linked_list();
@@ -442,4 +603,8 @@ void start_automated_testing(void)
     automated_calculate_contribution_rate();
     automated_determine_contribution_rates_to_use();
     automated_calculate_principal_components();
+    automated_calculate_integrated_support_degree_matrix();
+    automated_eliminate_incorrect_data();
+    automated_calculate_weight_coefficient();
+    automated_calculate_fused_output();
 }

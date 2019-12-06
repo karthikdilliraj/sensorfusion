@@ -75,7 +75,7 @@ int main(int argc, char *argv[])
 
     if (integrate_support_matrix == NULL)
     {
-        goto calculate_done;
+        goto gracefull_free;
     }
 
     printf("integrate_support_matrix: ");
@@ -89,7 +89,7 @@ int main(int argc, char *argv[])
     if (res != 0)
     {
         printf("Fail to eliminate incorrect data\n");
-        goto calculate_done;
+        goto gracefull_free;
     }
 
     printf("Eliminated integrate_support_matrix: ");
@@ -99,8 +99,8 @@ int main(int argc, char *argv[])
     }
     printf("\n");
 
-    double *weight_coff = calculate_weight_coefficient(integrate_support_matrix, n_sensor_t);
-    if (weight_coff == NULL)
+    double *weight_coeff = calculate_weight_coefficient(integrate_support_matrix, n_sensor_t);
+    if (weight_coeff == NULL)
     {
         goto calculate_done;
     }
@@ -108,16 +108,26 @@ int main(int argc, char *argv[])
     printf("Weight Coefficient: ");
     for (int idx = 0; idx < n_sensor_t; idx++)
     {
-        printf(" %f", weight_coff[idx]);
+        printf(" %f", weight_coeff[idx]);
     }
     printf("\n");
 
     double sensor_data_t[] = {10, 1, 4, 5};
-    double fused_value = calculate_fused_output(weight_coff, sensor_data_t, n_sensor_t);
+    double fused_value = 0;
+    calculate_fused_output(weight_coeff, sensor_data_t, n_sensor_t, &fused_value);
     printf("Fused value:%f\n", fused_value);
 
 calculate_done:
-
+    if (weight_coeff != NULL)
+    {
+      free(weight_coeff);
+    }
+gracefull_free:
+    if (integrate_support_matrix != NULL)
+    {
+      free(integrate_support_matrix);
+    }
+    
     strncpy(in_file_name, INPUT_FILE_NAME, MAX_FILE_NAME_SIZE);
     strncpy(out_file_name, OUTPUT_FILE_NAME, MAX_FILE_NAME_SIZE);
 
@@ -149,9 +159,6 @@ calculate_done:
         case 't':
             /* Run automated unit testing */
             printf("Running automated unit testing\n");
-            printf("\n\nAUTOMATED TESTING NOT YET IMPLEMENTED. MAKEFILE IS "
-                   "REQUIRED\n\n");
-
             start_automated_testing();
             printf("Automated testing has completed\n");
             return 0;

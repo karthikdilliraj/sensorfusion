@@ -117,6 +117,6 @@ double *calculate_weight_coefficient(double *integrate_support_degree_matrix, in
  * @return double calculate_fused_output, if input is invalid, returns NULL.
  */
 
-double calculate_fused_output(double *weight_coefficient, double *sensor_data, int no_of_sensors);
+int calculate_fused_output(double *weight_coefficient, double *sensor_data, int no_of_sensors, double *fused_value);
 
 #endif // CALCULATE_FUSION_H

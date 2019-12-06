@@ -239,7 +239,8 @@ double *calculate_integrated_support_degree_matrix(double **principle_components
     int n_contribute = no_of_contribution_rates_to_use;
     int n_sensors = no_of_sensors;
 
-    if ((principle_components == NULL) || (contribution_rate == NULL) || (n_contribute == 0) || (n_sensors == 0))
+    if ((principle_components == NULL) || (contribution_rate == NULL)
+        || (n_contribute == 0) || (n_sensors == 0))
     {
         printf("%s: Incorrect Input\n", __func__);
         return NULL;
@@ -258,7 +259,7 @@ double *calculate_integrated_support_degree_matrix(double **principle_components
         for (int j = 0; j < n_contribute; j++)
         {
             printf("sensors: %d-%f, contri: %d-%f\n", i, principle_components[i][j], j, contribution_rate[i]);
-            arr[i] += principle_components[i][j] * contribution_rate[i];
+            arr[i] += principle_components[i][j] * contribution_rate[j];
         }
     }
 
@@ -332,16 +333,21 @@ double *calculate_weight_coefficient(double *integrate_support_degree_matrix,
     return arr;
 }
 
-double calculate_fused_output(double *weight_coefficient, double *sensor_data,
-                              int no_of_sensors)
+int calculate_fused_output(double *weight_coefficient, double *sensor_data,
+                              int no_of_sensors, double *fused_value)
 {
-    double fused_value = 0;
     int n_sensors = no_of_sensors;
+
+    if ((weight_coefficient == NULL) || (n_sensors == 0))
+    {
+        printf("%s: Incorrect Input\n", __func__);
+        return -1;
+    }
 
     for (int i = 0; i < n_sensors; i++)
     {
-        fused_value += weight_coefficient[i] * sensor_data[i];
+        *fused_value += weight_coefficient[i] * sensor_data[i];
     }
 
-    return fused_value;
+    return 0;
 }
