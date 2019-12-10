@@ -10,14 +10,17 @@ Boolean parser_parse_csv_file(char *file_name,
                               float *sensor_value)
 {
     Boolean end_of_file;
-    float   time;
     FILE    *ifp;
     char    buf[MAX_ROW_LIMIT];
     char    *field;
+    char    *time_field;
+    char    *save_ptr_line;
+    char    *save_ptr_time;
+    int     time_field_count;
     int     field_count = 0;
-    int     remainder;
     int     row_count = 0;
-    int     temp;
+    int     minutes;
+    int     hours;
 
     ifp = fopen(file_name, INPUT_MODE);
     if (ifp == NULL)
@@ -45,16 +48,32 @@ Boolean parser_parse_csv_file(char *file_name,
             continue;
         }
 
-        field = strtok(buf, ",");
+        field = strtok_r(buf, ",", &save_ptr_line);
         while (field)
         {
             switch (field_count)
             {
                 case 0: /* Timestamp */
-                    time = strtod(field, NULL);
-                    temp = time * 100;
-                    remainder = (temp % 100);
-                    (*time_in_minutes) = ((int)time * 60) + remainder;
+                    time_field_count = 0;
+
+                    time_field = strtok_r(field, ".", &save_ptr_time);
+                    while (time_field)
+                    {
+                        switch (time_field_count)
+                        {
+                            case 0: /* Hours */
+                                hours = strtod(time_field, NULL);
+                                break;
+                            case 1: /* Minutes */
+                                minutes = strtod(time_field, NULL);
+                                break;
+                        }
+
+                        time_field = strtok_r(NULL, ",", &save_ptr_time);
+                        time_field_count++;
+                    }
+
+                    (*time_in_minutes) = (hours * 60) + minutes;
                     break;
 
                 case 1: /* Sensor Name */
@@ -66,7 +85,7 @@ Boolean parser_parse_csv_file(char *file_name,
                     break;
             }
 
-            field = strtok(NULL, ",");
+            field = strtok_r(NULL, ",", &save_ptr_line);
             field_count++;
         }
 
