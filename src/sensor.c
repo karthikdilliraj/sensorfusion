@@ -220,9 +220,9 @@ void determine_if_sensors_are_stuck(int current_time, int stuck_value)
                  * Sensor has not been updated recently enough and must be
                  * considered stuck. It will be moved to the stuck list.
                  */
-                rc = move_node(&sensor_list_head_array[i],
-                               &sensor_list_head_array[STUCK_SENSOR_LIST],
-                               node);
+                rc = move_node(node,
+                               &sensor_list_head_array[i],
+                               &sensor_list_head_array[STUCK_SENSOR_LIST]);
                 if (!rc)
                 {
                     printf("Error: Could not move sensor node \"%s\" from %s "

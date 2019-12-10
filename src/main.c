@@ -75,7 +75,10 @@ int main(int argc, char *argv[])
 
     if (integrate_support_matrix == NULL)
     {
-        goto gracefull_free;
+        if (integrate_support_matrix != NULL)
+        {
+          free(integrate_support_matrix);
+        }
     }
 
     printf("integrate_support_matrix: ");
@@ -89,7 +92,10 @@ int main(int argc, char *argv[])
     if (res != 0)
     {
         printf("Fail to eliminate incorrect data\n");
-        goto gracefull_free;
+        if (integrate_support_matrix != NULL)
+        {
+          free(integrate_support_matrix);
+        }
     }
 
     printf("Eliminated integrate_support_matrix: ");
@@ -100,34 +106,27 @@ int main(int argc, char *argv[])
     printf("\n");
 
     double *weight_coeff = calculate_weight_coefficient(integrate_support_matrix, n_sensor_t);
-    if (weight_coeff == NULL)
+    if (weight_coeff != NULL)
     {
-        goto calculate_done;
+        printf("Weight Coefficient: ");
+        for (int idx = 0; idx < n_sensor_t; idx++)
+        {
+            printf(" %f", weight_coeff[idx]);
+        }
+        printf("\n");
+
+        double sensor_data_t[] = {10, 1, 4, 5};
+        double fused_value = 0;
+        calculate_fused_output(weight_coeff, sensor_data_t, n_sensor_t, &fused_value);
+        printf("Fused value:%f\n", fused_value);
     }
 
-    printf("Weight Coefficient: ");
-    for (int idx = 0; idx < n_sensor_t; idx++)
-    {
-        printf(" %f", weight_coeff[idx]);
-    }
-    printf("\n");
-
-    double sensor_data_t[] = {10, 1, 4, 5};
-    double fused_value = 0;
-    calculate_fused_output(weight_coeff, sensor_data_t, n_sensor_t, &fused_value);
-    printf("Fused value:%f\n", fused_value);
-
-calculate_done:
     if (weight_coeff != NULL)
     {
       free(weight_coeff);
     }
-gracefull_free:
-    if (integrate_support_matrix != NULL)
-    {
-      free(integrate_support_matrix);
-    }
-    
+
+
     strncpy(in_file_name, INPUT_FILE_NAME, MAX_FILE_NAME_SIZE);
     strncpy(out_file_name, OUTPUT_FILE_NAME, MAX_FILE_NAME_SIZE);
 

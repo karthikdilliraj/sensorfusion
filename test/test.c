@@ -129,8 +129,9 @@ void automated_testing_linked_list(void)
     printf("\nMove node from list 1 to list 2 - ");
     node = search_sensor_name(test_list_head_array[VALID_SENSOR_LIST],
                               "test3");
-    rc = move_node(&test_list_head_array[VALID_SENSOR_LIST],
-                   &test_list_head_array[OOR_SENSOR_LIST], node);
+    rc = move_node(node,
+                   &test_list_head_array[VALID_SENSOR_LIST],
+                   &test_list_head_array[OOR_SENSOR_LIST]);
     ASSERT_TEST(rc &&
                 (search_sensor_name(test_list_head_array[VALID_SENSOR_LIST],
                                     "test3") == NULL) &&
@@ -437,15 +438,36 @@ void automated_calculate_integrated_support_degree_matrix(void)
     double contribution_rate_test[] = {0.1, 0.2, 0.3, 0.4};
     double n_sensor_t = 4;
     double n_contri_rate_t = 3;
-    double principal_components_matrix_test[4][4]= {
-        {1, 1, 1, 1},
-        {2, 2, 2, 2},
-        {3, 3, 3, 3},
-        {4, 4, 4, 4}
-    };
+    double **principal_components_matrix_test =
+        (double **)malloc(n_sensor_t * sizeof(double *));
+    int i;
+    int j;
 
     double expected_support_matrix[4]={1.0, 2.0, 3.0, 4.0};
     double *calculated_support_matrix;
+
+    if (!principal_components_matrix_test)
+    {
+        printf("Error running test case (malloc failed)\n");
+        return;
+    }
+
+    for (i = 0; i < n_sensor_t; i++)
+    {
+        principal_components_matrix_test[i] =
+            (double *)malloc(n_sensor_t * sizeof(double));
+        if (!principal_components_matrix_test[i])
+        {
+            printf("Error running test case (malloc for element %d failed)\n",
+                   i);
+            return;
+        }
+
+        for (j = 0; j < n_sensor_t; j++)
+        {
+            principal_components_matrix_test[i][j] = (i + 1);
+        }
+    }
 
     printf("\n\n");
     printf("-------------------\n");
@@ -475,6 +497,13 @@ void automated_calculate_integrated_support_degree_matrix(void)
 
     printf("PASSED!\n");
     free(calculated_support_matrix);
+
+    for (i = 0; i < n_sensor_t; i++)
+    {
+        free(principal_components_matrix_test[i]);
+    }
+
+    free(principal_components_matrix_test);
 }
 
 void automated_eliminate_incorrect_data(void)
