@@ -350,29 +350,97 @@ void automated_sensor_manipulation(void)
 
 void automated_calculate_support_degree_matrix(void)
 {
+    printf("\n\n");
+    printf("-------------------\n");
+    printf("CALCULATE SUPPORT DEGREE MATRIX TESTING\n");
+    printf("-------------------\n");
+
+    double expected_sd_matrix[] = {1.0,
+                                   0.000045,
+                                   0.000045,
+                                   1.0};
+
     struct support_degree_matrix *spd_test = calculate_support_degree_matrix();
-    ASSERT_TEST(spd_test->no_of_sensors != 0 && spd_test->sd_matrix != NULL)
+    int n = spd_test->no_of_sensors;
+    if (n < 1)
+    {
+        printf("Unable to call calculate_fused_output\n");
+        ASSERT_TEST(spd_test->no_of_sensors == 0);
+    }
+    printf("Ensure correctness of elminination ---\n");
+    for (int i = 0; i < n * n; i++)
+    {
+        if (spd_test->sd_matrix[i] != expected_sd_matrix[i])
+        {
+            ASSERT_TEST(spd_test->sd_matrix[i] == expected_sd_matrix[i]);
+            printf("Expected:%f --- Calculated:%f\n", expected_sd_matrix[i], spd_test->sd_matrix[i]);
+            free(spd_test->sd_matrix);
+            free(spd_test);
+            return;
+        }
+    }
+    free(spd_test->sd_matrix);
     free(spd_test);
+    printf("PASSED!\n");
 }
 
 void automated_calculate_eigensystem(void)
 {
+    printf("\n\n");
+    printf("-------------------\n");
+    printf("CALCULATE EIGENSYSTEM TESTING\n");
+    printf("-------------------\n");
+
+    double expected_eigen_vector[][2] = {{-0.7071, 0.7071}, {0.7071, 0.7071}};
+    double expected_eigen_value[] = {-9.0, 11.0};
     struct support_degree_matrix *spd_test;
     spd_test = (struct support_degree_matrix *)malloc(sizeof(struct support_degree_matrix));
     spd_test->no_of_sensors = 2;
     spd_test->sd_matrix = (double *)malloc(sizeof(double) * 4);
     spd_test->sd_matrix[0] = 1.0;
-    spd_test->sd_matrix[1] = 0.000045;
-    spd_test->sd_matrix[2] = 0.000045;
+    spd_test->sd_matrix[1] = 10.0;
+    spd_test->sd_matrix[2] = 10.0;
     spd_test->sd_matrix[3] = 1.0;
     struct eigen_systems *eigen_test = calculate_eigensystem(spd_test);
-    ASSERT_TEST(eigen_test->eigen_value != NULL && eigen_test->eigen_vector != NULL)
+    for (int i = 0; i < 2; i++)
+    {
+        if (eigen_test->eigen_value[i] != expected_eigen_value[i])
+        {
+            ASSERT_TEST(eigen_test->eigen_value[i] == expected_eigen_value[i]);
+            printf("Expected:%f --- Calculated:%f\n", expected_eigen_value[i], eigen_test->eigen_value[i]);
+            free(spd_test->sd_matrix);
+            free(spd_test);
+            free(eigen_test->eigen_value);
+            free(eigen_test->eigen_vector);
+            free(eigen_test);
+            return;
+        }
+        for (int j = 0; j < 2; j++)
+        {
+            if (eigen_test->eigen_vector[i][j] != expected_eigen_vector[i][j])
+            {
+                ASSERT_TEST(eigen_test->eigen_vector[i][j] == expected_eigen_vector[i][j]);
+                printf("Expected:%f --- Calculated:%f\n", expected_eigen_vector[i][j], eigen_test->eigen_vector[i][j]);
+                free(spd_test->sd_matrix);
+                free(spd_test);
+                free(eigen_test->eigen_value);
+                free(eigen_test->eigen_vector);
+                free(eigen_test);
+                return;
+            }
+        }
+    }
+    free(spd_test->sd_matrix);
     free(spd_test);
+    free(eigen_test->eigen_value);
+    free(eigen_test->eigen_vector);
     free(eigen_test);
+    printf("PASSED!\n");
 }
 
 void automated_calculate_contribution_rate(void)
 {
+    double expected_contribution_rate[] = {0.500023, 0.499977};
     struct eigen_systems *eigen_test;
     eigen_test = (struct eigen_systems *)malloc(sizeof(struct eigen_systems));
     eigen_test->eigen_value = (double *)malloc(sizeof(double) * 2);
@@ -387,28 +455,53 @@ void automated_calculate_contribution_rate(void)
     eigen_test->eigen_vector[0][1] = 0.707107;
     eigen_test->eigen_vector[1][0] = -0.707107;
     eigen_test->eigen_vector[1][1] = 0.707107;
-    int n = 2;
-    double *contribution_rate = calculate_contribution_rate(eigen_test, n);
-    ASSERT_TEST(contribution_rate != NULL)
+    int no_of_sensors = 2;
+    double *calculated_contribution_rate = calculate_contribution_rate(eigen_test, no_of_sensors);
+    for (int i = 0; i < 2; i++)
+    {
+        if (calculated_contribution_rate[i] != expected_contribution_rate[i])
+        {
+            ASSERT_TEST(calculated_contribution_rate[i] == expected_contribution_rate[i]);
+            printf("Expected:%f --- Calculated:%f\n", expected_contribution_rate[i], calculated_contribution_rate[i]);
+            free(eigen_test->eigen_value);
+            free(eigen_test->eigen_vector);
+            free(eigen_test);
+            free(calculated_contribution_rate);
+            return;
+        }
+    }
+    free(eigen_test->eigen_value);
+    free(eigen_test->eigen_vector);
     free(eigen_test);
-    free(contribution_rate);
+    free(calculated_contribution_rate);
+    printf("PASSED!\n");
 }
 
 void automated_determine_contribution_rates_to_use(void)
 {
+    int expected_contribution_rates_to_use = 2;
     double *contribution_rate = (double *)malloc(2 * sizeof(double));
     contribution_rate[0] = 0.500023;
     contribution_rate[1] = 0.499977;
     int no_of_sensors = 2;
     float parameter = 0.5;
-    int to_use = determine_contribution_rates_to_use(contribution_rate, parameter, no_of_sensors);
-    ASSERT_TEST(to_use != 0)
+    int determined_contribution_rates_to_use = determine_contribution_rates_to_use(contribution_rate, parameter, no_of_sensors);
+    if (determined_contribution_rates_to_use != expected_contribution_rates_to_use)
+    {
+        ASSERT_TEST(determined_contribution_rates_to_use == expected_contribution_rates_to_use);
+        printf("Expected:%d --- Calculated:%d\n", expected_contribution_rates_to_use, determined_contribution_rates_to_use);
+        free(contribution_rate);
+    }
     free(contribution_rate);
+    printf("PASSED!\n");
 }
 
 void automated_calculate_principal_components(void)
 {
-    struct support_degree_matrix *spd_test;
+    double expected_principal_components_matrix[][2] = {{0.707139, 0.707139},
+                                                        {-0.707075, 0.707075}};
+    struct support_degree_matrix *
+        spd_test;
     spd_test = (struct support_degree_matrix *)malloc(sizeof(struct support_degree_matrix));
     spd_test->sd_matrix = (double *)malloc(sizeof(double) * 4);
     spd_test->sd_matrix[0] = 1.0;
@@ -425,12 +518,29 @@ void automated_calculate_principal_components(void)
     eigen_vector[0][1] = 0.707107;
     eigen_vector[1][0] = -0.707107;
     eigen_vector[1][1] = 0.707107;
-    int to_use = 2;
-    double **principal_components_matrix = calculate_principal_components(spd_test, eigen_vector, to_use);
-    ASSERT_TEST(principal_components_matrix != NULL)
+    int contribution_rates_to_use = 2;
+    double **calculated_principal_components_matrix = calculate_principal_components(spd_test, eigen_vector, contribution_rates_to_use);
+    for (int i = 0; i < 2; i++)
+    {
+        for (int j = 0; j < 2; j++)
+        {
+            if (calculated_principal_components_matrix[i][j] != expected_principal_components_matrix[i][j])
+            {
+                ASSERT_TEST(calculated_principal_components_matrix[i][j] == expected_principal_components_matrix[i][j]);
+                printf("Expected:%f --- Calculated:%f\n", expected_principal_components_matrix[i][j], calculated_principal_components_matrix[i][j]);
+                free(spd_test->sd_matrix);
+                free(spd_test);
+                free(eigen_vector);
+                free(calculated_principal_components_matrix);
+                return;
+            }
+        }
+    }
+    free(spd_test->sd_matrix);
     free(spd_test);
     free(eigen_vector);
-    free(principal_components_matrix);
+    free(calculated_principal_components_matrix);
+    printf("PASSED!\n");
 }
 
 void automated_calculate_integrated_support_degree_matrix(void)
@@ -443,7 +553,7 @@ void automated_calculate_integrated_support_degree_matrix(void)
     int i;
     int j;
 
-    double expected_support_matrix[4]={1.0, 2.0, 3.0, 4.0};
+    double expected_support_matrix[4] = {1.0, 2.0, 3.0, 4.0};
     double *calculated_support_matrix;
 
     if (!principal_components_matrix_test)
@@ -485,10 +595,8 @@ void automated_calculate_integrated_support_degree_matrix(void)
     {
         if (expected_support_matrix[i] != calculated_support_matrix[i])
         {
-            ASSERT_TEST(expected_support_matrix[i]
-                == calculated_support_matrix[i]);
-            printf("Expected:%f --- Caculated:%f\n", expected_support_matrix[i]
-                , calculated_support_matrix[i]);
+            ASSERT_TEST(expected_support_matrix[i] == calculated_support_matrix[i]);
+            printf("Expected:%f --- Caculated:%f\n", expected_support_matrix[i], calculated_support_matrix[i]);
 
             free(calculated_support_matrix);
             return;
@@ -521,7 +629,7 @@ void automated_eliminate_incorrect_data(void)
     double input_integrated_support_matrix[4] = {10.0, 1.0, 3.0, 5.0};
 
     res = eliminate_incorrect_data(input_integrated_support_matrix,
-        parameter, n_sensor_t);
+                                   parameter, n_sensor_t);
     if (res < 0)
     {
         printf("Unable to call eliminate_incorrect_data\n");
@@ -534,10 +642,8 @@ void automated_eliminate_incorrect_data(void)
         if (expected_elminated_matrix[i] !=
             input_integrated_support_matrix[i])
         {
-            printf("Expected:%f --- Caculated:%f\n", expected_elminated_matrix[i]
-                , input_integrated_support_matrix[i]);
-            ASSERT_TEST(expected_elminated_matrix[i]
-                == input_integrated_support_matrix[i]);
+            printf("Expected:%f --- Caculated:%f\n", expected_elminated_matrix[i], input_integrated_support_matrix[i]);
+            ASSERT_TEST(expected_elminated_matrix[i] == input_integrated_support_matrix[i]);
             return;
         }
     }
@@ -559,7 +665,7 @@ void automated_calculate_weight_coefficient(void)
     double *caclulated_weight_coefficient;
 
     caclulated_weight_coefficient = calculate_weight_coefficient(input_integrated_support_matrix,
-        n_sensor_t);
+                                                                 n_sensor_t);
     if (caclulated_weight_coefficient == NULL)
     {
         printf("Unable to call calculate_weight_coefficient\n");
@@ -572,10 +678,8 @@ void automated_calculate_weight_coefficient(void)
         if (expected_elminated_matrix[i] !=
             input_integrated_support_matrix[i])
         {
-            printf("Expected:%f --- Caculated:%f\n", expected_elminated_matrix[i]
-                , caclulated_weight_coefficient[i]);
-            ASSERT_TEST(expected_elminated_matrix[i]
-                == caclulated_weight_coefficient[i]);
+            printf("Expected:%f --- Caculated:%f\n", expected_elminated_matrix[i], caclulated_weight_coefficient[i]);
+            ASSERT_TEST(expected_elminated_matrix[i] == caclulated_weight_coefficient[i]);
 
             free(caclulated_weight_coefficient);
             return;
@@ -602,21 +706,20 @@ void automated_calculate_fused_output(void)
     double caclulated_fused_output;
 
     res = calculate_fused_output(weight_coefficient,
-        input_sensor_data, n_sensor_t, &caclulated_fused_output);
+                                 input_sensor_data, n_sensor_t, &caclulated_fused_output);
     if (res < 0)
     {
         printf("Unable to call calculate_fused_output\n");
-        ASSERT_TEST(res == 0
-            );
+        ASSERT_TEST(res == 0);
     }
     printf("Ensure correctness of elminination ---\n");
 
     if (expected_fused_output != caclulated_fused_output)
     {
-            printf("Expected:%f --- Caculated:%f\n", expected_fused_output,
-                caclulated_fused_output);
-            ASSERT_TEST(expected_fused_output == caclulated_fused_output);
-            return;
+        printf("Expected:%f --- Caculated:%f\n", expected_fused_output,
+               caclulated_fused_output);
+        ASSERT_TEST(expected_fused_output == caclulated_fused_output);
+        return;
     }
 
     printf("PASSED!\n");

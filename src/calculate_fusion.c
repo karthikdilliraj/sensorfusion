@@ -93,17 +93,13 @@ struct eigen_systems *calculate_eigensystem(struct support_degree_matrix *spd)
     gsl_eigen_symmv_sort(eval, evec,
                          GSL_EIGEN_SORT_VAL_DESC);
 
+    for (int i = 0; i < length; i++)
     {
-        int i;
-
-        for (i = 0; i < length; i++)
+        eigen->eigen_value[i] = gsl_vector_get(eval, i);
+        gsl_vector_view evec_i = gsl_matrix_column(evec, i);
+        for (int j = 0; j < length; j++)
         {
-            eigen->eigen_value[i] = gsl_vector_get(eval, i);
-            gsl_vector_view evec_i = gsl_matrix_column(evec, i);
-            for (int j = 0; j < length; j++)
-            {
-                eigen->eigen_vector[i][j] = *(*(&evec_i.vector.data) + j * length);
-            }
+            eigen->eigen_vector[i][j] = *(*(&evec_i.vector.data) + j * length);
         }
     }
 
@@ -239,8 +235,7 @@ double *calculate_integrated_support_degree_matrix(double **principle_components
     int n_contribute = no_of_contribution_rates_to_use;
     int n_sensors = no_of_sensors;
 
-    if ((principle_components == NULL) || (contribution_rate == NULL)
-        || (n_contribute == 0) || (n_sensors == 0))
+    if ((principle_components == NULL) || (contribution_rate == NULL) || (n_contribute == 0) || (n_sensors == 0))
     {
         printf("%s: Incorrect Input\n", __func__);
         return NULL;
@@ -334,7 +329,7 @@ double *calculate_weight_coefficient(double *integrate_support_degree_matrix,
 }
 
 int calculate_fused_output(double *weight_coefficient, double *sensor_data,
-                              int no_of_sensors, double *fused_value)
+                           int no_of_sensors, double *fused_value)
 {
     int n_sensors = no_of_sensors;
 
