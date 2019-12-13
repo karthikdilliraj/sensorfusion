@@ -258,7 +258,6 @@ double *calculate_integrated_support_degree_matrix(double **principle_components
     {
         for (int j = 0; j < n_contribute; j++)
         {
-            printf("sensors: %d-%f, contri: %d-%f\n", i, principle_components[i][j], j, contribution_rate[i]);
             arr[i] += principle_components[i][j] * contribution_rate[j];
         }
     }

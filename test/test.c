@@ -1,4 +1,5 @@
 #include "test.h"
+#include <math.h>
 
 /**
  * Head pointers to three linked lists used for storing three types of sensors
@@ -443,7 +444,7 @@ void automated_calculate_integrated_support_degree_matrix(void)
     int i;
     int j;
 
-    double expected_support_matrix[4]={1.0, 2.0, 3.0, 4.0};
+    double expected_support_matrix[3]={0.6, 1.2, 1.8};
     double *calculated_support_matrix;
 
     if (!principal_components_matrix_test)
@@ -476,18 +477,20 @@ void automated_calculate_integrated_support_degree_matrix(void)
 
     calculated_support_matrix =
         calculate_integrated_support_degree_matrix(
-            principal_components_matrix_test,
+            (double **) principal_components_matrix_test,
             contribution_rate_test,
             n_contri_rate_t, n_sensor_t);
 
-    printf("Ensure correctness of caculation ---\n");
-    for (int i = 0; i < n_sensor_t; i++)
+    printf("Ensure correctness of calculation ---\n");
+    for (int i = 0; i < n_contri_rate_t; i++)
     {
-        if (expected_support_matrix[i] != calculated_support_matrix[i])
+        double result_diff = fabs(expected_support_matrix[i]
+            - calculated_support_matrix[i]);
+        if (result_diff > EPSILON)
         {
-            ASSERT_TEST(expected_support_matrix[i]
-                == calculated_support_matrix[i]);
-            printf("Expected:%f --- Caculated:%f\n", expected_support_matrix[i]
+            ASSERT_TEST(expected_support_matrix[i] ==
+                calculated_support_matrix[i]);
+            printf("ERROR: Expected:%f --- Caculated:%f\n", expected_support_matrix[i]
                 , calculated_support_matrix[i]);
 
             free(calculated_support_matrix);
@@ -517,7 +520,7 @@ void automated_eliminate_incorrect_data(void)
     printf("ELMIMINATE INCORRECT DATA TESTING\n");
     printf("-------------------\n");
 
-    double expected_elminated_matrix[4] = {10.0, 0.0, 0.0, 1.0};
+    double expected_elminated_matrix[4] = {10.0, 0.0, 3.0, 5.0};
     double input_integrated_support_matrix[4] = {10.0, 1.0, 3.0, 5.0};
 
     res = eliminate_incorrect_data(input_integrated_support_matrix,
@@ -534,7 +537,7 @@ void automated_eliminate_incorrect_data(void)
         if (expected_elminated_matrix[i] !=
             input_integrated_support_matrix[i])
         {
-            printf("Expected:%f --- Caculated:%f\n", expected_elminated_matrix[i]
+            printf("ERROR: Expected:%f --- Calculated:%f\n", expected_elminated_matrix[i]
                 , input_integrated_support_matrix[i]);
             ASSERT_TEST(expected_elminated_matrix[i]
                 == input_integrated_support_matrix[i]);
@@ -569,10 +572,12 @@ void automated_calculate_weight_coefficient(void)
 
     for (int i = 0; i < n_sensor_t; i++)
     {
-        if (expected_elminated_matrix[i] !=
-            input_integrated_support_matrix[i])
+        double result_diff = fabs(expected_elminated_matrix[i]
+            - caclulated_weight_coefficient[i]);
+
+        if (result_diff > EPSILON)
         {
-            printf("Expected:%f --- Caculated:%f\n", expected_elminated_matrix[i]
+            printf("ERROR: Expected:%f --- Caculated:%f\n", expected_elminated_matrix[i]
                 , caclulated_weight_coefficient[i]);
             ASSERT_TEST(expected_elminated_matrix[i]
                 == caclulated_weight_coefficient[i]);
@@ -613,7 +618,7 @@ void automated_calculate_fused_output(void)
 
     if (expected_fused_output != caclulated_fused_output)
     {
-            printf("Expected:%f --- Caculated:%f\n", expected_fused_output,
+            printf("ERROR: Expected:%f --- Calculated:%f\n", expected_fused_output,
                 caclulated_fused_output);
             ASSERT_TEST(expected_fused_output == caclulated_fused_output);
             return;
