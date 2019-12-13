@@ -39,7 +39,7 @@ struct eigen_systems
  * 
  */
 
-struct support_degree_matrix *calculate_support_degree_matrix(Node_t *node);
+struct support_degree_matrix *calculate_support_degree_matrix(Node_t *node, int max_size);
 /**
  * @brief Calculate eigen values and eigen vectors of the support degree matrix
  *

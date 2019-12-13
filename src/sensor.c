@@ -8,24 +8,24 @@ const char *list_name[] = {"Valid",
  * Head pointers to three linked lists used for storing three types of sensors
  * retrieved from the specified input file.
  */
-Node_t  *sensor_list_head_array[MAX_SENSOR_LISTS] = {NULL};
+Node_t *sensor_list_head_array[MAX_SENSOR_LISTS] = {NULL};
 
-void run_main_sensor_algorithm(char     *in_file_name,
-                               char     *out_file_name,
-                               float    high_range,
-                               Boolean  use_high_range,
-                               float    low_range,
-                               Boolean  use_low_range,
-                               float    stuck_range,
-                               Boolean  use_stuck)
+void run_main_sensor_algorithm(char *in_file_name,
+                               char *out_file_name,
+                               float high_range,
+                               Boolean use_high_range,
+                               float low_range,
+                               Boolean use_low_range,
+                               float stuck_range,
+                               Boolean use_stuck)
 {
     Boolean end_of_file_reached = FALSE;
-    float   fused_sensor_value;
-    float   sensor_value;
-    char    sensor_name[MAX_SENSOR_NAME_SIZE];
-    int     time_in_minutes = 0;
-    int     current_time = -1;
-    int     lines_read = 1;
+    float fused_sensor_value;
+    float sensor_value;
+    char sensor_name[MAX_SENSOR_NAME_SIZE];
+    int time_in_minutes = 0;
+    int current_time = -1;
+    int lines_read = 1;
 
     do
     {
@@ -108,17 +108,16 @@ void run_main_sensor_algorithm(char     *in_file_name,
                       fused_sensor_value);
 }
 
-
-void update_sensor_lists(int    time_in_minutes,
-                         char   *sensor_name,
-                         float  sensor_value,
-                         int    use_high_range,
-                         int    high_range,
-                         int    use_low_range,
-                         int    low_range)
+void update_sensor_lists(int time_in_minutes,
+                         char *sensor_name,
+                         float sensor_value,
+                         int use_high_range,
+                         int high_range,
+                         int use_low_range,
+                         int low_range)
 {
-    Node_t  *node = NULL;
-    int     list_index;
+    Node_t *node = NULL;
+    int list_index;
 
     /**
      * Check to see if the node already exists. If it does, we will remove
@@ -127,9 +126,8 @@ void update_sensor_lists(int    time_in_minutes,
     node = search_all_chains(sensor_name, &list_index);
     if (node)
     {
-        sensor_list_head_array[list_index]
-            = remove_node(sensor_list_head_array[list_index],
-                          node);
+        sensor_list_head_array[list_index] = remove_node(sensor_list_head_array[list_index],
+                                                         node);
     }
 
     if ((use_high_range) && (sensor_value > high_range))
@@ -138,11 +136,10 @@ void update_sensor_lists(int    time_in_minutes,
          * Sensor is above the high range, so we dump it into the out of
          * range list.
          */
-        sensor_list_head_array[OOR_SENSOR_LIST]
-            = append(sensor_list_head_array[OOR_SENSOR_LIST],
-                     time_in_minutes,
-                     sensor_name,
-                     sensor_value);
+        sensor_list_head_array[OOR_SENSOR_LIST] = append(sensor_list_head_array[OOR_SENSOR_LIST],
+                                                         time_in_minutes,
+                                                         sensor_name,
+                                                         sensor_value);
     }
     else if ((use_low_range) && (sensor_value < low_range))
     {
@@ -150,28 +147,25 @@ void update_sensor_lists(int    time_in_minutes,
          * Sensor is below the low range, so we dump it into the out of
          * range list.
          */
-        sensor_list_head_array[OOR_SENSOR_LIST]
-            = append(sensor_list_head_array[OOR_SENSOR_LIST],
-                     time_in_minutes,
-                     sensor_name,
-                     sensor_value);
+        sensor_list_head_array[OOR_SENSOR_LIST] = append(sensor_list_head_array[OOR_SENSOR_LIST],
+                                                         time_in_minutes,
+                                                         sensor_name,
+                                                         sensor_value);
     }
     else
     {
         /* Sensor is fine, it gets to go into the valid list. */
-        sensor_list_head_array[VALID_SENSOR_LIST]
-            = append(sensor_list_head_array[VALID_SENSOR_LIST],
-                     time_in_minutes,
-                     sensor_name,
-                     sensor_value);
+        sensor_list_head_array[VALID_SENSOR_LIST] = append(sensor_list_head_array[VALID_SENSOR_LIST],
+                                                           time_in_minutes,
+                                                           sensor_name,
+                                                           sensor_value);
     }
 }
 
-
-Node_t* search_all_chains(char *str, int *list_index)
+Node_t *search_all_chains(char *str, int *list_index)
 {
-    Node_t  *node = NULL;
-    int     i;
+    Node_t *node = NULL;
+    int i;
 
     for (i = 0; i < MAX_SENSOR_LISTS; i++)
     {
@@ -186,13 +180,12 @@ Node_t* search_all_chains(char *str, int *list_index)
     return NULL;
 }
 
-
 void determine_if_sensors_are_stuck(int current_time, int stuck_value)
 {
     Boolean rc = 0;
-    Node_t  *node = NULL;
-    Node_t  *next = NULL;
-    int     i;
+    Node_t *node = NULL;
+    Node_t *next = NULL;
+    int i;
 
     for (i = 0; i < MAX_SENSOR_LISTS; i++)
     {
@@ -238,11 +231,10 @@ void determine_if_sensors_are_stuck(int current_time, int stuck_value)
     }
 }
 
-
 void dump_current_lists(void)
 {
-    Node_t  *node = NULL;
-    int     i;
+    Node_t *node = NULL;
+    int i;
 
     for (i = 0; i < MAX_SENSOR_LISTS; i++)
     {
@@ -251,22 +243,22 @@ void dump_current_lists(void)
         {
             switch (i)
             {
-                case VALID_SENSOR_LIST:
-                    printf("Valid - ");
-                    break;
+            case VALID_SENSOR_LIST:
+                printf("Valid - ");
+                break;
 
-                case OOR_SENSOR_LIST:
-                    printf("  OOR - ");
-                    break;
+            case OOR_SENSOR_LIST:
+                printf("  OOR - ");
+                break;
 
-                case STUCK_SENSOR_LIST:
-                    printf("Stuck - ");
-                    break;
+            case STUCK_SENSOR_LIST:
+                printf("Stuck - ");
+                break;
 
-                default:
-                    printf("Invalid list\n");
-                    return;
-                    break;
+            default:
+                printf("Invalid list\n");
+                return;
+                break;
             }
 
             printf("Time: %d, Value: %f, Name: %s\n",
@@ -278,22 +270,21 @@ void dump_current_lists(void)
     }
 }
 
-
-void write_output_file(char     *file_name,
-                       int      use_high_range,
-                       float    high_range,
-                       int      use_low_range,
-                       float    low_range,
-                       int      use_stuck,
-                       int      stuck_range,
-                       int      current_time,
-                       float    fused_sensor_value)
+void write_output_file(char *file_name,
+                       int use_high_range,
+                       float high_range,
+                       int use_low_range,
+                       float low_range,
+                       int use_stuck,
+                       int stuck_range,
+                       int current_time,
+                       float fused_sensor_value)
 {
-    Node_t  *node;
-    FILE    *fp;
-    int     minutes;
-    int     hours;
-    int     i = 0;
+    Node_t *node;
+    FILE *fp;
+    int minutes;
+    int hours;
+    int i = 0;
 
     fp = fopen(file_name, OUTPUT_MODE);
     if (fp == NULL)
@@ -312,9 +303,9 @@ void write_output_file(char     *file_name,
 
     fprintf(fp, "\n\n");
     fprintf(fp, "--------------------------------------------------------------"
-            "------------------\n");
+                "------------------\n");
     fprintf(fp, "Fused Sensor Algorithm run for sensors reporting at:"
-            " %02d%02dH\n\n",
+                " %02d%02dH\n\n",
             hours,
             minutes);
     fprintf(fp, "Sensor Parameters\n");
@@ -337,32 +328,31 @@ void write_output_file(char     *file_name,
     for (i = 0; i < MAX_SENSOR_LISTS; i++)
     {
 
-
         node = sensor_list_head_array[i];
         while (node)
         {
 
             hours = node->time_in_minutes / 60;
             minutes = node->time_in_minutes % 60;
-            fprintf(fp, " %02d%02dH  |" , hours, minutes);
+            fprintf(fp, " %02d%02dH  |", hours, minutes);
 
             switch (i)
             {
-                case VALID_SENSOR_LIST:
-                    fprintf(fp, " Valid  |");
-                    break;
+            case VALID_SENSOR_LIST:
+                fprintf(fp, " Valid  |");
+                break;
 
-                case OOR_SENSOR_LIST:
-                    fprintf(fp, " OOR    |");
-                    break;
+            case OOR_SENSOR_LIST:
+                fprintf(fp, " OOR    |");
+                break;
 
-                case STUCK_SENSOR_LIST:
-                    fprintf(fp, " Stuck  |");
-                    break;
+            case STUCK_SENSOR_LIST:
+                fprintf(fp, " Stuck  |");
+                break;
 
-                default:
-                    fprintf(fp, " ERROR |");
-                    break;
+            default:
+                fprintf(fp, " ERROR |");
+                break;
             }
 
             fprintf(fp,
@@ -378,7 +368,6 @@ void write_output_file(char     *file_name,
     return;
 }
 
-
 float do_sensor_fusion_algorithm(void)
 {
     Node_t *node = sensor_list_head_array[VALID_SENSOR_LIST];
@@ -390,8 +379,9 @@ float do_sensor_fusion_algorithm(void)
      * calculate_support_degree_matrix(c,
      *    sensor_list_head_array[VALID_SENSOR_LIST]);
      */
-     
-    (void)calculate_support_degree_matrix(node);
+
+    int max_size = count(sensor_list_head_array[VALID_SENSOR_LIST]);
+    (void)calculate_support_degree_matrix(node, max_size);
 
     /* Return the fused sensor value. */
     return 0;

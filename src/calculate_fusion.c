@@ -6,42 +6,40 @@
 #include <gsl/gsl_eigen.h>
 #include "calculate_fusion.h"
 
-struct support_degree_matrix *calculate_support_degree_matrix(Node_t *node)
+struct support_degree_matrix *calculate_support_degree_matrix(Node_t *node, int max_size)
 {
-     if (node == NULL)
-     {
-         printf("%s: Incorrect Input\n", __func__);
-         return NULL;
-     }
-     int i = 0;
-     while (node != NULL)
-     {
-         printf("%s\n", node->sensor_name);
-         node = node->next;
-         i++;
-         printf("%d\n", i);
-     }
-    float values[] = {10, 0};
+    if (node == NULL)
+    {
+        printf("%s: Incorrect Input\n", __func__);
+        return NULL;
+    }
+    int i = 0;
+    float values[max_size];
+    while (node != NULL)
+    {
+        values[i] = node->sensor_value;
+        node = node->next;
+        i++;
+    }
     struct support_degree_matrix *spd;
     spd = (struct support_degree_matrix *)malloc(sizeof(struct support_degree_matrix));
-    int length = sizeof(values) / sizeof(values[0]);
-    spd->no_of_sensors = length;
-    double **arrptr = (double **)malloc(length * sizeof(double *));
+    spd->no_of_sensors = max_size;
+    double **arrptr = (double **)malloc(max_size * sizeof(double *));
     int count = 0;
-    for (int i = 0; i < length; i++)
+    for (int i = 0; i < max_size; i++)
     {
-        arrptr[i] = (double *)malloc(length * sizeof(double));
+        arrptr[i] = (double *)malloc(max_size * sizeof(double));
     }
-    spd->sd_matrix = (double *)malloc(sizeof(double) * length * length);
+    spd->sd_matrix = (double *)malloc(sizeof(double) * max_size * max_size);
     if (arrptr == NULL || spd == NULL || spd->sd_matrix == NULL)
     {
         printf("%s: Unable to allocate memory!\n", __func__);
         return NULL;
     }
 
-    for (int i = 0; i < length; i++)
+    for (int i = 0; i < max_size; i++)
     {
-        for (int j = 0; j < length; j++)
+        for (int j = 0; j < max_size; j++)
         {
             arrptr[i][j] = exp(-1 * fabs(values[i] - values[j]));
             spd->sd_matrix[count] = arrptr[i][j];
@@ -49,7 +47,7 @@ struct support_degree_matrix *calculate_support_degree_matrix(Node_t *node)
         }
     }
     printf("Support Degree Matrix\n");
-    for (int i = 0; i < length * length; i++)
+    for (int i = 0; i < max_size * max_size; i++)
     {
         printf("%f\n", spd->sd_matrix[i]);
     }
