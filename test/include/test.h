@@ -17,6 +17,12 @@
 #include "calculate_fusion.h"
 
 /**
+ * @brief Epsilon to compare two float or double value
+ */
+#define EPSILON 	0.000000001
+
+
+/**
  * @brief Starts automated testing
  *
  * @details Entry point into the automated test script
