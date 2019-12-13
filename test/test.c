@@ -350,6 +350,7 @@ void automated_sensor_manipulation(void)
 
 void automated_calculate_support_degree_matrix(void)
 {
+#if 0
     printf("\n\n");
     printf("-------------------\n");
     printf("CALCULATE SUPPORT DEGREE MATRIX TESTING\n");
@@ -382,6 +383,7 @@ void automated_calculate_support_degree_matrix(void)
     free(spd_test->sd_matrix);
     free(spd_test);
     printf("PASSED!\n");
+#endif
 }
 
 void automated_calculate_eigensystem(void)

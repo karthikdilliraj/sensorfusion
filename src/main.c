@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
     /**
      * Run testing for calculate_fusion.c
      */
-
+#if 0
     struct support_degree_matrix *spd = calculate_support_degree_matrix();
     struct eigen_systems *eigen = calculate_eigensystem(spd);
     double *contribution_rate = calculate_contribution_rate(eigen, spd->no_of_sensors);
@@ -125,7 +125,7 @@ int main(int argc, char *argv[])
     {
       free(weight_coeff);
     }
-
+#endif
 
     strncpy(in_file_name, INPUT_FILE_NAME, MAX_FILE_NAME_SIZE);
     strncpy(out_file_name, OUTPUT_FILE_NAME, MAX_FILE_NAME_SIZE);

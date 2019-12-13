@@ -6,21 +6,21 @@
 #include <gsl/gsl_eigen.h>
 #include "calculate_fusion.h"
 
-struct support_degree_matrix *calculate_support_degree_matrix(void)
+struct support_degree_matrix *calculate_support_degree_matrix(Node_t *node)
 {
-    // if (node == NULL)
-    // {
-    //     printf("%s: Incorrect Input\n", __func__);
-    //     return;
-    // }
-    // int i = 0;
-    // while (node != NULL)
-    // {
-    //     printf("%c\n", node->sensor_name);
-    //     node = node->next;
-    //     i++;
-    //     printf("%d\n", i);
-    // }
+     if (node == NULL)
+     {
+         printf("%s: Incorrect Input\n", __func__);
+         return NULL;
+     }
+     int i = 0;
+     while (node != NULL)
+     {
+         printf("%s\n", node->sensor_name);
+         node = node->next;
+         i++;
+         printf("%d\n", i);
+     }
     float values[] = {10, 0};
     struct support_degree_matrix *spd;
     spd = (struct support_degree_matrix *)malloc(sizeof(struct support_degree_matrix));

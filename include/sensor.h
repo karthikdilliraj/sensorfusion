@@ -8,6 +8,7 @@
 #define SENSOR_H
 
 #include "linked_list.h"
+#include "calculate_fusion.h"
 
 
 /**

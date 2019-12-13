@@ -381,6 +381,7 @@ void write_output_file(char     *file_name,
 
 float do_sensor_fusion_algorithm(void)
 {
+    Node_t *node = sensor_list_head_array[VALID_SENSOR_LIST];
     /**
      * Call step one of the Fused Sensor Calculation here with a
      * pointer to the head of the valid_sensor_list
@@ -389,6 +390,8 @@ float do_sensor_fusion_algorithm(void)
      * calculate_support_degree_matrix(c,
      *    sensor_list_head_array[VALID_SENSOR_LIST]);
      */
+     
+    (void)calculate_support_degree_matrix(node);
 
     /* Return the fused sensor value. */
     return 0;

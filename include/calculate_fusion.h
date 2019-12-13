@@ -5,6 +5,8 @@
 #ifndef CALCULATE_FUSION_H
 #define CALCULATE_FUSION_H
 
+#include "linked_list.h"
+
 /**
  * @brief Structure to store support_degree_matrix
  *
@@ -37,8 +39,7 @@ struct eigen_systems
  * 
  */
 
-struct support_degree_matrix *calculate_support_degree_matrix(void);
-
+struct support_degree_matrix *calculate_support_degree_matrix(Node_t *node);
 /**
  * @brief Calculate eigen values and eigen vectors of the support degree matrix
  *
