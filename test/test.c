@@ -532,7 +532,7 @@ void automated_calculate_integrated_support_degree_matrix(void)
     int i;
     int j;
 
-    double expected_support_matrix[3] = {0.6, 1.2, 1.8};
+    double expected_support_matrix[3] = {1.4, 1.4, 1.4};
     double *calculated_support_matrix;
 
     if (!principal_components_matrix_test)

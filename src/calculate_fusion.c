@@ -6,7 +6,7 @@
 #include <gsl/gsl_eigen.h>
 #include "calculate_fusion.h"
 
-double *calculate_support_degree_matrix(Node_t *node, int no_of_sensors)
+double *calculate_support_degree_matrix(Node_t *node, int no_of_sensors, double *sensor_array)
 {
     if (node == NULL)
     {
@@ -14,10 +14,10 @@ double *calculate_support_degree_matrix(Node_t *node, int no_of_sensors)
         return NULL;
     }
     int i = 0;
-    float values[no_of_sensors];
+
     while (node != NULL)
     {
-        values[i] = node->sensor_value;
+        sensor_array[i] = node->sensor_value;
         node = node->next;
         i++;
     }
@@ -39,7 +39,7 @@ double *calculate_support_degree_matrix(Node_t *node, int no_of_sensors)
     {
         for (int j = 0; j < no_of_sensors; j++)
         {
-            arrptr[i][j] = exp(-1 * fabs(values[i] - values[j]));
+            arrptr[i][j] = exp(-1 * fabs(sensor_array[i] - sensor_array[j]));
             sd_matrix[count] = arrptr[i][j];
             count++;
         }
@@ -230,7 +230,9 @@ double *calculate_integrated_support_degree_matrix(double **principle_components
     {
         for (int j = 0; j < n_contribute; j++)
         {
-            arr[i] += principle_components[i][j] * contribution_rate[j];
+            arr[i] += principle_components[j][i] * contribution_rate[j];
+            //printf("prin_com:%f, contri_rate:%f, arr[%d]:%f\n", principle_components[j][i],
+                //contribution_rate[j], i, arr[i]);
         }
     }
 
@@ -304,7 +306,7 @@ double *calculate_weight_coefficient(double *integrate_support_degree_matrix,
     return arr;
 }
 
-int calculate_fused_output(double *weight_coefficient, double *sensor_data,
+double calculate_fused_output(double *weight_coefficient, double *sensor_data,
                            int no_of_sensors, double *fused_value)
 {
     int n_sensors = no_of_sensors;
