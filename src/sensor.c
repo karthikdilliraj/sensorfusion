@@ -379,23 +379,38 @@ float do_sensor_fusion_algorithm(void)
      * calculate_support_degree_matrix(c,
      *    sensor_list_head_array[VALID_SENSOR_LIST]);
      */
-
     int no_of_sensors = count(sensor_list_head_array[VALID_SENSOR_LIST]);
-    double *sd_matrix = calculate_support_degree_matrix(node, no_of_sensors);
-    // struct eigen_systems *eigen = calculate_eigensystem(sd_matrix, no_of_sensors);
-    // double *contribution_rate = calculate_contribution_rate(eigen->eigen_value, no_of_sensors);
-    // int contribution_rates_to_use = determine_contribution_rates_to_use(contribution_rate, 0.5, no_of_sensors);
-    // double **principal_components_matrix = calculate_principal_components(sd_matrix, no_of_sensors, eigen->eigen_vector, contribution_rates_to_use);
-    // double *integrated_support_matrix =
-    //     calculate_integrated_support_degree_matrix(
-    //         principal_components_matrix,
-    //         contribution_rate,
-    //         contribution_rates_to_use, no_of_sensors);
-    // int result = eliminate_incorrect_data(integrated_support_matrix,
-    //                                       0.5, no_of_sensors);
-    // double *weight_coefficient = calculate_weight_coefficient(integrated_support_matrix,
-    //                                                           no_of_sensors);
+    double *sensor_array = (double *)malloc(no_of_sensors * sizeof(double));;
 
+    double *sd_matrix = calculate_support_degree_matrix(node, no_of_sensors, sensor_array);
+    
+    struct eigen_systems *eigen = calculate_eigensystem(sd_matrix, no_of_sensors);
+    
+    double *contribution_rate = calculate_contribution_rate(eigen->eigen_value, no_of_sensors);
+    
+    int contribution_rates_to_use = determine_contribution_rates_to_use(contribution_rate, 0.5, no_of_sensors);
+    
+    double **principal_components_matrix = calculate_principal_components(sd_matrix, no_of_sensors, eigen->eigen_vector, contribution_rates_to_use);
+    
+    double *integrated_support_matrix =
+        calculate_integrated_support_degree_matrix(
+        principal_components_matrix,
+        contribution_rate,
+        contribution_rates_to_use, no_of_sensors);
+    
+    int result = eliminate_incorrect_data(integrated_support_matrix,
+        0.5, no_of_sensors);
+    
+    double *weight_coefficient = calculate_weight_coefficient(integrated_support_matrix,
+        no_of_sensors);
+
+    double sensed_value;
+    calculate_fused_output(weight_coefficient, sensor_array, no_of_sensors, &sensed_value);
+    printf("sensed_value:%f\n", sensed_value);
     /* Return the fused sensor value. */
+
+    free(sensor_array);
+    free(weight_coefficient);
+    free(integrated_support_matrix);
     return 0;
 }
