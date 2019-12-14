@@ -393,14 +393,14 @@ void automated_calculate_eigensystem(void)
     printf("-------------------\n");
     printf("CALCULATE EIGENSYSTEM TESTING\n");
     printf("-------------------\n");
-
-    double expected_eigen_vector[][2] = {{0.707107, 0.707107}, {-0.707107, 0.707107}};
-    double expected_eigen_value[] = {11.0, -9.0};
-    int no_of_sensors = 2;
-    double sd_matrix[] = {1.0, 10.0, 10.0, 1.0};
+    double expected_eigen_vector[][3] = {{0.5711, 0.5896, 0.5711}, {0.7071, -0.0, -0.7071}, {0.4169, -0.8077, 0.4169}};
+    double expected_eigen_value[] = {2.7529, 0.1813, 0.0658};
+    int no_of_sensors = 3;
+    double sd_matrix[] = {
+        1., 0.9048, 0.8187, 0.9048, 1., 0.9048, 0.8187, 0.9048, 1.};
     struct eigen_systems *eigen_test = calculate_eigensystem(sd_matrix, no_of_sensors);
     printf("Ensure correctness of calculation ---\n");
-    for (int i = 0; i < 2; i++)
+    for (int i = 0; i < no_of_sensors; i++)
     {
         double result_diff = fabs(eigen_test->eigen_value[i] - expected_eigen_value[i]);
         if (result_diff > EPSILON)
@@ -412,13 +412,13 @@ void automated_calculate_eigensystem(void)
             free(eigen_test);
             return;
         }
-        for (int j = 0; j < 2; j++)
+        for (int j = 0; j < no_of_sensors; j++)
         {
             double result_diff = fabs(eigen_test->eigen_vector[i][j] - expected_eigen_vector[i][j]);
             if (result_diff > EPSILON)
             {
                 ASSERT_TEST(eigen_test->eigen_vector[i][j] == expected_eigen_vector[i][j]);
-                printf("Expected:%f --- Calculated:%f\n", expected_eigen_vector[i][j], eigen_test->eigen_vector[i][j]);
+                printf("Expected eigen_vector :%f --- Calculated:%f\n", expected_eigen_vector[i][j], eigen_test->eigen_vector[i][j]);
                 free(eigen_test->eigen_value);
                 free(eigen_test->eigen_vector);
                 free(eigen_test);
