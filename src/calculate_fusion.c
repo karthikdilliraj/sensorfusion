@@ -14,7 +14,7 @@ double *calculate_support_degree_matrix(Node_t *node, int no_of_sensors, double 
         return NULL;
     }
     int i = 0;
-
+    printf("nos %d\n", no_of_sensors);
     while (node != NULL)
     {
         sensor_array[i] = node->sensor_value;
@@ -35,7 +35,6 @@ double *calculate_support_degree_matrix(Node_t *node, int no_of_sensors, double 
         return NULL;
     }
 
-    printf("---- Step1   ====Spd_matrix:\n");
     for (int i = 0; i < no_of_sensors; i++)
     {
         for (int j = 0; j < no_of_sensors; j++)
@@ -43,7 +42,6 @@ double *calculate_support_degree_matrix(Node_t *node, int no_of_sensors, double 
             arrptr[i][j] = exp(-1 * fabs(sensor_array[i] - sensor_array[j]));
             sd_matrix[count] = arrptr[i][j];
             count++;
-            printf("%f ", arrptr[i][j]);
         }
         printf("\n");
     }
@@ -75,18 +73,24 @@ struct eigen_systems *calculate_eigensystem(double *sd_matrix, int no_of_sensors
         printf("%s: Unable to allocate memory!\n", __func__);
         return NULL;
     }
-    gsl_matrix_view m = gsl_matrix_view_array(sd_matrix, no_of_sensors, no_of_sensors);
-
+    double *local_sd_matrix = (double *)malloc(sizeof(double) * no_of_sensors* no_of_sensors);
+    for(int i=0; i<no_of_sensors * no_of_sensors; i++){
+        local_sd_matrix[i] = sd_matrix[i];
+    }
+   
+    gsl_matrix_view m = gsl_matrix_view_array(local_sd_matrix, no_of_sensors, no_of_sensors);
+ 
     gsl_vector *eval = gsl_vector_alloc(no_of_sensors);
+  
     gsl_matrix *evec = gsl_matrix_alloc(no_of_sensors, no_of_sensors);
 
     gsl_eigen_symmv_workspace *w =
         gsl_eigen_symmv_alloc(no_of_sensors);
 
     gsl_eigen_symmv(&m.matrix, eval, evec, w);
-
+  
     gsl_eigen_symmv_free(w);
-
+ 
     gsl_eigen_symmv_sort(eval, evec,
                          GSL_EIGEN_SORT_VAL_DESC);
 
@@ -94,17 +98,16 @@ struct eigen_systems *calculate_eigensystem(double *sd_matrix, int no_of_sensors
     for (int i = 0; i < no_of_sensors; i++)
     {
         eigen->eigen_value[i] = gsl_vector_get(eval, i);
-        printf("===Eigen Value: %f\n", eigen->eigen_value[i]);
 
         gsl_vector_view evec_i = gsl_matrix_column(evec, i);
-        printf("===Eigen Vector:\n");
+    
         for (int j = 0; j < no_of_sensors; j++)
         {
             eigen->eigen_vector[i][j] = *(*(&evec_i.vector.data) + j * no_of_sensors);
-            printf("%f ", eigen->eigen_vector[i][j]);
         }
         printf("\n");
     }
+    free(local_sd_matrix);
     gsl_vector_free(eval);
     gsl_matrix_free(evec);
     return eigen;
@@ -149,7 +152,6 @@ int determine_contribution_rates_to_use(double *contribution_rate, float paramet
     }
     double sum = 0;
     int no_of_contribution_rates_to_use;
-    printf("---- Step 5: params: %f\n", parameter);
     for (int k = 0; k < no_of_sensors; k++)
     {
         for (int j = 0; j <= k; j++)
@@ -160,12 +162,14 @@ int determine_contribution_rates_to_use(double *contribution_rate, float paramet
         if (sum <= parameter)
         {
             no_of_contribution_rates_to_use = k - 1;
-            printf("k:%d no_of_contribution_rates_to_use: %d\n", k, no_of_contribution_rates_to_use);
+            printf("----- Step 3 -----\n");
+            printf("== no_of_contribution_rates_to_use: %d\n",no_of_contribution_rates_to_use);
             return no_of_contribution_rates_to_use;
         }
     }
+    printf("----- Step 3 -----\n");
+    printf("== no_of_contribution_rates_to_use: %d\n",no_of_sensors);
 
-    printf("no_of_contribution_rates_to_use:%d\n", no_of_sensors);
     return no_of_sensors;
 }
 
@@ -189,7 +193,8 @@ double **calculate_principal_components(double *sd_matrix, int no_of_sensors, do
         printf("%s: Unable to allocate memory!\n", __func__);
         return NULL;
     }
-    for (int i = 0; i < n; i++)
+
+    for (int i = 0; i < no_of_sensors; i++)
     {
         for (int j = 0; j < n; j++)
         {
@@ -197,6 +202,7 @@ double **calculate_principal_components(double *sd_matrix, int no_of_sensors, do
             count++;
         }
     }
+    
     double **principal_components_matrix = (double **)malloc(m * sizeof(double *));
     for (int i = 0; i < n; i++)
     {
@@ -208,8 +214,6 @@ double **calculate_principal_components(double *sd_matrix, int no_of_sensors, do
         return NULL;
     }
 
-    printf("----- Step 3 -----\n");
-    printf("== Principle component matrix:\n");
     for (int i = 0; i < m; i++)
     {
         for (int j = 0; j < n; j++)
@@ -217,10 +221,8 @@ double **calculate_principal_components(double *sd_matrix, int no_of_sensors, do
             principal_components_matrix[i][j] = 0;
             for (int k = 0; k < n; k++)
             {
-                principal_components_matrix[i][j] += eigen_vector[i][k] * arrptr[k][j];
-                printf("%f ", principal_components_matrix[i][j]);
+                principal_components_matrix[i][j] += eigen_vector[i][k] * arrptr[k][j];     
             }
-            printf("\n");
         }
     }
     for(int i=0; i< no_of_sensors; i++){

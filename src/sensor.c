@@ -380,10 +380,10 @@ double do_sensor_fusion_algorithm(void)
      *    sensor_list_head_array[VALID_SENSOR_LIST]);
      */
     int no_of_sensors = count(sensor_list_head_array[VALID_SENSOR_LIST]);
-    double *sensor_array = (double *)malloc(no_of_sensors * sizeof(double));;
-
+    double *sensor_array = (double *)malloc(no_of_sensors * sizeof(double));
+    printf("nos %d\n", no_of_sensors);
     double *sd_matrix = calculate_support_degree_matrix(node, no_of_sensors, sensor_array);
-    
+  
     struct eigen_systems *eigen = calculate_eigensystem(sd_matrix, no_of_sensors);
     
     double *contribution_rate = calculate_contribution_rate(eigen->eigen_value, no_of_sensors);
