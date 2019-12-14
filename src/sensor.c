@@ -368,7 +368,7 @@ void write_output_file(char *file_name,
     return;
 }
 
-float do_sensor_fusion_algorithm(void)
+double do_sensor_fusion_algorithm(void)
 {
     Node_t *node = sensor_list_head_array[VALID_SENSOR_LIST];
     /**
@@ -409,8 +409,19 @@ float do_sensor_fusion_algorithm(void)
     printf("sensed_value:%f\n", sensed_value);
     /* Return the fused sensor value. */
 
+    free(sd_matrix);
+    free(eigen->eigen_value);
+    for(int i=0; i< no_of_sensors; i++){
+        free(eigen->eigen_vector[i]);
+    }
+    free(eigen);
+    free(contribution_rate);
+    for(int i=0; i< no_of_sensors; i++){
+        free(principal_components_matrix[i]);
+    }
+    free(principal_components_matrix);
     free(sensor_array);
     free(weight_coefficient);
     free(integrated_support_matrix);
-    return 0;
+    return sensed_value;
 }

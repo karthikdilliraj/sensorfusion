@@ -146,6 +146,6 @@ void write_output_file(char     *file_name,
  *
  * @return The fused sensor value after, the algorithm has been run.
  */
-float do_sensor_fusion_algorithm(void);
+double do_sensor_fusion_algorithm(void);
 
 #endif

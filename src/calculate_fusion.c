@@ -49,6 +49,9 @@ double *calculate_support_degree_matrix(Node_t *node, int no_of_sensors, double 
     {
         printf("%f\n", sd_matrix[i]);
     }
+    for(int i=0; i< no_of_sensors; i++){
+        free(arrptr[i]);
+    }
     free(arrptr);
     return sd_matrix;
 }
@@ -200,6 +203,9 @@ double **calculate_principal_components(double *sd_matrix, int no_of_sensors, do
                 principal_components_matrix[i][j] += eigen_vector[i][k] * arrptr[k][j];
             }
         }
+    }
+    for(int i=0; i< no_of_sensors; i++){
+        free(arrptr[i]);
     }
     free(arrptr);
     return principal_components_matrix;
