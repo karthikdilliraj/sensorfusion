@@ -6,7 +6,7 @@
 #include <gsl/gsl_eigen.h>
 #include "calculate_fusion.h"
 
-struct support_degree_matrix *calculate_support_degree_matrix(Node_t *node, int max_size)
+double *calculate_support_degree_matrix(Node_t *node, int no_of_sensors)
 {
     if (node == NULL)
     {
@@ -14,75 +14,72 @@ struct support_degree_matrix *calculate_support_degree_matrix(Node_t *node, int 
         return NULL;
     }
     int i = 0;
-    float values[max_size];
+    float values[no_of_sensors];
     while (node != NULL)
     {
         values[i] = node->sensor_value;
         node = node->next;
         i++;
     }
-    struct support_degree_matrix *spd;
-    spd = (struct support_degree_matrix *)malloc(sizeof(struct support_degree_matrix));
-    spd->no_of_sensors = max_size;
-    double **arrptr = (double **)malloc(max_size * sizeof(double *));
+    double *sd_matrix;
+    double **arrptr = (double **)malloc(no_of_sensors * sizeof(double *));
     int count = 0;
-    for (int i = 0; i < max_size; i++)
+    for (int i = 0; i < no_of_sensors; i++)
     {
-        arrptr[i] = (double *)malloc(max_size * sizeof(double));
+        arrptr[i] = (double *)malloc(no_of_sensors * sizeof(double));
     }
-    spd->sd_matrix = (double *)malloc(sizeof(double) * max_size * max_size);
-    if (arrptr == NULL || spd == NULL || spd->sd_matrix == NULL)
+    sd_matrix = (double *)malloc(sizeof(double) * no_of_sensors * no_of_sensors);
+    if (arrptr == NULL || sd_matrix == NULL)
     {
         printf("%s: Unable to allocate memory!\n", __func__);
         return NULL;
     }
 
-    for (int i = 0; i < max_size; i++)
+    for (int i = 0; i < no_of_sensors; i++)
     {
-        for (int j = 0; j < max_size; j++)
+        for (int j = 0; j < no_of_sensors; j++)
         {
             arrptr[i][j] = exp(-1 * fabs(values[i] - values[j]));
-            spd->sd_matrix[count] = arrptr[i][j];
+            sd_matrix[count] = arrptr[i][j];
             count++;
         }
     }
     printf("Support Degree Matrix\n");
-    for (int i = 0; i < max_size * max_size; i++)
+    for (int i = 0; i < no_of_sensors * no_of_sensors; i++)
     {
-        printf("%f\n", spd->sd_matrix[i]);
+        printf("%f\n", sd_matrix[i]);
     }
     free(arrptr);
-    return spd;
+    return sd_matrix;
 }
 
-struct eigen_systems *calculate_eigensystem(struct support_degree_matrix *spd)
+struct eigen_systems *calculate_eigensystem(double *sd_matrix, int no_of_sensors)
 {
-    if ((spd->sd_matrix == NULL) || (spd->no_of_sensors == 0))
+    if (sd_matrix == NULL || no_of_sensors == 0)
     {
         printf("%s: Incorrect Input\n", __func__);
         return NULL;
     }
-    int length = spd->no_of_sensors;
     struct eigen_systems *eigen;
     eigen = (struct eigen_systems *)malloc(sizeof(struct eigen_systems));
-    eigen->eigen_value = (double *)malloc(sizeof(double) * length);
-    eigen->eigen_vector = (double **)malloc(length * sizeof(double *));
-    for (int i = 0; i < length; i++)
+    eigen->eigen_value = (double *)malloc(sizeof(double) * no_of_sensors);
+    eigen->eigen_vector = (double **)malloc(no_of_sensors * sizeof(double *));
+    for (int i = 0; i < no_of_sensors; i++)
     {
-        eigen->eigen_vector[i] = (double *)malloc(length * sizeof(double));
+        eigen->eigen_vector[i] = (double *)malloc(no_of_sensors * sizeof(double));
     }
     if (eigen == NULL || eigen->eigen_vector == NULL || eigen->eigen_value == NULL)
     {
         printf("%s: Unable to allocate memory!\n", __func__);
         return NULL;
     }
-    gsl_matrix_view m = gsl_matrix_view_array(spd->sd_matrix, length, length);
+    gsl_matrix_view m = gsl_matrix_view_array(sd_matrix, no_of_sensors, no_of_sensors);
 
-    gsl_vector *eval = gsl_vector_alloc(length);
-    gsl_matrix *evec = gsl_matrix_alloc(length, length);
+    gsl_vector *eval = gsl_vector_alloc(no_of_sensors);
+    gsl_matrix *evec = gsl_matrix_alloc(no_of_sensors, no_of_sensors);
 
     gsl_eigen_symmv_workspace *w =
-        gsl_eigen_symmv_alloc(length);
+        gsl_eigen_symmv_alloc(no_of_sensors);
 
     gsl_eigen_symmv(&m.matrix, eval, evec, w);
 
@@ -91,23 +88,13 @@ struct eigen_systems *calculate_eigensystem(struct support_degree_matrix *spd)
     gsl_eigen_symmv_sort(eval, evec,
                          GSL_EIGEN_SORT_VAL_DESC);
 
-    for (int i = 0; i < length; i++)
+    for (int i = 0; i < no_of_sensors; i++)
     {
         eigen->eigen_value[i] = gsl_vector_get(eval, i);
         gsl_vector_view evec_i = gsl_matrix_column(evec, i);
-        for (int j = 0; j < length; j++)
+        for (int j = 0; j < no_of_sensors; j++)
         {
-            eigen->eigen_vector[i][j] = *(*(&evec_i.vector.data) + j * length);
-        }
-    }
-
-    for (int i = 0; i < length; i++)
-    {
-        printf("eigenvalue = %g\n", eigen->eigen_value[i]);
-        printf("eigenvector = \n");
-        for (int j = 0; j < length; j++)
-        {
-            printf("%g\n", eigen->eigen_vector[i][j]);
+            eigen->eigen_vector[i][j] = *(*(&evec_i.vector.data) + j * no_of_sensors);
         }
     }
     gsl_vector_free(eval);
@@ -115,30 +102,27 @@ struct eigen_systems *calculate_eigensystem(struct support_degree_matrix *spd)
     return eigen;
 }
 
-double *calculate_contribution_rate(struct eigen_systems *eigen, int no_of_sensors)
+double *calculate_contribution_rate(double *eigen_value, int no_of_sensors)
 {
-    if ((eigen->eigen_value == NULL) || (eigen->eigen_vector == NULL) || (no_of_sensors == 0))
+    if (eigen_value == NULL || no_of_sensors == 0)
     {
         printf("%s: Incorrect Input\n", __func__);
         return NULL;
     }
-    int length = no_of_sensors;
-    double *contribution_rate = (double *)malloc(length * sizeof(double));
+    double *contribution_rate = (double *)malloc(no_of_sensors * sizeof(double));
     if (contribution_rate == NULL)
     {
         printf("%s: Unable to allocate memory!\n", __func__);
         return NULL;
     }
     double sum = 0;
-    for (int i = 0; i < length; i++)
+    for (int i = 0; i < no_of_sensors; i++)
     {
-        sum += eigen->eigen_value[i];
+        sum += eigen_value[i];
     }
-    printf("Contribution rate\n");
-    for (int j = 0; j < length; j++)
+    for (int j = 0; j < no_of_sensors; j++)
     {
-        contribution_rate[j] = eigen->eigen_value[j] / sum;
-        printf("%g\n", contribution_rate[j]);
+        contribution_rate[j] = eigen_value[j] / sum;
     }
     return contribution_rate;
 }
@@ -150,10 +134,9 @@ int determine_contribution_rates_to_use(double *contribution_rate, float paramet
         printf("%s: Incorrect Input\n", __func__);
         return -1;
     }
-    int length = no_of_sensors;
     double sum = 0;
-    int m;
-    for (int k = 0; k < length; k++)
+    int no_of_contribution_rates_to_use;
+    for (int k = 0; k < no_of_sensors; k++)
     {
         for (int j = 0; j <= k; j++)
         {
@@ -162,23 +145,21 @@ int determine_contribution_rates_to_use(double *contribution_rate, float paramet
 
         if (sum <= parameter)
         {
-            m = k - 1;
-            printf("Number of Contribution rates to use %d\n", m);
-            return m;
+            no_of_contribution_rates_to_use = k - 1;
+            return no_of_contribution_rates_to_use;
         }
     }
-    printf("Number of Contribution rates to use %d\n", length);
-    return length;
+    return no_of_sensors;
 }
 
-double **calculate_principal_components(struct support_degree_matrix *spd, double **eigen_vector, int no_of_contribution_rates_to_use)
+double **calculate_principal_components(double *sd_matrix, int no_of_sensors, double **eigen_vector, int no_of_contribution_rates_to_use)
 {
-    if ((spd->sd_matrix == NULL) || (eigen_vector == NULL) || (spd->no_of_sensors == 0) || (no_of_contribution_rates_to_use == 0))
+    if (sd_matrix == NULL || eigen_vector == NULL || no_of_sensors == 0 || no_of_contribution_rates_to_use == 0)
     {
         printf("%s: Incorrect Input\n", __func__);
         return NULL;
     }
-    int n = spd->no_of_sensors;
+    int n = no_of_sensors;
     int m = no_of_contribution_rates_to_use;
     int count = 0;
     double **arrptr = (double **)malloc(n * sizeof(double *));
@@ -191,13 +172,11 @@ double **calculate_principal_components(struct support_degree_matrix *spd, doubl
         printf("%s: Unable to allocate memory!\n", __func__);
         return NULL;
     }
-    printf("Support Degree Matrix\n");
     for (int i = 0; i < n; i++)
     {
         for (int j = 0; j < n; j++)
         {
-            arrptr[i][j] = spd->sd_matrix[count];
-            printf("%f\n", arrptr[i][j]);
+            arrptr[i][j] = sd_matrix[count];
             count++;
         }
     }

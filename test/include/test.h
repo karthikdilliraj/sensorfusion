@@ -19,8 +19,7 @@
 /**
  * @brief Epsilon to compare two float or double value
  */
-#define EPSILON 	0.000000001
-
+#define EPSILON 0.0001
 
 /**
  * @brief Starts automated testing

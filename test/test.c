@@ -394,25 +394,19 @@ void automated_calculate_eigensystem(void)
     printf("CALCULATE EIGENSYSTEM TESTING\n");
     printf("-------------------\n");
 
-    double expected_eigen_vector[][2] = {{-0.7071, 0.7071}, {0.7071, 0.7071}};
-    double expected_eigen_value[] = {-9.0, 11.0};
-    struct support_degree_matrix *spd_test;
-    spd_test = (struct support_degree_matrix *)malloc(sizeof(struct support_degree_matrix));
-    spd_test->no_of_sensors = 2;
-    spd_test->sd_matrix = (double *)malloc(sizeof(double) * 4);
-    spd_test->sd_matrix[0] = 1.0;
-    spd_test->sd_matrix[1] = 10.0;
-    spd_test->sd_matrix[2] = 10.0;
-    spd_test->sd_matrix[3] = 1.0;
-    struct eigen_systems *eigen_test = calculate_eigensystem(spd_test);
+    double expected_eigen_vector[][2] = {{0.707107, 0.707107}, {-0.707107, 0.707107}};
+    double expected_eigen_value[] = {11.0, -9.0};
+    int no_of_sensors = 2;
+    double sd_matrix[] = {1.0, 10.0, 10.0, 1.0};
+    struct eigen_systems *eigen_test = calculate_eigensystem(sd_matrix, no_of_sensors);
+    printf("Ensure correctness of calculation ---\n");
     for (int i = 0; i < 2; i++)
     {
-        if (eigen_test->eigen_value[i] != expected_eigen_value[i])
+        double result_diff = fabs(eigen_test->eigen_value[i] - expected_eigen_value[i]);
+        if (result_diff > EPSILON)
         {
             ASSERT_TEST(eigen_test->eigen_value[i] == expected_eigen_value[i]);
             printf("Expected:%f --- Calculated:%f\n", expected_eigen_value[i], eigen_test->eigen_value[i]);
-            free(spd_test->sd_matrix);
-            free(spd_test);
             free(eigen_test->eigen_value);
             free(eigen_test->eigen_vector);
             free(eigen_test);
@@ -420,12 +414,11 @@ void automated_calculate_eigensystem(void)
         }
         for (int j = 0; j < 2; j++)
         {
-            if (eigen_test->eigen_vector[i][j] != expected_eigen_vector[i][j])
+            double result_diff = fabs(eigen_test->eigen_vector[i][j] - expected_eigen_vector[i][j]);
+            if (result_diff > EPSILON)
             {
                 ASSERT_TEST(eigen_test->eigen_vector[i][j] == expected_eigen_vector[i][j]);
                 printf("Expected:%f --- Calculated:%f\n", expected_eigen_vector[i][j], eigen_test->eigen_vector[i][j]);
-                free(spd_test->sd_matrix);
-                free(spd_test);
                 free(eigen_test->eigen_value);
                 free(eigen_test->eigen_vector);
                 free(eigen_test);
@@ -433,8 +426,6 @@ void automated_calculate_eigensystem(void)
             }
         }
     }
-    free(spd_test->sd_matrix);
-    free(spd_test);
     free(eigen_test->eigen_value);
     free(eigen_test->eigen_vector);
     free(eigen_test);
@@ -443,75 +434,62 @@ void automated_calculate_eigensystem(void)
 
 void automated_calculate_contribution_rate(void)
 {
+    printf("\n\n");
+    printf("-------------------\n");
+    printf("CALCULATE CONTRIBUTION RATE TESTING\n");
+    printf("-------------------\n");
     double expected_contribution_rate[] = {0.500023, 0.499977};
-    struct eigen_systems *eigen_test;
-    eigen_test = (struct eigen_systems *)malloc(sizeof(struct eigen_systems));
-    eigen_test->eigen_value = (double *)malloc(sizeof(double) * 2);
-    eigen_test->eigen_value[0] = 1.00005;
-    eigen_test->eigen_value[1] = 0.999955;
-    eigen_test->eigen_vector = (double **)malloc(2 * sizeof(double *));
-    for (int i = 0; i < 2; i++)
-    {
-        eigen_test->eigen_vector[i] = (double *)malloc(2 * sizeof(double));
-    }
-    eigen_test->eigen_vector[0][0] = 0.707107;
-    eigen_test->eigen_vector[0][1] = 0.707107;
-    eigen_test->eigen_vector[1][0] = -0.707107;
-    eigen_test->eigen_vector[1][1] = 0.707107;
+    double eigen_value[] = {1.00005,
+                            0.999955};
     int no_of_sensors = 2;
-    double *calculated_contribution_rate = calculate_contribution_rate(eigen_test, no_of_sensors);
+    double *calculated_contribution_rate = calculate_contribution_rate(eigen_value, no_of_sensors);
+    printf("Ensure correctness of calculation ---\n");
     for (int i = 0; i < 2; i++)
     {
-        if (calculated_contribution_rate[i] != expected_contribution_rate[i])
+        double result_diff = fabs(calculated_contribution_rate[i] - expected_contribution_rate[i]);
+        if (result_diff > EPSILON)
         {
             ASSERT_TEST(calculated_contribution_rate[i] == expected_contribution_rate[i]);
             printf("Expected:%f --- Calculated:%f\n", expected_contribution_rate[i], calculated_contribution_rate[i]);
-            free(eigen_test->eigen_value);
-            free(eigen_test->eigen_vector);
-            free(eigen_test);
             free(calculated_contribution_rate);
             return;
         }
     }
-    free(eigen_test->eigen_value);
-    free(eigen_test->eigen_vector);
-    free(eigen_test);
     free(calculated_contribution_rate);
     printf("PASSED!\n");
 }
 
 void automated_determine_contribution_rates_to_use(void)
 {
+    printf("\n\n");
+    printf("-------------------\n");
+    printf("CALCULATE NUMBER OF CONTRIBUTION RATES TO USE TESTING\n");
+    printf("-------------------\n");
     int expected_contribution_rates_to_use = 2;
-    double *contribution_rate = (double *)malloc(2 * sizeof(double));
-    contribution_rate[0] = 0.500023;
-    contribution_rate[1] = 0.499977;
+    double contribution_rate[] = {0.500023,
+                                  0.499977};
     int no_of_sensors = 2;
     float parameter = 0.5;
     int determined_contribution_rates_to_use = determine_contribution_rates_to_use(contribution_rate, parameter, no_of_sensors);
+    printf("Ensure correctness of calculation ---\n");
     if (determined_contribution_rates_to_use != expected_contribution_rates_to_use)
     {
         ASSERT_TEST(determined_contribution_rates_to_use == expected_contribution_rates_to_use);
         printf("Expected:%d --- Calculated:%d\n", expected_contribution_rates_to_use, determined_contribution_rates_to_use);
-        free(contribution_rate);
     }
-    free(contribution_rate);
     printf("PASSED!\n");
 }
 
 void automated_calculate_principal_components(void)
 {
+    printf("\n\n");
+    printf("-------------------\n");
+    printf("CALCULATE PRINCIPAL COMPONENTS TESTING\n");
+    printf("-------------------\n");
     double expected_principal_components_matrix[][2] = {{0.707139, 0.707139},
                                                         {-0.707075, 0.707075}};
-    struct support_degree_matrix *
-        spd_test;
-    spd_test = (struct support_degree_matrix *)malloc(sizeof(struct support_degree_matrix));
-    spd_test->sd_matrix = (double *)malloc(sizeof(double) * 4);
-    spd_test->sd_matrix[0] = 1.0;
-    spd_test->sd_matrix[1] = 0.000045;
-    spd_test->sd_matrix[2] = 0.000045;
-    spd_test->sd_matrix[3] = 1.0;
-    spd_test->no_of_sensors = 2;
+    double sd_matrix[] = {1.0, 0.000045, 0.000045, 1.0};
+    int no_of_sensors = 2;
     double **eigen_vector = (double **)malloc(2 * sizeof(double *));
     for (int i = 0; i < 2; i++)
     {
@@ -522,25 +500,23 @@ void automated_calculate_principal_components(void)
     eigen_vector[1][0] = -0.707107;
     eigen_vector[1][1] = 0.707107;
     int contribution_rates_to_use = 2;
-    double **calculated_principal_components_matrix = calculate_principal_components(spd_test, eigen_vector, contribution_rates_to_use);
+    double **calculated_principal_components_matrix = calculate_principal_components(sd_matrix, no_of_sensors, eigen_vector, contribution_rates_to_use);
+    printf("Ensure correctness of calculation ---\n");
     for (int i = 0; i < 2; i++)
     {
         for (int j = 0; j < 2; j++)
         {
-            if (calculated_principal_components_matrix[i][j] != expected_principal_components_matrix[i][j])
+            double result_diff = fabs(calculated_principal_components_matrix[i][j] - expected_principal_components_matrix[i][j]);
+            if (result_diff > EPSILON)
             {
                 ASSERT_TEST(calculated_principal_components_matrix[i][j] == expected_principal_components_matrix[i][j]);
                 printf("Expected:%f --- Calculated:%f\n", expected_principal_components_matrix[i][j], calculated_principal_components_matrix[i][j]);
-                free(spd_test->sd_matrix);
-                free(spd_test);
                 free(eigen_vector);
                 free(calculated_principal_components_matrix);
                 return;
             }
         }
     }
-    free(spd_test->sd_matrix);
-    free(spd_test);
     free(eigen_vector);
     free(calculated_principal_components_matrix);
     printf("PASSED!\n");

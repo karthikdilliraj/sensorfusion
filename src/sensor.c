@@ -380,8 +380,21 @@ float do_sensor_fusion_algorithm(void)
      *    sensor_list_head_array[VALID_SENSOR_LIST]);
      */
 
-    int max_size = count(sensor_list_head_array[VALID_SENSOR_LIST]);
-    (void)calculate_support_degree_matrix(node, max_size);
+    int no_of_sensors = count(sensor_list_head_array[VALID_SENSOR_LIST]);
+    double *sd_matrix = calculate_support_degree_matrix(node, no_of_sensors);
+    // struct eigen_systems *eigen = calculate_eigensystem(sd_matrix, no_of_sensors);
+    // double *contribution_rate = calculate_contribution_rate(eigen->eigen_value, no_of_sensors);
+    // int contribution_rates_to_use = determine_contribution_rates_to_use(contribution_rate, 0.5, no_of_sensors);
+    // double **principal_components_matrix = calculate_principal_components(sd_matrix, no_of_sensors, eigen->eigen_vector, contribution_rates_to_use);
+    // double *integrated_support_matrix =
+    //     calculate_integrated_support_degree_matrix(
+    //         principal_components_matrix,
+    //         contribution_rate,
+    //         contribution_rates_to_use, no_of_sensors);
+    // int result = eliminate_incorrect_data(integrated_support_matrix,
+    //                                       0.5, no_of_sensors);
+    // double *weight_coefficient = calculate_weight_coefficient(integrated_support_matrix,
+    //                                                           no_of_sensors);
 
     /* Return the fused sensor value. */
     return 0;
