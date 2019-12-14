@@ -370,6 +370,7 @@ void write_output_file(char *file_name,
 
 float do_sensor_fusion_algorithm(void)
 {
+#if 0
     Node_t *node = sensor_list_head_array[VALID_SENSOR_LIST];
     /**
      * Call step one of the Fused Sensor Calculation here with a
@@ -396,6 +397,8 @@ float do_sensor_fusion_algorithm(void)
     // double *weight_coefficient = calculate_weight_coefficient(integrated_support_matrix,
     //                                                           no_of_sensors);
 
+    (void)sd_matrix;
+#endif    
     /* Return the fused sensor value. */
     return 0;
 }
