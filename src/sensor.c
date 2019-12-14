@@ -423,5 +423,6 @@ double do_sensor_fusion_algorithm(void)
     free(sensor_array);
     free(weight_coefficient);
     free(integrated_support_matrix);
+    printf("============== END FUSED SENSOR ================\n");
     return sensed_value;
 }
