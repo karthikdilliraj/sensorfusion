@@ -22,12 +22,13 @@ struct eigen_systems
  * @brief Calculate Support degree matrix D for the set of sensor values
  *
  *  @param[in]   Node_t *node Linked list containing sensor values
+ *  @param[out]  double *sensor_array containing sensor values
  * 
  *  @return pointer to double of support_degree_matrix, if no node is found, returns NULL.
  * 
  */
 
-double *calculate_support_degree_matrix(Node_t *node, int no_of_sensors);
+double *calculate_support_degree_matrix(Node_t *node, int no_of_sensors, double * sensor_array);
 /**
  * @brief Calculate eigen values and eigen vectors of the support degree matrix
  *
@@ -106,6 +107,6 @@ double *calculate_weight_coefficient(double *integrate_support_degree_matrix, in
  * @return double calculate_fused_output, if input is invalid, returns NULL.
  */
 
-int calculate_fused_output(double *weight_coefficient, double *sensor_data, int no_of_sensors, double *fused_value);
+double calculate_fused_output(double *weight_coefficient, double *sensor_data, int no_of_sensors, double *fused_value);
 
 #endif // CALCULATE_FUSION_H

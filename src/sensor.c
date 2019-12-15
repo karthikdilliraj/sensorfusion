@@ -318,7 +318,10 @@ void write_output_file(char *file_name,
     fprintf(fp, "Stuck Interval ----- ");
     use_stuck ? fprintf(fp, "%02d\n", stuck_range) : fprintf(fp, "N/A\n");
 
-    fprintf(fp, "Fused Sensor Value - %0.4f\n", fused_sensor_value);
+    fprintf(fp, "Fused Sensor Value - ");
+    (fused_sensor_value == INVALID_SENSOR_FUSION_VALUE) ? 
+        fprintf(fp, "N/A\n") : 
+        fprintf(fp, "%0.4f\n", fused_sensor_value);
 
     fprintf(fp, "\n");
     fprintf(fp, "Sensor Statistics:\n");
@@ -368,9 +371,8 @@ void write_output_file(char *file_name,
     return;
 }
 
-float do_sensor_fusion_algorithm(void)
+double do_sensor_fusion_algorithm(void)
 {
-#if 0
     Node_t *node = sensor_list_head_array[VALID_SENSOR_LIST];
     /**
      * Call step one of the Fused Sensor Calculation here with a
@@ -380,25 +382,95 @@ float do_sensor_fusion_algorithm(void)
      * calculate_support_degree_matrix(c,
      *    sensor_list_head_array[VALID_SENSOR_LIST]);
      */
-
     int no_of_sensors = count(sensor_list_head_array[VALID_SENSOR_LIST]);
-    double *sd_matrix = calculate_support_degree_matrix(node, no_of_sensors);
-    // struct eigen_systems *eigen = calculate_eigensystem(sd_matrix, no_of_sensors);
-    // double *contribution_rate = calculate_contribution_rate(eigen->eigen_value, no_of_sensors);
-    // int contribution_rates_to_use = determine_contribution_rates_to_use(contribution_rate, 0.5, no_of_sensors);
-    // double **principal_components_matrix = calculate_principal_components(sd_matrix, no_of_sensors, eigen->eigen_vector, contribution_rates_to_use);
-    // double *integrated_support_matrix =
-    //     calculate_integrated_support_degree_matrix(
-    //         principal_components_matrix,
-    //         contribution_rate,
-    //         contribution_rates_to_use, no_of_sensors);
-    // int result = eliminate_incorrect_data(integrated_support_matrix,
-    //                                       0.5, no_of_sensors);
-    // double *weight_coefficient = calculate_weight_coefficient(integrated_support_matrix,
-    //                                                           no_of_sensors);
+    double *sensor_array = (double *)malloc(no_of_sensors * sizeof(double));
+    printf("nos %d\n", no_of_sensors);
+    double *sd_matrix = calculate_support_degree_matrix(node, no_of_sensors, sensor_array);
+    if (!node)
+    {
+        return INVALID_SENSOR_FUSION_VALUE;   
+    }
+    
+    struct eigen_systems *eigen = calculate_eigensystem(sd_matrix, no_of_sensors);
+    
+    double *contribution_rate = calculate_contribution_rate(eigen->eigen_value, no_of_sensors);
+    
+    int contribution_rates_to_use = determine_contribution_rates_to_use(contribution_rate, 0.5, no_of_sensors);
+    if (contribution_rates_to_use <= 0)
+    {
+        return INVALID_SENSOR_FUSION_VALUE;
+    }
+    
+    double **principal_components_matrix = calculate_principal_components(sd_matrix, no_of_sensors, eigen->eigen_vector, contribution_rates_to_use);
+    
+    printf("no_sensors:%d, no_contri:%d\n", no_of_sensors, contribution_rates_to_use);
+    double *integrated_support_matrix =
+        calculate_integrated_support_degree_matrix(
+        principal_components_matrix,
+        contribution_rate,
+        contribution_rates_to_use, no_of_sensors);
 
-    (void)sd_matrix;
-#endif    
-    /* Return the fused sensor value. */
-    return 0;
+    if (integrated_support_matrix == NULL)
+    {
+        printf("Unable to calculate integrated support matrix\n");
+        goto spd_free;
+    }
+    
+    int result_eliminate = eliminate_incorrect_data(integrated_support_matrix,
+        0.5, no_of_sensors);
+
+    if (result_eliminate < 0)
+    {
+        printf("Unable to elminnate incorrect data\n");
+        goto integrate_free;
+    }
+    
+    double *weight_coeff;
+    weight_coeff = calculate_weight_coefficient(integrated_support_matrix,
+        no_of_sensors);
+
+    if (weight_coeff == NULL)
+    {
+        printf("Unable to calculate weight coefficient\n");
+        goto integrate_free;
+    }
+
+    double sensed_value;
+    double result_fused = calculate_fused_output(weight_coeff, sensor_array,
+        no_of_sensors, &sensed_value);
+
+    if (result_fused < 0)
+    {
+        printf("Unable to calculate fused output\n");
+        goto weight_coeff_free;
+    }
+
+    printf("sensed_value:%f\n", sensed_value);
+
+weight_coeff_free:
+    free(weight_coeff);
+
+integrate_free:
+    free(integrated_support_matrix);
+
+spd_free:
+    free(sensor_array);
+    free(sd_matrix);
+    free(eigen->eigen_value);
+    for(int i=0; i< no_of_sensors; i++)
+    {
+        free(eigen->eigen_vector[i]);
+    }
+
+    free(eigen);
+
+    free(contribution_rate);
+
+    for(int i = 0; i < no_of_sensors; i++)
+    {
+        free(principal_components_matrix[i]);
+    }
+    free(principal_components_matrix);
+
+    return sensed_value;
 }

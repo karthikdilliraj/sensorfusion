@@ -10,6 +10,12 @@
 #include "linked_list.h"
 #include "calculate_fusion.h"
 
+/**
+ * Invalid value to specify that an error should be written into the final
+ * report.
+ */
+#define INVALID_SENSOR_FUSION_VALUE -9999
+
 
 /**
  * @brief Starts the sensor fusion algorithm by parsing the CSV
@@ -146,6 +152,6 @@ void write_output_file(char     *file_name,
  *
  * @return The fused sensor value after, the algorithm has been run.
  */
-float do_sensor_fusion_algorithm(void);
+double do_sensor_fusion_algorithm(void);
 
 #endif
