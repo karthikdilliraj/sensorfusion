@@ -371,9 +371,14 @@ void write_output_file(char *file_name,
     return;
 }
 
+
 double do_sensor_fusion_algorithm(void)
 {
     Node_t *node = sensor_list_head_array[VALID_SENSOR_LIST];
+    if (node == NULL)
+    {
+        return INVALID_SENSOR_FUSION_VALUE;
+    }
     /**
      * Call step one of the Fused Sensor Calculation here with a
      * pointer to the head of the valid_sensor_list
@@ -384,25 +389,82 @@ double do_sensor_fusion_algorithm(void)
      */
     int no_of_sensors = count(sensor_list_head_array[VALID_SENSOR_LIST]);
     double *sensor_array = (double *)malloc(no_of_sensors * sizeof(double));
+    if (sensor_array == NULL)
+    {
+        return INVALID_SENSOR_FUSION_VALUE;
+    }
+
     printf("nos %d\n", no_of_sensors);
     double *sd_matrix = calculate_support_degree_matrix(node, no_of_sensors, sensor_array);
-    if (!node)
+    if (sd_matrix == NULL)
     {
-        return INVALID_SENSOR_FUSION_VALUE;   
+        free(sensor_array);
+        return INVALID_SENSOR_FUSION_VALUE;
     }
     
     struct eigen_systems *eigen = calculate_eigensystem(sd_matrix, no_of_sensors);
-    
+    if (eigen == NULL)
+    {
+        free(sensor_array);
+        free(sd_matrix);
+        return INVALID_SENSOR_FUSION_VALUE;
+    }
+
     double *contribution_rate = calculate_contribution_rate(eigen->eigen_value, no_of_sensors);
-    
+    if (contribution_rate == NULL)
+    {
+        free(sensor_array);
+        free(sd_matrix);
+
+        free(eigen->eigen_value);
+        for(int i=0; i< no_of_sensors; i++)
+        {
+            free(eigen->eigen_vector[i]);
+        }
+
+        free(eigen->eigen_value);
+        free(eigen);
+        return INVALID_SENSOR_FUSION_VALUE;
+    }
+
     int contribution_rates_to_use = determine_contribution_rates_to_use(contribution_rate, 0.5, no_of_sensors);
     if (contribution_rates_to_use <= 0)
     {
+        free(sensor_array);
+        free(sd_matrix);
+
+        free(eigen->eigen_value);
+        for(int i=0; i< no_of_sensors; i++)
+        {
+            free(eigen->eigen_vector[i]);
+        }
+
+        free(eigen->eigen_value);
+        free(eigen);
+
+        free(contribution_rate);
         return INVALID_SENSOR_FUSION_VALUE;
     }
     
     double **principal_components_matrix = calculate_principal_components(sd_matrix, no_of_sensors, eigen->eigen_vector, contribution_rates_to_use);
-    
+    if (principal_components_matrix == NULL)
+    {
+        free(sensor_array);
+        free(sd_matrix);
+
+        free(eigen->eigen_value);
+        for(int i=0; i< no_of_sensors; i++)
+        {
+            free(eigen->eigen_vector[i]);
+        }
+
+        free(eigen->eigen_value);
+        free(eigen);
+
+        free(contribution_rate);
+        return INVALID_SENSOR_FUSION_VALUE;
+    }
+
     printf("no_sensors:%d, no_contri:%d\n", no_of_sensors, contribution_rates_to_use);
     double *integrated_support_matrix =
         calculate_integrated_support_degree_matrix(
@@ -412,8 +474,27 @@ double do_sensor_fusion_algorithm(void)
 
     if (integrated_support_matrix == NULL)
     {
-        printf("Unable to calculate integrated support matrix\n");
-        goto spd_free;
+        free(sensor_array);
+        free(sd_matrix);
+
+        free(eigen->eigen_value);
+        for(int i=0; i< no_of_sensors; i++)
+        {
+            free(eigen->eigen_vector[i]);
+        }
+
+        free(eigen->eigen_value);
+        free(eigen);
+
+        free(contribution_rate);
+
+        for(int i = 0; i < no_of_sensors; i++)
+        {
+            free(principal_components_matrix[i]);
+        }
+        free(principal_components_matrix);
+
+        return INVALID_SENSOR_FUSION_VALUE;
     }
     
     int result_eliminate = eliminate_incorrect_data(integrated_support_matrix,
@@ -421,8 +502,28 @@ double do_sensor_fusion_algorithm(void)
 
     if (result_eliminate < 0)
     {
-        printf("Unable to elminnate incorrect data\n");
-        goto integrate_free;
+        free(sensor_array);
+        free(sd_matrix);
+
+        free(eigen->eigen_value);
+        for(int i=0; i< no_of_sensors; i++)
+        {
+            free(eigen->eigen_vector[i]);
+        }
+
+        free(eigen->eigen_value);
+        free(eigen);
+
+        free(contribution_rate);
+
+        for(int i = 0; i < no_of_sensors; i++)
+        {
+            free(principal_components_matrix[i]);
+        }
+        free(principal_components_matrix);
+
+        free(integrated_support_matrix);
+        return INVALID_SENSOR_FUSION_VALUE;
     }
     
     double *weight_coeff;
@@ -431,8 +532,28 @@ double do_sensor_fusion_algorithm(void)
 
     if (weight_coeff == NULL)
     {
-        printf("Unable to calculate weight coefficient\n");
-        goto integrate_free;
+        free(sensor_array);
+        free(sd_matrix);
+
+        free(eigen->eigen_value);
+        for(int i=0; i< no_of_sensors; i++)
+        {
+            free(eigen->eigen_vector[i]);
+        }
+
+        free(eigen->eigen_value);
+        free(eigen);
+
+        free(contribution_rate);
+
+        for(int i = 0; i < no_of_sensors; i++)
+        {
+            free(principal_components_matrix[i]);
+        }
+        free(principal_components_matrix);
+
+        free(integrated_support_matrix);
+        return INVALID_SENSOR_FUSION_VALUE;
     }
 
     double sensed_value;
@@ -441,36 +562,32 @@ double do_sensor_fusion_algorithm(void)
 
     if (result_fused < 0)
     {
-        printf("Unable to calculate fused output\n");
-        goto weight_coeff_free;
+        free(sensor_array);
+        free(sd_matrix);
+
+        free(eigen->eigen_value);
+        for(int i=0; i< no_of_sensors; i++)
+        {
+            free(eigen->eigen_vector[i]);
+        }
+
+        free(eigen->eigen_value);
+        free(eigen);
+
+        free(contribution_rate);
+
+        for(int i = 0; i < no_of_sensors; i++)
+        {
+            free(principal_components_matrix[i]);
+        }
+        free(principal_components_matrix);
+
+        free(integrated_support_matrix);
+        free(weight_coeff);
+
+        return INVALID_SENSOR_FUSION_VALUE;
     }
 
     printf("sensed_value:%f\n", sensed_value);
-
-weight_coeff_free:
-    free(weight_coeff);
-
-integrate_free:
-    free(integrated_support_matrix);
-
-spd_free:
-    free(sensor_array);
-    free(sd_matrix);
-    free(eigen->eigen_value);
-    for(int i=0; i< no_of_sensors; i++)
-    {
-        free(eigen->eigen_vector[i]);
-    }
-
-    free(eigen);
-
-    free(contribution_rate);
-
-    for(int i = 0; i < no_of_sensors; i++)
-    {
-        free(principal_components_matrix[i]);
-    }
-    free(principal_components_matrix);
-
     return sensed_value;
 }
