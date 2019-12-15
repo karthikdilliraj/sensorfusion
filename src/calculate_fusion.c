@@ -14,6 +14,7 @@ double *calculate_support_degree_matrix(Node_t *node, int no_of_sensors, double 
         return NULL;
     }
     int i = 0;
+
     printf("nos %d\n", no_of_sensors);
     while (node != NULL)
     {
@@ -245,11 +246,16 @@ double *calculate_integrated_support_degree_matrix(double **principle_components
         return NULL;
     }
 
-    double *arr = (double *)malloc(n_sensors * sizeof(double));
+    double *arr = (double *)malloc(no_of_sensors * sizeof(double));
     if (arr == NULL)
     {
         printf("%s: Unable to allocate memory!\n", __func__);
         return NULL;
+    }
+
+    for (int i = 0; i < no_of_sensors; i++)
+    {
+        arr[i] = 0.0;
     }
 
     /* Calculate integrated support degree score */
@@ -324,7 +330,10 @@ double *calculate_weight_coefficient(double *integrate_support_degree_matrix,
         return NULL;
     }
 
-    memset(arr, 0, n_sensors * sizeof(double));
+    for (int i = 0; i < n_sensors; i++)
+    {
+        arr[i] = 0.0;
+    }
 
     for (int i = 0; i < n_sensors; i++)
     {
@@ -348,7 +357,8 @@ double calculate_fused_output(double *weight_coefficient, double *sensor_data,
 {
     int n_sensors = no_of_sensors;
 
-    if ((weight_coefficient == NULL) || (n_sensors == 0))
+    if ((weight_coefficient == NULL) || (n_sensors == 0) || 
+        (sensor_data == NULL))
     {
         printf("%s: Incorrect Input\n", __func__);
         return -1;

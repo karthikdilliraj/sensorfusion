@@ -392,37 +392,74 @@ double do_sensor_fusion_algorithm(void)
     
     double **principal_components_matrix = calculate_principal_components(sd_matrix, no_of_sensors, eigen->eigen_vector, contribution_rates_to_use);
     
+    printf("no_sensors:%d, no_contri:%d\n", no_of_sensors, contribution_rates_to_use);
     double *integrated_support_matrix =
         calculate_integrated_support_degree_matrix(
         principal_components_matrix,
         contribution_rate,
         contribution_rates_to_use, no_of_sensors);
+
+    if (integrated_support_matrix == NULL)
+    {
+        printf("Unable to calculate integrated support matrix\n");
+        goto spd_free;
+    }
     
-    int result = eliminate_incorrect_data(integrated_support_matrix,
+    int result_eliminate = eliminate_incorrect_data(integrated_support_matrix,
         0.5, no_of_sensors);
+
+    if (result_eliminate < 0)
+    {
+        printf("Unable to elminnate incorrect data\n");
+        goto integrate_free;
+    }
     
-    double *weight_coefficient = calculate_weight_coefficient(integrated_support_matrix,
+    double *weight_coeff;
+    weight_coeff = calculate_weight_coefficient(integrated_support_matrix,
         no_of_sensors);
 
-    double sensed_value;
-    calculate_fused_output(weight_coefficient, sensor_array, no_of_sensors, &sensed_value);
-    printf("sensed_value:%f\n", sensed_value);
-    /* Return the fused sensor value. */
+    if (weight_coeff == NULL)
+    {
+        printf("Unable to calculate weight coefficient\n");
+        goto integrate_free;
+    }
 
+    double sensed_value;
+    double result_fused = calculate_fused_output(weight_coeff, sensor_array,
+        no_of_sensors, &sensed_value);
+
+    if (result_fused < 0)
+    {
+        printf("Unable to calculate fused output\n");
+        goto weight_coeff_free;
+    }
+
+    printf("sensed_value:%f\n", sensed_value);
+
+weight_coeff_free:
+    free(weight_coeff);
+
+integrate_free:
+    free(integrated_support_matrix);
+
+spd_free:
+    free(sensor_array);
     free(sd_matrix);
     free(eigen->eigen_value);
-    for(int i=0; i< no_of_sensors; i++){
+    for(int i=0; i< no_of_sensors; i++)
+    {
         free(eigen->eigen_vector[i]);
     }
+
     free(eigen);
+
     free(contribution_rate);
-    for(int i=0; i< no_of_sensors; i++){
+
+    for(int i = 0; i < no_of_sensors; i++)
+    {
         free(principal_components_matrix[i]);
     }
     free(principal_components_matrix);
-    free(sensor_array);
-    free(weight_coefficient);
-    free(integrated_support_matrix);
-    printf("============== END FUSED SENSOR ================\n");
+
     return sensed_value;
 }
