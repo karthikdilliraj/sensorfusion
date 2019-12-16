@@ -1,8 +1,14 @@
 /**
- * Implementation of the linked list.
+ * @file linked_list.c
+ *
+ * @brief Implementation of the linked list.
+ *
+ * @author Karthik Dilliraj - karthikdilliraj@cmail.carleton.ca - Carleton University
+ * @author Nhat Hieu Le - nhathieule@cmail.carleton.ca - Carleton University
+ * @author Jason Miller - jasonmiller@cmail.carleton.ca - Carleton University
  */
-#include "linked_list.h"
 
+#include "linked_list.h"
 
 Node_t* create(int time, char *name, float value, Node_t *next)
 {

@@ -1,6 +1,13 @@
 /**
- * Implementation of the CSV parser.
+ * @file parsing_csv_file.c
+ *
+ * @brief Implementation of the CSV parser.
+ *
+ * @author Karthik Dilliraj - karthikdilliraj@cmail.carleton.ca - Carleton University
+ * @author Nhat Hieu Le - nhathieule@cmail.carleton.ca - Carleton University
+ * @author Jason Miller - jasonmiller@cmail.carleton.ca - Carleton University
  */
+
 #include "parsing_csv_file.h"
 
 Boolean parser_parse_csv_file(char *file_name,

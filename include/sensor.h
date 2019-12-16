@@ -2,6 +2,10 @@
  * @file sensor.h
  *
  * @brief A collection of functions related to the manipulation of sensors.
+ *
+ * @author Karthik Dilliraj - karthikdilliraj@cmail.carleton.ca - Carleton University
+ * @author Nhat Hieu Le - nhathieule@cmail.carleton.ca - Carleton University
+ * @author Jason Miller - jasonmiller@cmail.carleton.ca - Carleton University
  */
  
 #ifndef SENSOR_H

@@ -2,7 +2,12 @@
  * @file parsing_csv_file.h
  *
  * @brief Implementation of the CSV parser.
+ *
+ * @author Karthik Dilliraj - karthikdilliraj@cmail.carleton.ca - Carleton University
+ * @author Nhat Hieu Le - nhathieule@cmail.carleton.ca - Carleton University
+ * @author Jason Miller - jasonmiller@cmail.carleton.ca - Carleton University
  */
+
 #ifndef PARSER_H
 #define PARSER_H
 

@@ -1,3 +1,13 @@
+/**
+ * @file test.c
+ *
+ * @brief Implementation of automated unit tests.
+ *
+ * @author Karthik Dilliraj - karthikdilliraj@cmail.carleton.ca - Carleton University
+ * @author Nhat Hieu Le - nhathieule@cmail.carleton.ca - Carleton University
+ * @author Jason Miller - jasonmiller@cmail.carleton.ca - Carleton University
+ */
+
 #include "test.h"
 #include <math.h>
 
@@ -697,7 +707,7 @@ void automated_calculate_integrated_support_degree_matrix(void)
     printf("--- Test 1: Validate Input ---\n");
     calculated_support_matrix =
         calculate_integrated_support_degree_matrix(NULL,
-                                                   contribution_rate_test, n_contri_rate_t, n_sensor_t);
+            contribution_rate_test, n_contri_rate_t, n_sensor_t);
 
     if (calculated_support_matrix == NULL)
     {
@@ -783,8 +793,6 @@ void automated_calculate_integrated_support_degree_matrix(void)
         {
             ASSERT_TEST(expected_support_matrix[i] ==
                         calculated_support_matrix[i]);
-            //printf("ERROR: Expected:%f --- Caculated:%f\n", expected_support_matrix[i], calculated_support_matrix[i]);
-
             free(calculated_support_matrix);
             return;
         }
@@ -924,13 +932,16 @@ void automated_calculate_weight_coefficient(void)
 
     for (int i = 0; i < n_sensor_t; i++)
     {
-        double result_diff = fabs(expected_weight_coefficient[i] - caclulated_weight_coefficient[i]);
+        double result_diff = fabs(expected_weight_coefficient[i] -
+            caclulated_weight_coefficient[i]);
 
         if (result_diff > EPSILON)
         {
-            printf("ERROR: Expected:%f --- Caculated:%f\n", expected_weight_coefficient[i],
-                   caclulated_weight_coefficient[i]);
-            ASSERT_TEST(expected_weight_coefficient[i] == caclulated_weight_coefficient[i]);
+            printf("ERROR: Expected:%f --- Caculated:%f\n",
+                expected_weight_coefficient[i],
+                caclulated_weight_coefficient[i]);
+            ASSERT_TEST(expected_weight_coefficient[i] ==
+                caclulated_weight_coefficient[i]);
 
             free(caclulated_weight_coefficient);
             return;
@@ -1004,7 +1015,7 @@ void automated_calculate_fused_output(void)
     printf("\tWeight_coefficient: {0.5, 0.0, 0.3, 0.2}\n");
     printf("\tExpected Fused Output: 7.5\n");
     res = calculate_fused_output(weight_coefficient,
-                                 input_sensor_data, n_sensor_t, &caclulated_fused_output);
+        input_sensor_data, n_sensor_t, &caclulated_fused_output);
     if (res < 0)
     {
         printf("Unable to call calculate_fused_output\n");

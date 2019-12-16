@@ -1,7 +1,11 @@
 /**
  * @file test.h
  *
- * @brief Implementation of automated unit tests.
+ * @brief Collections of declaration function of automated unit tests.
+ *
+ * @author Karthik Dilliraj - karthikdilliraj@cmail.carleton.ca - Carleton University
+ * @author Nhat Hieu Le - nhathieule@cmail.carleton.ca - Carleton University
+ * @author Jason Miller - jasonmiller@cmail.carleton.ca - Carleton University
  */
 
 #ifndef TEST_H
@@ -98,5 +102,39 @@ void automated_determine_contribution_rates_to_use(void);
  * support_degree_matrix, eigenvector and number of contribution rates to use
  */
 void automated_calculate_principal_components(void);
+
+/**
+ * @brief Automated unit testing of calculate_integrated_support_degree_matrix
+ *
+ * @details Automatically tests the integrated support degree matrix calculation
+ * by the input of principal_components_matrix, number of contribution rates to use
+ * and number of sensors
+ */
+void automated_calculate_integrated_support_degree_matrix(void);
+
+/**
+ * @brief Automated unit testing of eliminate_incorrect_data
+ *
+ * @details Automatically tests elimination of incorrect data within integrate
+ * support degree matrix by the input of integrated_support_degree_matrix, number of
+ * sensors and the fault tolerance parameters
+ */
+void automated_eliminate_incorrect_data(void);
+
+/**
+ * @brief Automated unit testing of calculate_weight_coefficient
+ *
+ * @details Automatically tests weight coefficient matrix by the input of
+ * elminianated integrated_support_degree_matrix, number of sensors
+ */
+void automated_calculate_weight_coefficient(void);
+
+/**
+ * @brief Automated unit testing of calculate_fused_output
+ *
+ * @details Automatically tests fused sensor output by the input of
+ * weight coefficient matrix, the raw sensor data and the number of sensors
+ */
+void automated_calculate_fused_output(void);
 
 #endif

@@ -1,5 +1,11 @@
 /**
+ * @file calculate_fusion.h
+ *
  * @brief A collection of functions related to the calculation of fused output.
+ *
+ * @author Karthik Dilliraj - karthikdilliraj@cmail.carleton.ca - Carleton University
+ * @author Nhat Hieu Le - nhathieule@cmail.carleton.ca - Carleton University
+ * @author Jason Miller - jasonmiller@cmail.carleton.ca - Carleton University
  */
 
 #ifndef CALCULATE_FUSION_H
@@ -103,6 +109,7 @@ double *calculate_weight_coefficient(double *integrate_support_degree_matrix, in
  * @brief Calculate the fused output
  *
  * @param[in] pointer to double of weight_coefficient, pointer to double of sensor_data, int no_of_sensors
+ * @param[out]  double *fused_value containing fused sensor values
  *
  * @return double calculate_fused_output, if input is invalid, returns NULL.
  */

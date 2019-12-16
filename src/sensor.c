@@ -1,3 +1,15 @@
+/**
+ * @file sensor.c
+ *
+ * @brief Implementation of the processing sensor data and output into report files.
+ * Trigger sensor fusion algorithm
+ * update stuck sensor and update result to files.
+ *
+ * @author Karthik Dilliraj - karthikdilliraj@cmail.carleton.ca - Carleton University
+ * @author Nhat Hieu Le - nhathieule@cmail.carleton.ca - Carleton University
+ * @author Jason Miller - jasonmiller@cmail.carleton.ca - Carleton University
+ */
+
 #include "sensor.h"
 
 const char *list_name[] = {"Valid",

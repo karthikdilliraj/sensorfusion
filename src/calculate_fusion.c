@@ -1,3 +1,13 @@
+/**
+ * @file calculate_fusion.c
+ *
+ * @brief Implementation of sensor fusion algorithm.
+ *
+ * @author Karthik Dilliraj - karthikdilliraj@cmail.carleton.ca - Carleton University
+ * @author Nhat Hieu Le - nhathieule@cmail.carleton.ca - Carleton University
+ * @author Jason Miller - jasonmiller@cmail.carleton.ca - Carleton University
+ */
+
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>

@@ -2,9 +2,11 @@
  * @file linked_list.h
  *
  * @brief Implementation of the linked list data structure.
+ * Implements a linked list for the purposes of storing and sorting sensor input.
  *
- * Implements a linked list for the purposes of storing and sorting sensor 
- * input.
+ * @author Karthik Dilliraj - karthikdilliraj@cmail.carleton.ca - Carleton University
+ * @author Nhat Hieu Le - nhathieule@cmail.carleton.ca - Carleton University
+ * @author Jason Miller - jasonmiller@cmail.carleton.ca - Carleton University
  */
  
 #ifndef LINKED_LIST_H
