@@ -351,40 +351,74 @@ void automated_sensor_manipulation(void)
 
 void automated_calculate_support_degree_matrix(void)
 {
-#if 0
     printf("\n\n");
     printf("-------------------\n");
     printf("CALCULATE SUPPORT DEGREE MATRIX TESTING\n");
     printf("-------------------\n");
 
-    double expected_sd_matrix[] = {1.0,
-                                   0.000045,
-                                   0.000045,
-                                   1.0};
-
-    struct support_degree_matrix *spd_test = calculate_support_degree_matrix();
-    int n = spd_test->no_of_sensors;
-    if (n < 1)
+    double expected_sd_matrix[] = {
+        1., 0.9048, 0.8187, 0.9048, 1., 0.9048, 0.8187, 0.9048, 1.};
+    int no_of_sensors;
+    test_list_head_array[VALID_SENSOR_LIST] =
+        update(test_list_head_array[VALID_SENSOR_LIST],
+               10,
+               "sen1",
+               1.2);
+    test_list_head_array[VALID_SENSOR_LIST] =
+        update(test_list_head_array[VALID_SENSOR_LIST],
+               10,
+               "sen2",
+               1.3);
+    test_list_head_array[VALID_SENSOR_LIST] =
+        update(test_list_head_array[VALID_SENSOR_LIST],
+               10,
+               "sen3",
+               1.4);
+    no_of_sensors = count(test_list_head_array[VALID_SENSOR_LIST]);
+    double *sd_matrix;
+    double *sensor_array = (double *)malloc(no_of_sensors * sizeof(double));
+    printf("--- Test 1: Validate Input ---\n");
+    sd_matrix = calculate_support_degree_matrix(NULL, no_of_sensors, sensor_array);
+    if (sd_matrix == NULL)
     {
-        printf("Unable to call calculate_fused_output\n");
-        ASSERT_TEST(spd_test->no_of_sensors == 0);
+        printf("Null Node_list\n");
+        ASSERT_TEST(sd_matrix == NULL);
     }
-    printf("Ensure correctness of elminination ---\n");
-    for (int i = 0; i < n * n; i++)
+    free(sd_matrix);
+    sd_matrix = calculate_support_degree_matrix(test_list_head_array[VALID_SENSOR_LIST], 0, sensor_array);
+    if (sd_matrix == NULL)
     {
-        if (spd_test->sd_matrix[i] != expected_sd_matrix[i])
+        printf("Invalid No_of_sensors\n");
+        ASSERT_TEST(sd_matrix == NULL);
+    }
+    free(sd_matrix);
+    sd_matrix = calculate_support_degree_matrix(test_list_head_array[VALID_SENSOR_LIST], no_of_sensors, NULL);
+    if (sd_matrix == NULL)
+    {
+        printf("Null Sensor_array\n");
+        ASSERT_TEST(sd_matrix == NULL);
+    }
+    free(sd_matrix);
+    printf("--- Test2: Ensure correctness of support degree matrix ---\n");
+    printf("\tInput Node_list: {10,sen1,1.2} {10,sen2,1.3} {10,sen3,1.4} \n");
+    printf("\tNo_of_sensors = 3 \n");
+    printf("\tExpected sd_matrixs: { 1., 0.9048, 0.8187, 0.9048, 1., 0.9048, 0.8187, 0.9048, 1.}\n");
+    sd_matrix = calculate_support_degree_matrix(test_list_head_array[VALID_SENSOR_LIST], no_of_sensors, sensor_array);
+    for (int i = 0; i < no_of_sensors * no_of_sensors; i++)
+    {
+        double result_diff = fabs(sd_matrix[i] - expected_sd_matrix[i]);
+        if (result_diff > EPSILON)
         {
-            ASSERT_TEST(spd_test->sd_matrix[i] == expected_sd_matrix[i]);
-            printf("Expected:%f --- Calculated:%f\n", expected_sd_matrix[i], spd_test->sd_matrix[i]);
-            free(spd_test->sd_matrix);
-            free(spd_test);
+            ASSERT_TEST(sd_matrix[i] == expected_sd_matrix[i]);
+            printf("Expected:%f --- Calculated:%f\n", expected_sd_matrix[i], sd_matrix[i]);
+            free(sd_matrix);
+            free(sensor_array);
             return;
         }
     }
-    free(spd_test->sd_matrix);
-    free(spd_test);
+    free(sd_matrix);
+    free(sensor_array);
     printf("PASSED!\n");
-#endif
 }
 
 void automated_calculate_eigensystem(void)
@@ -398,8 +432,27 @@ void automated_calculate_eigensystem(void)
     int no_of_sensors = 3;
     double sd_matrix[] = {
         1., 0.9048, 0.8187, 0.9048, 1., 0.9048, 0.8187, 0.9048, 1.};
+    printf("--- Test 1: Validate Input ---\n");
+    struct eigen_systems *eigen_test1 = calculate_eigensystem(NULL, no_of_sensors);
+    if (eigen_test1 == NULL)
+    {
+        printf("Null Support_degree_matrix\n");
+        ASSERT_TEST(eigen_test1 == NULL);
+    }
+    free(eigen_test1);
+    struct eigen_systems *eigen_test2 = calculate_eigensystem(sd_matrix, 0);
+    if (eigen_test2 == NULL)
+    {
+        printf("Invalid No_of_sensors\n");
+        ASSERT_TEST(eigen_test2 == NULL);
+    }
+    free(eigen_test2);
+    printf("--- Test2: Ensure correctness of Eigen values and Eigenvectors ---\n");
+    printf("\tInput sd_matrix: { 1., 0.9048, 0.8187, 0.9048, 1., 0.9048, 0.8187, 0.9048, 1.} \n");
+    printf("\tNo_of_sensors = 3 \n");
+    printf("\tExpected Eigen Values: {2.7529, 0.1813, 0.0658}\n");
+    printf("\tExpected Eigen Vectors: {{0.5711, 0.5896, 0.5711}, {0.7071, -0.0, -0.7071}, {0.4169, -0.8077, 0.4169}}\n");
     struct eigen_systems *eigen_test = calculate_eigensystem(sd_matrix, no_of_sensors);
-    printf("Ensure correctness of calculation ---\n");
     for (int i = 0; i < no_of_sensors; i++)
     {
         double result_diff = fabs(eigen_test->eigen_value[i] - expected_eigen_value[i]);
@@ -442,8 +495,27 @@ void automated_calculate_contribution_rate(void)
     double eigen_value[] = {1.00005,
                             0.999955};
     int no_of_sensors = 2;
-    double *calculated_contribution_rate = calculate_contribution_rate(eigen_value, no_of_sensors);
-    printf("Ensure correctness of calculation ---\n");
+    double *calculated_contribution_rate;
+    printf("--- Test 1: Validate Input ---\n");
+    calculated_contribution_rate = calculate_contribution_rate(NULL, no_of_sensors);
+    if (calculated_contribution_rate == NULL)
+    {
+        printf("Null Eigen_value\n");
+        ASSERT_TEST(calculated_contribution_rate == NULL);
+    }
+    free(calculated_contribution_rate);
+    calculated_contribution_rate = calculate_contribution_rate(eigen_value, 0);
+    if (calculated_contribution_rate == NULL)
+    {
+        printf("Invalid No_of_sensors\n");
+        ASSERT_TEST(calculated_contribution_rate == NULL);
+    }
+    free(calculated_contribution_rate);
+    printf("--- Test2: Ensure correctness of Contribution rate ---\n");
+    printf("\tInput Eigen Values: {1.00005,0.999955} \n");
+    printf("\tNo_of_sensors = 2 \n");
+    printf("\tExpected Contribution rate: {0.500023, 0.499977}\n");
+    calculated_contribution_rate = calculate_contribution_rate(eigen_value, no_of_sensors);
     for (int i = 0; i < 2; i++)
     {
         double result_diff = fabs(calculated_contribution_rate[i] - expected_contribution_rate[i]);
@@ -470,8 +542,32 @@ void automated_determine_contribution_rates_to_use(void)
                                   0.499977};
     int no_of_sensors = 2;
     float parameter = 0.5;
-    int determined_contribution_rates_to_use = determine_contribution_rates_to_use(contribution_rate, parameter, no_of_sensors);
-    printf("Ensure correctness of calculation ---\n");
+    int determined_contribution_rates_to_use;
+    printf("--- Test 1: Validate Input ---\n");
+    determined_contribution_rates_to_use = determine_contribution_rates_to_use(NULL, parameter, no_of_sensors);
+    if (determined_contribution_rates_to_use == -1)
+    {
+        printf("Null Contribution_rate\n");
+        ASSERT_TEST(determined_contribution_rates_to_use == -1);
+    }
+    determined_contribution_rates_to_use = determine_contribution_rates_to_use(NULL, 1.1, no_of_sensors);
+    if (determined_contribution_rates_to_use == -1)
+    {
+        printf("Invalid paramater value\n");
+        ASSERT_TEST(determined_contribution_rates_to_use == -1);
+    }
+    determined_contribution_rates_to_use = determine_contribution_rates_to_use(NULL, parameter, 0);
+    if (determined_contribution_rates_to_use == -1)
+    {
+        printf("Invalid No_of_sensors\n");
+        ASSERT_TEST(determined_contribution_rates_to_use == -1);
+    }
+    printf("--- Test2: Ensure correctness of Number of Contribution rates to use ---\n");
+    printf("\tInput Contribution rate: {0.500023,0.499977}\n");
+    printf("\tParameter = 0.5 \n");
+    printf("\tNo_of_sensors = 2 \n");
+    printf("\tExpected No of Contribution rates to use : 2\n");
+    determined_contribution_rates_to_use = determine_contribution_rates_to_use(contribution_rate, parameter, no_of_sensors);
     if (determined_contribution_rates_to_use != expected_contribution_rates_to_use)
     {
         ASSERT_TEST(determined_contribution_rates_to_use == expected_contribution_rates_to_use);
@@ -500,8 +596,43 @@ void automated_calculate_principal_components(void)
     eigen_vector[1][0] = -0.707107;
     eigen_vector[1][1] = 0.707107;
     int contribution_rates_to_use = 2;
-    double **calculated_principal_components_matrix = calculate_principal_components(sd_matrix, no_of_sensors, eigen_vector, contribution_rates_to_use);
-    printf("Ensure correctness of calculation ---\n");
+    double **calculated_principal_components_matrix;
+    printf("--- Test 1: Validate Input ---\n");
+    calculated_principal_components_matrix = calculate_principal_components(NULL, no_of_sensors, eigen_vector, contribution_rates_to_use);
+    if (calculated_principal_components_matrix == NULL)
+    {
+        printf("Null Support_Degree_Matrix\n");
+        ASSERT_TEST(calculated_principal_components_matrix == NULL);
+    }
+    free(calculated_principal_components_matrix);
+    calculated_principal_components_matrix = calculate_principal_components(sd_matrix, 0, eigen_vector, contribution_rates_to_use);
+    if (calculated_principal_components_matrix == NULL)
+    {
+        printf("Invalid No_of_sensors\n");
+        ASSERT_TEST(calculated_principal_components_matrix == NULL);
+    }
+    free(calculated_principal_components_matrix);
+    calculated_principal_components_matrix = calculate_principal_components(sd_matrix, no_of_sensors, NULL, contribution_rates_to_use);
+    if (calculated_principal_components_matrix == NULL)
+    {
+        printf("Null Eigen Vector\n");
+        ASSERT_TEST(calculated_principal_components_matrix == NULL);
+    }
+    free(calculated_principal_components_matrix);
+    calculated_principal_components_matrix = calculate_principal_components(sd_matrix, no_of_sensors, eigen_vector, -1);
+    if (calculated_principal_components_matrix == NULL)
+    {
+        printf("Invalid No_of_Contribution_Rates_to_Use\n");
+        ASSERT_TEST(calculated_principal_components_matrix == NULL);
+    }
+    free(calculated_principal_components_matrix);
+    printf("--- Test2: Ensure correctness of Principal Component Matrix ---\n");
+    printf("\tInput Support_degree_matrix: {1.0, 0.000045, 0.000045, 1.0}\n");
+    printf("\tNo_of_sensors = 2 \n");
+    printf("\tEigen_Vector = {{0.707107, 0.707107},{-0.707107, 0.707107}} \n");
+    printf("\tNo of Contribution rates to use : 2 \n");
+    printf("\tExpected Principal Component Matrix : {{0.707139, 0.707139},{-0.707075, 0.707075}}\n");
+    calculated_principal_components_matrix = calculate_principal_components(sd_matrix, no_of_sensors, eigen_vector, contribution_rates_to_use);
     for (int i = 0; i < 2; i++)
     {
         for (int j = 0; j < 2; j++)
@@ -565,8 +696,8 @@ void automated_calculate_integrated_support_degree_matrix(void)
 
     printf("--- Test 1: Validate Input ---\n");
     calculated_support_matrix =
-        calculate_integrated_support_degree_matrix( NULL,
-            contribution_rate_test, n_contri_rate_t, n_sensor_t);
+        calculate_integrated_support_degree_matrix(NULL,
+                                                   contribution_rate_test, n_contri_rate_t, n_sensor_t);
 
     if (calculated_support_matrix == NULL)
     {
@@ -699,7 +830,7 @@ void automated_eliminate_incorrect_data(void)
     }
 
     res = eliminate_incorrect_data(input_integrated_support_matrix,
-        parameter, 0);
+                                   parameter, 0);
     if (res < 0)
     {
         printf("NULL number of sensors:\n");
@@ -730,7 +861,7 @@ void automated_eliminate_incorrect_data(void)
             input_integrated_support_matrix[i])
         {
             printf("ERROR: Expected:%f --- Calculated:%f\n",
-                expected_elminated_matrix[i], input_integrated_support_matrix[i]);
+                   expected_elminated_matrix[i], input_integrated_support_matrix[i]);
             ASSERT_TEST(expected_elminated_matrix[i] == input_integrated_support_matrix[i]);
             return;
         }
@@ -798,7 +929,7 @@ void automated_calculate_weight_coefficient(void)
         if (result_diff > EPSILON)
         {
             printf("ERROR: Expected:%f --- Caculated:%f\n", expected_weight_coefficient[i],
-                caclulated_weight_coefficient[i]);
+                   caclulated_weight_coefficient[i]);
             ASSERT_TEST(expected_weight_coefficient[i] == caclulated_weight_coefficient[i]);
 
             free(caclulated_weight_coefficient);
@@ -827,7 +958,7 @@ void automated_calculate_fused_output(void)
 
     printf("--- Test 1: Validate Input ---\n");
     res = calculate_fused_output(NULL, input_sensor_data, n_sensor_t,
-        &caclulated_fused_output);
+                                 &caclulated_fused_output);
     if (res < 0)
     {
         printf("Null weight_cofficient:\n");
@@ -841,7 +972,7 @@ void automated_calculate_fused_output(void)
     }
 
     res = calculate_fused_output(weight_coefficient, NULL, n_sensor_t,
-        &caclulated_fused_output);
+                                 &caclulated_fused_output);
     if (res < 0)
     {
         printf("Null Sensor Data:\n");
@@ -855,7 +986,7 @@ void automated_calculate_fused_output(void)
     }
 
     res = calculate_fused_output(weight_coefficient, input_sensor_data, 0,
-        &caclulated_fused_output);
+                                 &caclulated_fused_output);
     if (res < 0)
     {
         printf("Zero Number of Sensor:\n");

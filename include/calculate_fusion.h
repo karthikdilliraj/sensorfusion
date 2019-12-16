@@ -21,14 +21,14 @@ struct eigen_systems
 /**
  * @brief Calculate Support degree matrix D for the set of sensor values
  *
- *  @param[in]   Node_t *node Linked list containing sensor values
+ *  @param[in]   Node_t *node Linked list containing sensor values, int no_of_sensors
  *  @param[out]  double *sensor_array containing sensor values
  * 
  *  @return pointer to double of support_degree_matrix, if no node is found, returns NULL.
  * 
  */
 
-double *calculate_support_degree_matrix(Node_t *node, int no_of_sensors, double * sensor_array);
+double *calculate_support_degree_matrix(Node_t *node, int no_of_sensors, double *sensor_array);
 /**
  * @brief Calculate eigen values and eigen vectors of the support degree matrix
  *
