@@ -468,7 +468,6 @@ double do_sensor_fusion_algorithm(void)
         return INVALID_SENSOR_FUSION_VALUE;
     }
 
-    printf("no_sensors:%d, no_contri:%d\n", no_of_sensors, contribution_rates_to_use);
     double *integrated_support_matrix =
         calculate_integrated_support_degree_matrix(
             principal_components_matrix,
@@ -591,6 +590,5 @@ double do_sensor_fusion_algorithm(void)
         return INVALID_SENSOR_FUSION_VALUE;
     }
 
-    printf("sensed_value:%f\n", sensed_value);
     return sensed_value;
 }
