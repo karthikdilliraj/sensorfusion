@@ -24,6 +24,9 @@ double *calculate_support_degree_matrix(Node_t *node, int no_of_sensors, double 
         return NULL;
     }
     int i = 0;
+    /*
+    * Sensor array value obtained from Node list
+    */
     while (node != NULL)
     {
         sensor_array[i] = node->sensor_value;
@@ -54,6 +57,9 @@ double *calculate_support_degree_matrix(Node_t *node, int no_of_sensors, double 
         }
     }
 
+    /*
+    * Pointer Memory freed
+    */
     for (int i = 0; i < no_of_sensors; i++)
     {
         free(arrptr[i]);
@@ -88,6 +94,9 @@ struct eigen_systems *calculate_eigensystem(double *sd_matrix, int no_of_sensors
         local_sd_matrix[i] = sd_matrix[i];
     }
 
+    /*
+    * GSL to obtain Eigen values and Eigen Vectors
+    */
     gsl_matrix_view m = gsl_matrix_view_array(local_sd_matrix, no_of_sensors, no_of_sensors);
 
     gsl_vector *eval = gsl_vector_alloc(no_of_sensors);
@@ -115,6 +124,10 @@ struct eigen_systems *calculate_eigensystem(double *sd_matrix, int no_of_sensors
             eigen->eigen_vector[i][j] = *(*(&evec_i.vector.data) + j * no_of_sensors);
         }
     }
+
+    /*
+    * Pointer Memory freed
+    */
     free(local_sd_matrix);
     gsl_vector_free(eval);
     gsl_matrix_free(evec);
@@ -155,27 +168,27 @@ int determine_contribution_rates_to_use(double *contribution_rate, float paramet
         return -1;
     }
     double sum = 0;
-    
+
     for (int k = 0; k < no_of_sensors; k++)
     {
         sum += contribution_rate[k];
-        
+
         if (sum > parameter)
         {
-            /**
+            /*
              * We have overshot our contribution rate, so we will use one less
              * sensor than what we've currently found.
              */
             return k;
         }
-        
+
         if (sum == parameter)
         {
-            /**
+            /*
              * We have hit exactly on the contrubution rate, so we want to use
              * all of the sensors we have checked.
              */
-            return (k + 1);   
+            return (k + 1);
         }
     }
     return no_of_sensors;
@@ -222,6 +235,9 @@ double **calculate_principal_components(double *sd_matrix, int no_of_sensors, do
         return NULL;
     }
 
+    /*
+    * Matrix Multiplication to calculate principal_components_matrix
+    */
     for (int i = 0; i < m; i++)
     {
         for (int j = 0; j < n; j++)
@@ -233,6 +249,9 @@ double **calculate_principal_components(double *sd_matrix, int no_of_sensors, do
             }
         }
     }
+    /*
+    * Pointer Memory freed
+    */
     for (int i = 0; i < no_of_sensors; i++)
     {
         free(arrptr[i]);

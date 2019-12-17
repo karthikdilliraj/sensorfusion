@@ -10,9 +10,9 @@
 
 #include "linked_list.h"
 
-Node_t* create(int time, char *name, float value, Node_t *next)
+Node_t *create(int time, char *name, float value, Node_t *next)
 {
-    Node_t  *new_node = malloc(sizeof(Node_t));
+    Node_t *new_node = malloc(sizeof(Node_t));
     if (!new_node)
     {
         /* This is a major issue, so we should abort the whole program. */
@@ -28,17 +28,16 @@ Node_t* create(int time, char *name, float value, Node_t *next)
     return new_node;
 }
 
-
-Node_t* append(Node_t *head, int time, char *name, float value)
+Node_t *append(Node_t *head, int time, char *name, float value)
 {
-    Node_t  *node = head;
-    Node_t  *new_node;
+    Node_t *node = head;
+    Node_t *new_node;
 
     /* Creating node at end of list, so there is no next node to pass. */
     new_node = create(time, name, value, NULL);
     if (!node)
     {
-        /**
+        /*
          * The head pointer is NULL, which means we have nothing in our list
          * so far. We will assign the new node to the head pointer and return
          * that.
@@ -47,7 +46,7 @@ Node_t* append(Node_t *head, int time, char *name, float value)
         return node;
     }
 
-    /**
+    /*
      * We have elements in our list already, so we will traverse to the end of
      * the list and append the new node there.
      */
@@ -60,13 +59,13 @@ Node_t* append(Node_t *head, int time, char *name, float value)
     return head;
 }
 
-Node_t* update(Node_t *head, int time, char *name, float value)
+Node_t *update(Node_t *head, int time, char *name, float value)
 {
     Node_t *node = search_sensor_name(head, name);
 
     if (node == NULL)
     {
-        /**
+        /*
          * No found node, so we will just add the node to the end of the list.
          */
         return append(head, time, name, value);
@@ -77,14 +76,13 @@ Node_t* update(Node_t *head, int time, char *name, float value)
     return head;
 }
 
-
-Node_t* search_sensor_name(Node_t *head, char *str)
+Node_t *search_sensor_name(Node_t *head, char *str)
 {
-    Node_t  *node = head;
+    Node_t *node = head;
 
     if (!str)
     {
-        /**
+        /*
          * Was given an invalid string to search, so we must abort.
          */
         return NULL;
@@ -92,7 +90,7 @@ Node_t* search_sensor_name(Node_t *head, char *str)
 
     while (node)
     {
-        /**
+        /*
          * Iterate over all nodes to see if there is a node that has the same
          * name as what we are searching for.
          */
@@ -107,14 +105,13 @@ Node_t* search_sensor_name(Node_t *head, char *str)
     return NULL;
 }
 
-
-Node_t* remove_from_front(Node_t *head)
+Node_t *remove_from_front(Node_t *head)
 {
-    Node_t  *node = head;
+    Node_t *node = head;
 
     if (!head)
     {
-        /**
+        /*
          * No list to even remove from, we can return and empty list.
          */
         return NULL;
@@ -125,7 +122,7 @@ Node_t* remove_from_front(Node_t *head)
 
     if (node == head)
     {
-        /**
+        /*
          * We have removed the only entry in the list.
          */
         head = NULL;
@@ -135,15 +132,14 @@ Node_t* remove_from_front(Node_t *head)
     return head;
 }
 
-
-Node_t* remove_from_back(Node_t *head)
+Node_t *remove_from_back(Node_t *head)
 {
-    Node_t  *node = head;
-    Node_t  *last = NULL;
+    Node_t *node = head;
+    Node_t *last = NULL;
 
     if (!head)
     {
-        /**
+        /*
          * We've been provided an invalid list, so we can just return NULL.
          */
         return NULL;
@@ -169,10 +165,9 @@ Node_t* remove_from_back(Node_t *head)
     return head;
 }
 
-
-Node_t* remove_node(Node_t *head, Node_t *to_be_removed)
+Node_t *remove_node(Node_t *head, Node_t *to_be_removed)
 {
-    Node_t  *node = head;
+    Node_t *node = head;
 
     if (to_be_removed == head)
     {
@@ -188,7 +183,7 @@ Node_t* remove_node(Node_t *head, Node_t *to_be_removed)
 
     while (node)
     {
-        /**
+        /*
          * If the node we want to remove isn't the front or last, we can run
          * through the list to see if any node matches what we want to remove.
          */
@@ -210,7 +205,6 @@ Node_t* remove_node(Node_t *head, Node_t *to_be_removed)
     return head;
 }
 
-
 Boolean move_node(Node_t *node, Node_t **head_move_from, Node_t **head_move_to)
 {
     if (node)
@@ -228,11 +222,10 @@ Boolean move_node(Node_t *node, Node_t **head_move_from, Node_t **head_move_to)
     return FALSE;
 }
 
-
 void display(Node_t *head)
 {
-    Node_t  *node = head;
-    int     i = 0;
+    Node_t *node = head;
+    int i = 0;
 
     if (!node)
     {
@@ -251,7 +244,6 @@ void display(Node_t *head)
     printf("\n");
 }
 
-
 void display_node(Node_t *node)
 {
     if (!node)
@@ -267,8 +259,8 @@ void display_node(Node_t *node)
 
 int count(Node_t *head)
 {
-    Node_t  *node = head;
-    int     count = 0;
+    Node_t *node = head;
+    int count = 0;
 
     while (node != NULL)
     {

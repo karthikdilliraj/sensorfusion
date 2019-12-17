@@ -15,7 +15,7 @@
 #include "sensor.h"
 #include "test.h"
 
-/**
+/*
  * Currently, the exe gets put into sensorfusion/bin directory, but the input
  * file is in sensorfusion/src, so we will go down one directory, and up into
  * src to find the file.
@@ -28,14 +28,14 @@ int main(int argc, char *argv[])
     Boolean use_high_range = FALSE;
     Boolean use_low_range = FALSE;
     Boolean use_stuck = FALSE;
-    float   high_range;
-    float   low_range;
-    char    in_file_name[MAX_FILE_NAME_SIZE];
-    char    out_file_name[MAX_FILE_NAME_SIZE];
-    int     opt;
-    int     stuck_range;
-    int     q_support_value = 100;
-    int     principal_component_ratio = 100;
+    float high_range;
+    float low_range;
+    char in_file_name[MAX_FILE_NAME_SIZE];
+    char out_file_name[MAX_FILE_NAME_SIZE];
+    int opt;
+    int stuck_range;
+    int q_support_value = 100;
+    int principal_component_ratio = 100;
 
     strncpy(in_file_name, INPUT_FILE_NAME, MAX_FILE_NAME_SIZE);
     strncpy(out_file_name, OUTPUT_FILE_NAME, MAX_FILE_NAME_SIZE);
@@ -80,7 +80,7 @@ int main(int argc, char *argv[])
             return 0;
             break;
         case 'l':
-            /**
+            /*
              * Specifies the low edge of the valid sensor range. If the
              * sensor value is below this, it goes into the out of range
              * sensor list.
@@ -89,7 +89,7 @@ int main(int argc, char *argv[])
             use_low_range = TRUE;
             break;
         case 'u':
-            /**
+            /*
              * Specifies the high edge of the valid sensor range. If the
              * sensor value is above this, it goes into the out of range
              * sensor list.
@@ -98,7 +98,7 @@ int main(int argc, char *argv[])
             use_high_range = TRUE;
             break;
         case 's':
-            /**
+            /*
              * Specifies how long (in minutes) beyond which, the sensor is
              * considered to be stuck, and no longer valid.
              */
@@ -106,14 +106,14 @@ int main(int argc, char *argv[])
             use_stuck = TRUE;
             break;
         case 'f':
-            /**
+            /*
              * Specifies a non-default input file to use for the sensor
              * input data.
              */
             strncpy(in_file_name, optarg, MAX_FILE_NAME_SIZE);
             break;
         case 'q':
-            /**
+            /*
              * Specifies the q-support value - what percentage of sensors need
              * to agree for a sensor to be accepted. This is input as a whole
              * number (percentage * 100). By default, if this is not specified,
@@ -127,12 +127,12 @@ int main(int argc, char *argv[])
             }
             break;
         case 'p':
-            /**
+            /*
              * Specifies the p-ratio - this ratio is used to determine how many 
              * principal components are to be used.
              */
             principal_component_ratio = strtod(optarg, NULL);
-            if ((principal_component_ratio < 0) || 
+            if ((principal_component_ratio < 0) ||
                 (principal_component_ratio > 100))
             {
                 printf("Error, principal ratio (-p) must be between 0 - 100\n");

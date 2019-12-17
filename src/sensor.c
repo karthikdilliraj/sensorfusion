@@ -16,7 +16,7 @@ const char *list_name[] = {"Valid",
                            "Out of Range",
                            "Stuck"};
 
-/**
+/*
  * Head pointers to three linked lists used for storing three types of sensors
  * retrieved from the specified input file.
  */
@@ -50,7 +50,7 @@ void run_main_sensor_algorithm(char *in_file_name,
                                                     &sensor_value);
         if (current_time == -1)
         {
-            /**
+            /*
              * This is the first time that we are looking at, we want to get
              * other sensors that have updated at the same time as well.
              */
@@ -58,14 +58,14 @@ void run_main_sensor_algorithm(char *in_file_name,
         }
         else
         {
-            /**
+            /*
              * We want to check to see that the value we have just read was
              * updated at the same time as all the other values we have
              * collected.
              */
             if (time_in_minutes != current_time)
             {
-                /**
+                /*
                  * We have read a line that has a different time stamp than
                  * the rest (or we have hit the end of the file)
                  */
@@ -76,8 +76,8 @@ void run_main_sensor_algorithm(char *in_file_name,
                 }
 
                 fused_sensor_value = do_sensor_fusion_algorithm(
-                                        q_support_value,
-                                        principal_component_ratio);
+                    q_support_value,
+                    principal_component_ratio);
                 write_output_file(out_file_name,
                                   use_high_range,
                                   high_range,
@@ -104,7 +104,7 @@ void run_main_sensor_algorithm(char *in_file_name,
                             low_range);
     } while (!end_of_file_reached);
 
-    /**
+    /*
      * Hitting the end of the file is not the same as finding all the entries
      * with the same timestamp, so we will run the fusion algorithm after
      * hitting the end of the file since there will be no more entries.
@@ -140,7 +140,7 @@ void update_sensor_lists(int time_in_minutes,
     Node_t *node = NULL;
     int list_index;
 
-    /**
+    /*
      * Check to see if the node already exists. If it does, we will remove
      * it from the chain it belongs to, it will be re-added in a bit.
      */
@@ -153,7 +153,7 @@ void update_sensor_lists(int time_in_minutes,
 
     if ((use_high_range) && (sensor_value > high_range))
     {
-        /**
+        /*
          * Sensor is above the high range, so we dump it into the out of
          * range list.
          */
@@ -164,7 +164,7 @@ void update_sensor_lists(int time_in_minutes,
     }
     else if ((use_low_range) && (sensor_value < low_range))
     {
-        /**
+        /*
          * Sensor is below the low range, so we dump it into the out of
          * range list.
          */
@@ -212,7 +212,7 @@ void determine_if_sensors_are_stuck(int current_time, int stuck_value)
     {
         if (i == STUCK_SENSOR_LIST)
         {
-            /**
+            /*
              * We don't need to check the stuck sensor list. They're already
              * stuck.
              */
@@ -222,7 +222,7 @@ void determine_if_sensors_are_stuck(int current_time, int stuck_value)
         node = sensor_list_head_array[i];
         while (node)
         {
-            /**
+            /*
              * We're moving around nodes here, so we want to make sure we're
              * pointing to the correct next node, before we do any sort of
              * manipulation.
@@ -230,7 +230,7 @@ void determine_if_sensors_are_stuck(int current_time, int stuck_value)
             next = node->next;
             if ((node->time_in_minutes + stuck_value) < current_time)
             {
-                /**
+                /*
                  * Sensor has not been updated recently enough and must be
                  * considered stuck. It will be moved to the stuck list.
                  */
@@ -312,7 +312,7 @@ void write_output_file(char *file_name,
     fp = fopen(file_name, OUTPUT_MODE);
     if (fp == NULL)
     {
-        /**
+        /*
          * If we fail to open the file, then we need to abort the program,
          * there is nothing to be done.
          */
@@ -340,9 +340,9 @@ void write_output_file(char *file_name,
 
     fprintf(fp, "Stuck Interval ----- ");
     use_stuck ? fprintf(fp, "%02d\n", stuck_range) : fprintf(fp, "N/A\n");
-    
+
     fprintf(fp, "Q Support Value ---- %d%%\n", q_support_value);
-    
+
     fprintf(fp, "P Component Ratio -- %d%%\n", principal_component_ratio);
 
     fprintf(fp, "Fused Sensor Value - ");
@@ -415,34 +415,55 @@ double do_sensor_fusion_algorithm(int q_support_value,
     {
         return INVALID_SENSOR_FUSION_VALUE;
     }
-    /**
+    /*
      ** Sensor Fusion Algorithm starts
      */
     int no_of_sensors = count(sensor_list_head_array[VALID_SENSOR_LIST]);
+    /*
+    * Sensor array allocated to store the sensor data
+    */
     double *sensor_array = (double *)malloc(no_of_sensors * sizeof(double));
     if (sensor_array == NULL)
     {
         return INVALID_SENSOR_FUSION_VALUE;
     }
-    
+
+    /*
+    * Step 1 - calculate_support_degree_matrix
+    */
     double *sd_matrix = calculate_support_degree_matrix(node, no_of_sensors, sensor_array);
     if (sd_matrix == NULL)
     {
+        /*
+        * Pointer Memory freed
+        */
         free(sensor_array);
         return INVALID_SENSOR_FUSION_VALUE;
     }
 
+    /*
+    * Step 2 - calculate_eigensystem
+    */
     struct eigen_systems *eigen = calculate_eigensystem(sd_matrix, no_of_sensors);
     if (eigen == NULL)
     {
+        /*
+        * Pointer Memory freed
+        */
         free(sensor_array);
         free(sd_matrix);
         return INVALID_SENSOR_FUSION_VALUE;
     }
 
+    /*
+    * Step 3 - calculate_contribution_rate
+    */
     double *contribution_rate = calculate_contribution_rate(eigen->eigen_value, no_of_sensors);
     if (contribution_rate == NULL)
     {
+        /*
+        * Pointer Memory freed
+        */
         free(sensor_array);
         free(sd_matrix);
 
@@ -457,9 +478,15 @@ double do_sensor_fusion_algorithm(int q_support_value,
         return INVALID_SENSOR_FUSION_VALUE;
     }
 
+    /*
+    * Step 4 - determine_contribution_rates_to_use
+    */
     int contribution_rates_to_use = determine_contribution_rates_to_use(contribution_rate, ((float)principal_component_ratio / 100.0), no_of_sensors);
     if (contribution_rates_to_use <= 0)
     {
+        /*
+        * Pointer Memory freed
+        */
         free(sensor_array);
         free(sd_matrix);
 
@@ -476,9 +503,15 @@ double do_sensor_fusion_algorithm(int q_support_value,
         return INVALID_CONTRIBUTION_RATES;
     }
 
+    /*
+    * Step 5 - calculate_principal_components
+    */
     double **principal_components_matrix = calculate_principal_components(sd_matrix, no_of_sensors, eigen->eigen_vector, contribution_rates_to_use);
     if (principal_components_matrix == NULL)
     {
+        /*
+        * Pointer Memory freed
+        */
         free(sensor_array);
         free(sd_matrix);
 
@@ -495,6 +528,9 @@ double do_sensor_fusion_algorithm(int q_support_value,
         return INVALID_SENSOR_FUSION_VALUE;
     }
 
+    /*
+    * Step 6 - calculate_integrated_support_degree_matrix
+    */
     double *integrated_support_matrix =
         calculate_integrated_support_degree_matrix(
             principal_components_matrix,
@@ -503,6 +539,9 @@ double do_sensor_fusion_algorithm(int q_support_value,
 
     if (integrated_support_matrix == NULL)
     {
+        /*
+        * Pointer Memory freed
+        */
         free(sensor_array);
         free(sd_matrix);
 
@@ -526,11 +565,17 @@ double do_sensor_fusion_algorithm(int q_support_value,
         return INVALID_SENSOR_FUSION_VALUE;
     }
 
+    /*
+    * Step 7 - eliminate_incorrect_data
+    */
     int result_eliminate = eliminate_incorrect_data(integrated_support_matrix,
-        ((float)q_support_value / 100.0), no_of_sensors);
+                                                    ((float)q_support_value / 100.0), no_of_sensors);
 
     if (result_eliminate < 0)
     {
+        /*
+        * Pointer Memory freed
+        */
         free(sensor_array);
         free(sd_matrix);
 
@@ -555,12 +600,18 @@ double do_sensor_fusion_algorithm(int q_support_value,
         return INVALID_SENSOR_FUSION_VALUE;
     }
 
+    /*
+    * Step 8 - calculate_weight_coefficient
+    */
     double *weight_coeff;
     weight_coeff = calculate_weight_coefficient(integrated_support_matrix,
                                                 no_of_sensors);
 
     if (weight_coeff == NULL)
     {
+        /*
+        * Pointer Memory freed
+        */
         free(sensor_array);
         free(sd_matrix);
 
@@ -585,10 +636,16 @@ double do_sensor_fusion_algorithm(int q_support_value,
         return INVALID_SENSOR_FUSION_VALUE;
     }
 
+    /*
+    * Step 9 - calculate_fused_output
+    */
     double sensed_value;
     double result_fused = calculate_fused_output(weight_coeff, sensor_array,
                                                  no_of_sensors, &sensed_value);
 
+    /*
+    * Pointer Memory freed
+    */
     if (result_fused < 0)
     {
         free(sensor_array);
