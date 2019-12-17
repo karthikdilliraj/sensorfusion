@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
     char out_file_name[MAX_FILE_NAME_SIZE];
     int opt;
     int stuck_range;
-    int q_support_value = 100;
+    int q_support_value = 0;
     int principal_component_ratio = 100;
 
     strncpy(in_file_name, INPUT_FILE_NAME, MAX_FILE_NAME_SIZE);

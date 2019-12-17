@@ -21,7 +21,8 @@ Boolean parser_parse_csv_file(char *file_name,
     char buf[MAX_ROW_LIMIT];
     char *field;
     char *time_field;
-    char save_ptr_line[MAX_ROW_LIMIT] = {'\0'};
+    char *save_ptr_line;
+    char *save_ptr_time;
     int time_field_count;
     int field_count = 0;
     int row_count = 0;
@@ -54,63 +55,49 @@ Boolean parser_parse_csv_file(char *file_name,
             continue;
         }
 
-        field = strtok(buf, ",");
+        field = strtok_r(buf, ",", &save_ptr_line);
         while (field)
         {
             switch (field_count)
             {
-            case 0: /* Timestamp */
-                /*
-                 * We need to be careful here - strtok is not reentrant, 
-                 * and probably shouldn't be used here, but the reentrant
-                 * version isn't available on Windows. So insead we will
-                 * copy the time into a seperate string so we can parse
-                 * that ourselves seperately.
-                 */
-                strcpy(&save_ptr_line[0], field);
+                case 0: /* Timestamp */
+                    time_field_count = 0;
+
+                    time_field = strtok_r(field, ".", &save_ptr_time);
+                    while (time_field)
+                    {
+                        switch (time_field_count)
+                        {
+                            case 0: /* Hours */
+                                hours = strtod(time_field, NULL);
+                                break;
+                            case 1: /* Minutes */
+                                minutes = strtod(time_field, NULL);
+                                break;
+                        }
+
+                        time_field = strtok_r(NULL, ",", &save_ptr_time);
+                        time_field_count++;
+                    }
+
+                    (*time_in_minutes) = (hours * 60) + minutes;
                 break;
 
-            case 1: /* Sensor Name */
-                strncpy(sensor_name, field, MAX_SENSOR_NAME_SIZE);
-                break;
-
-            case 2: /* Sensor Value*/
-                (*sensor_value) = strtod(field, NULL);
-                break;
+                case 1: /* Sensor Name */
+                    strncpy(sensor_name, field, MAX_SENSOR_NAME_SIZE);
+                    break;
+    
+                case 2: /* Sensor Value*/
+                    (*sensor_value) = strtod(field, NULL);
+                    break;
             }
 
-            field = strtok(NULL, ",");
+            field = strtok_r(NULL, ",", &save_ptr_line);
             field_count++;
         }
 
         break;
     }
-
-    /*
-     * Here is where we can finally parse the timestamp. We have parsed a row
-     * of the input file, and will not be parsing another line until we call
-     * this function again. It will be safe to use strtok on a different string
-     * at this point.
-     */
-    time_field_count = 0;
-    time_field = strtok(save_ptr_line, ".");
-    while (time_field)
-    {
-        switch (time_field_count)
-        {
-        case 0: /* Hours */
-            hours = strtod(time_field, NULL);
-            break;
-        case 1: /* Minutes */
-            minutes = strtod(time_field, NULL);
-            break;
-        }
-
-        time_field = strtok(NULL, ".");
-        time_field_count++;
-    }
-
-    (*time_in_minutes) = (hours * 60) + minutes;
 
     end_of_file = feof(ifp);
     fclose(ifp);

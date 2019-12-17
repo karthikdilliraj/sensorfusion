@@ -173,20 +173,12 @@ int determine_contribution_rates_to_use(double *contribution_rate, float paramet
     {
         sum += contribution_rate[k];
 
-        if (sum > parameter)
+        if (sum >= parameter)
         {
             /*
-             * We have overshot our contribution rate, so we will use one less
-             * sensor than what we've currently found.
-             */
-            return k;
-        }
-
-        if (sum == parameter)
-        {
-            /*
-             * We have hit exactly on the contrubution rate, so we want to use
-             * all of the sensors we have checked.
+             * We are at or above our desired contribution rate. We will return
+             * this number of contributions so that we always have something
+             * to fuse.
              */
             return (k + 1);
         }
