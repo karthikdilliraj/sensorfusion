@@ -2,6 +2,10 @@
 
 SensorFusion is a software that measures sensor data from different sensors in order to assure precise estimates of value. It applies the sensor fusion algorithm to calculate the fused output.
 
+# Installation
+
+Please refer to INSTALL.md file for installation instructions.
+
 # Usage
 
 The user needs to input the software with a csv file containing the sensor values taken at different time from differnt sensors.
@@ -17,6 +21,8 @@ The following parameters are to be given along with the execution file sensorfus
 - Input file path location (-f) : Specifies a input filepath.
 
 Example:
+
+The below command will conduct sensor fusion algorithm with Stuck Time Interval is 10 minutes with sensor values range from 1 to 10. The data is get from sensor_fusion_input.csv
 
 ```
 ./sensorfusion -s 10 -l 1 -u 10 -f ./sensor_fusion_input.csv

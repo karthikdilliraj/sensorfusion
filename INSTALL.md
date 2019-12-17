@@ -1,8 +1,12 @@
 # Installation
 
+## Supported Platforms:
+
+Unix, Cygwin and MacOS.
+
 ## Prerequisite
 
-GCC Compiler
+GCC Compiler, GNU make, download ultilities such as wget or curl.
 
 ## Dependency Library
 
