@@ -53,4 +53,5 @@ $(OBJECTS2): $(OBJDIR)/%.o : $(SRCTESTDIR)/%.c
 .PHONY: clean
 clean:
 	@$(rm) $(OBJECTS1) $(OBJECTS2) $(BINDIR)/$(TARGET)
+	@$(rm) sensor_fusion_report.txt
 	@echo "Cleanup complete!"
