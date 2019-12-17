@@ -4,7 +4,7 @@ SensorFusion is a software that measures sensor data from different sensors in o
 
 # Installation
 
-Please refer to INSTALL.md file for installation instructions.
+Please refer to [INSTALL.md](https://github.com/karthikdilliraj/sensorfusion/blob/dev/INSTALL.md) file for installation instructions.
 
 # Usage
 
@@ -26,7 +26,7 @@ The following parameters are to be given along with the execution file sensorfus
 
 Example:
 
-The below command will conduct sensor fusion algorithm with Stuck Time Interval is 10 minutes with sensor values range from 1 to 10. The data input is from sensor_fusion_input.csv file, Parameter p is set to 50% and Support q is 70%.
+The below command will conduct sensor fusion algorithm with Stuck Time Interval as 10 minutes with sensor values range from 1 to 10. The data input is from sensor_fusion_input.csv file, Parameter p is set to 50% and Support q is 70%.
 
 ```
 ./sensorfusion -s 10 -l 1 -u 10 -p 50 -q 70 -f ./sensor_fusion_input.csv
