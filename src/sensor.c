@@ -1,13 +1,13 @@
 /**
  * @file sensor.c
  *
- * @brief Implementation of the processing sensor data and output into report files.
- * Trigger sensor fusion algorithm
- * update stuck sensor and update result to files.
+ * @brief Implementation of the processing sensor data and output into report
+ * files.Trigger sensor fusion algorithm,update stuck sensor
+ * and update result to files.
  *
- * @author Karthik Dilliraj - karthikdilliraj@cmail.carleton.ca - Carleton University
- * @author Nhat Hieu Le - nhathieule@cmail.carleton.ca - Carleton University
- * @author Jason Miller - jasonmiller@cmail.carleton.ca - Carleton University
+ * @author Karthik Dilliraj - karthikdilliraj@cmail.carleton.ca
+ * @author Nhat Hieu Le - nhathieule@cmail.carleton.ca
+ * @author Jason Miller - jasonmiller@cmail.carleton.ca
  */
 
 #include "sensor.h"
@@ -138,8 +138,8 @@ void update_sensor_lists(int time_in_minutes,
      */
     node = search_all_chains(sensor_name, &list_index);
     if (node) {
-        sensor_list_head_array[list_index] = remove_node(sensor_list_head_array[list_index],
-                                             node);
+        sensor_list_head_array[list_index] = remove_node(
+          sensor_list_head_array[list_index], node);
     }
 
     if ((use_high_range) && (sensor_value > high_range)) {
@@ -147,7 +147,8 @@ void update_sensor_lists(int time_in_minutes,
          * Sensor is above the high range, so we dump it into the out of
          * range list.
          */
-        sensor_list_head_array[OOR_SENSOR_LIST] = append(sensor_list_head_array[OOR_SENSOR_LIST],
+        sensor_list_head_array[OOR_SENSOR_LIST] = append(
+                sensor_list_head_array[OOR_SENSOR_LIST],
                 time_in_minutes,
                 sensor_name,
                 sensor_value);
@@ -156,13 +157,15 @@ void update_sensor_lists(int time_in_minutes,
          * Sensor is below the low range, so we dump it into the out of
          * range list.
          */
-        sensor_list_head_array[OOR_SENSOR_LIST] = append(sensor_list_head_array[OOR_SENSOR_LIST],
+        sensor_list_head_array[OOR_SENSOR_LIST] = append(
+                sensor_list_head_array[OOR_SENSOR_LIST],
                 time_in_minutes,
                 sensor_name,
                 sensor_value);
     } else {
         /* Sensor is fine, it gets to go into the valid list. */
-        sensor_list_head_array[VALID_SENSOR_LIST] = append(sensor_list_head_array[VALID_SENSOR_LIST],
+        sensor_list_head_array[VALID_SENSOR_LIST] = append(
+                sensor_list_head_array[VALID_SENSOR_LIST],
                 time_in_minutes,
                 sensor_name,
                 sensor_value);
@@ -391,7 +394,8 @@ double do_sensor_fusion_algorithm(int q_support_value,
     /*
     * Step 1 - calculate_support_degree_matrix
     */
-    double *sd_matrix = calculate_support_degree_matrix(node, no_of_sensors, sensor_array);
+    double *sd_matrix = calculate_support_degree_matrix(node, no_of_sensors,
+      sensor_array);
     if (sd_matrix == NULL) {
         /*
         * Pointer Memory freed
@@ -403,7 +407,8 @@ double do_sensor_fusion_algorithm(int q_support_value,
     /*
     * Step 2 - calculate_eigensystem
     */
-    struct eigen_systems *eigen = calculate_eigensystem(sd_matrix, no_of_sensors);
+    struct eigen_systems *eigen = calculate_eigensystem(sd_matrix,
+      no_of_sensors);
     if (eigen == NULL) {
         /*
         * Pointer Memory freed
@@ -416,7 +421,8 @@ double do_sensor_fusion_algorithm(int q_support_value,
     /*
     * Step 3 - calculate_contribution_rate
     */
-    double *contribution_rate = calculate_contribution_rate(eigen->eigen_value, no_of_sensors);
+    double *contribution_rate = calculate_contribution_rate(eigen->eigen_value,
+      no_of_sensors);
     if (contribution_rate == NULL) {
         /*
         * Pointer Memory freed
@@ -437,7 +443,9 @@ double do_sensor_fusion_algorithm(int q_support_value,
     /*
     * Step 4 - determine_contribution_rates_to_use
     */
-    int contribution_rates_to_use = determine_contribution_rates_to_use(contribution_rate, ((float)principal_component_ratio / 100.0), no_of_sensors);
+    int contribution_rates_to_use = determine_contribution_rates_to_use(
+      contribution_rate, ((float)principal_component_ratio / 100.0),
+      no_of_sensors);
     if (contribution_rates_to_use <= 0) {
         /*
         * Pointer Memory freed
@@ -460,7 +468,8 @@ double do_sensor_fusion_algorithm(int q_support_value,
     /*
     * Step 5 - calculate_principal_components
     */
-    double **principal_components_matrix = calculate_principal_components(sd_matrix, no_of_sensors, eigen->eigen_vector, contribution_rates_to_use);
+    double **principal_components_matrix = calculate_principal_components(
+      sd_matrix, no_of_sensors, eigen->eigen_vector, contribution_rates_to_use);
     if (principal_components_matrix == NULL) {
         /*
         * Pointer Memory freed

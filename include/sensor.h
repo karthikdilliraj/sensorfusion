@@ -3,9 +3,9 @@
  *
  * @brief A collection of functions related to the manipulation of sensors.
  *
- * @author Karthik Dilliraj - karthikdilliraj@cmail.carleton.ca - Carleton University
- * @author Nhat Hieu Le - nhathieule@cmail.carleton.ca - Carleton University
- * @author Jason Miller - jasonmiller@cmail.carleton.ca - Carleton University
+ * @author Karthik Dilliraj - karthikdilliraj@cmail.carleton.ca
+ * @author Nhat Hieu Le - nhathieule@cmail.carleton.ca
+ * @author Jason Miller - jasonmiller@cmail.carleton.ca
  */
 
 #ifndef SENSOR_H
