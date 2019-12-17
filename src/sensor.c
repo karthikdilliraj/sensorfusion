@@ -457,7 +457,7 @@ double do_sensor_fusion_algorithm(int q_support_value,
         return INVALID_SENSOR_FUSION_VALUE;
     }
 
-    int contribution_rates_to_use = determine_contribution_rates_to_use(contribution_rate, ((float)q_support_value / 100.0), no_of_sensors);
+    int contribution_rates_to_use = determine_contribution_rates_to_use(contribution_rate, ((float)principal_component_ratio / 100.0), no_of_sensors);
     if (contribution_rates_to_use <= 0)
     {
         free(sensor_array);
@@ -527,7 +527,7 @@ double do_sensor_fusion_algorithm(int q_support_value,
     }
 
     int result_eliminate = eliminate_incorrect_data(integrated_support_matrix,
-        ((float)principal_component_ratio / 100.0), no_of_sensors);
+        ((float)q_support_value / 100.0), no_of_sensors);
 
     if (result_eliminate < 0)
     {
