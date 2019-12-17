@@ -19,6 +19,10 @@
  * report.
  */
 #define INVALID_SENSOR_FUSION_VALUE -9999
+/**
+ * Invalid value to specify that an error should be written into the final
+ * report when cannot determine number of contribution rate
+ */
 #define INVALID_CONTRIBUTION_RATES  -9998
 
 /**
