@@ -149,24 +149,33 @@ double *calculate_contribution_rate(double *eigen_value, int no_of_sensors)
 
 int determine_contribution_rates_to_use(double *contribution_rate, float parameter, int no_of_sensors)
 {
-    if ((contribution_rate == NULL) || (parameter <= 0) || (parameter >= 1) || (no_of_sensors <= 0))
+    if ((contribution_rate == NULL) || (parameter <= 0) || (parameter > 1) || (no_of_sensors <= 0))
     {
         printf("%s: Incorrect Input\n", __func__);
         return -1;
     }
     double sum = 0;
-    int no_of_contribution_rates_to_use;
+    
     for (int k = 0; k < no_of_sensors; k++)
     {
-        for (int j = 0; j <= k; j++)
+        sum += contribution_rate[k];
+        
+        if (sum > parameter)
         {
-            sum += contribution_rate[j];
+            /**
+             * We have overshot our contribution rate, so we will use one less
+             * sensor than what we've currently found.
+             */
+            return k;
         }
-
-        if (sum <= parameter)
+        
+        if (sum == parameter)
         {
-            no_of_contribution_rates_to_use = k - 1;
-            return no_of_contribution_rates_to_use;
+            /**
+             * We have hit exactly on the contrubution rate, so we want to use
+             * all of the sensors we have checked.
+             */
+            return (k + 1);   
         }
     }
     return no_of_sensors;

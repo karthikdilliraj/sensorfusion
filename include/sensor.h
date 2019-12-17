@@ -19,26 +19,34 @@
  * report.
  */
 #define INVALID_SENSOR_FUSION_VALUE -9999
-
+#define INVALID_CONTRIBUTION_RATES  -9998
 
 /**
  * @brief Starts the sensor fusion algorithm by parsing the CSV
  *
- * @param[in] *in_file_name    Pointer to the filename of the file that 
- *                             contains the data to run the sensor fusion
- *                             algorithm on.
- * @param[in] *out_file_name   Pointer to the filename of the file that will
- *                             contain the output data from the sensor fusion
- *                             algorithm.
- * @param[in] high_range       The high limit the user has specified.
- * @param[in] use_high_range   Whether or not the user has specified a high 
- *                             sensor limit.
- * @param[in] low_range        The low limit the user has specified
- * @param[in] use_low_range    Whether or not the user has specified a low 
- *                             sensor limit.
- * @param[in] stuck_range      The stuck interval the user has specified
- * @param[in] use_stuck        Whether or not the user has specified a stuck
- *                             limit.
+ * @param[in] *in_file_name                 Pointer to the filename of the file
+ *                                          that contains the data to run the 
+ *                                          sensor fusion algorithm on.
+ * @param[in] *out_file_name                Pointer to the filename of the file
+ *                                          that will contain the output data 
+ *                                          from the sensor fusion algorithm.
+ * @param[in] high_range                    The high limit the user has
+ *                                          specified.
+ * @param[in] use_high_range                Whether or not the user has
+ *                                          specified a high sensor limit.
+ * @param[in] low_range                     The low limit the user has 
+ *                                          specified
+ * @param[in] use_low_range                 Whether or not the user has
+ *                                          specified a low sensor limit.
+ * @param[in] stuck_range                   The stuck interval the user has 
+ *                                          specified.
+ * @param[in] use_stuck                     Whether or not the user has 
+ *                                          specified a stuck limit.
+ * @param[in] q_support_value               The value of the q_support, used as 
+ *                                          part of the sensor fusion algorithm.
+ * @param[in] principal_component_ratio     The ratio that is used to determine
+ *                                          how many principal components will
+ *                                          be used.
  *
  * @details Starts off the sensor algorithm by reading in the values from the 
  * CSV file specified by *in_file_name.
@@ -50,7 +58,9 @@ void run_main_sensor_algorithm(char     *in_file_name,
                                float    low_range,
                                Boolean  use_low_range,
                                float    stuck_range,
-                               Boolean  use_stuck);
+                               Boolean  use_stuck,
+                               int      q_support_value,
+                               int      principal_component_ratio);
 
 
 /**
@@ -119,22 +129,30 @@ void dump_current_lists(void);
 /**
  * @brief Writes output file
  *
- * @param[in] *file_name            Pointer to the filename of the file that 
- *                                  will contain the output data from the 
- *                                  sensor fusion algorithm.
- * @param[in] use_high_range        Whether or not the user has specified a 
- *                                  high sensor limit.
- * @param[in] high_range            The high limit the user has specified.
- * @param[in] use_low_range         Whether or not the user has specified a low
- *                                  sensor limit.
- * @param[in] low_range             The low limit the user has specified
- * @param[in] use_stuck             Whether or not the user has specified a 
- *                                  stuck limit.
- * @param[in] stuck_range           The stuck interval the user has specified
- *`@param[in] current_time          The time within the CSV the parser is 
- *                                  currently looking at.
- * @param[in] fused_sensor_value    The final fused sensor value returned by 
- *                                  the sensor fusion algorithm.
+ * @param[in] *file_name                    Pointer to the filename of the file 
+ *                                          that will contain the output data
+ *                                          from the sensor fusion algorithm.
+ * @param[in] use_high_range                Whether or not the user has
+ *                                          specified a high sensor limit.
+ * @param[in] high_range                    The high limit the user has
+ *                                          specified.
+ * @param[in] use_low_range                 Whether or not the user has 
+ *                                          specified a low sensor limit.
+ * @param[in] low_range                     The low limit the user has specified
+ * @param[in] use_stuck                     Whether or not the user has  
+ *                                          specified a stuck limit.
+ * @param[in] stuck_range                   The stuck interval the user has 
+ *                                          specified.
+ *`@param[in] current_time                  The time within the CSV the parser
+ *                                          is currently looking at.
+ * @param[in] q_support_value               The value of the q_support, used as 
+ *                                          part of the sensor fusion algorithm.
+ * @param[in] fused_sensor_value            The final fused sensor value 
+ *                                          returned by the sensor fusion 
+ *                                          algorithm.
+ * @param[in] principal_component_ratio     The ratio that is used to determine
+ *                                          how many principal components will
+ *                                          be used.
  *
  * @details Writes the final sensor fusion report to file.
  */
@@ -146,16 +164,25 @@ void write_output_file(char     *file_name,
                        int      use_stuck,
                        int      stuck_range,
                        int      current_time,
+                       int      q_support_value,
+                       int      principal_component_ratio,
                        float    fused_sensor_value);
 
 
 /**
  * @brief Starts the sensor fusion algorithm
  *
+ * @param[in] q_support_value               The value of the q_support, used as
+ *                                          part of the sensor fusion algorithm.
+ * @param[in] principal_component_ratio     The ratio that is used to determine
+ *                                          how many principal components will
+ *                                          be used.
+ *
  * @details Entry point to the Fused Sensor Algorithm
  *
  * @return The fused sensor value after, the algorithm has been run.
  */
-double do_sensor_fusion_algorithm(void);
+double do_sensor_fusion_algorithm(int q_support_value,
+                                  int principal_component_ratio);
 
 #endif

@@ -29,7 +29,9 @@ void run_main_sensor_algorithm(char *in_file_name,
                                float low_range,
                                Boolean use_low_range,
                                float stuck_range,
-                               Boolean use_stuck)
+                               Boolean use_stuck,
+                               int q_support_value,
+                               int principal_component_ratio)
 {
     Boolean end_of_file_reached = FALSE;
     float fused_sensor_value;
@@ -73,7 +75,9 @@ void run_main_sensor_algorithm(char *in_file_name,
                                                    stuck_range);
                 }
 
-                fused_sensor_value = do_sensor_fusion_algorithm();
+                fused_sensor_value = do_sensor_fusion_algorithm(
+                                        q_support_value,
+                                        principal_component_ratio);
                 write_output_file(out_file_name,
                                   use_high_range,
                                   high_range,
@@ -82,6 +86,8 @@ void run_main_sensor_algorithm(char *in_file_name,
                                   use_stuck,
                                   stuck_range,
                                   current_time,
+                                  q_support_value,
+                                  principal_component_ratio,
                                   fused_sensor_value);
 
                 current_time = -1;
@@ -108,7 +114,8 @@ void run_main_sensor_algorithm(char *in_file_name,
         determine_if_sensors_are_stuck(time_in_minutes, stuck_range);
     }
 
-    fused_sensor_value = do_sensor_fusion_algorithm();
+    fused_sensor_value = do_sensor_fusion_algorithm(q_support_value,
+                                                    principal_component_ratio);
     write_output_file(out_file_name,
                       use_high_range,
                       high_range,
@@ -117,6 +124,8 @@ void run_main_sensor_algorithm(char *in_file_name,
                       use_stuck,
                       stuck_range,
                       time_in_minutes,
+                      q_support_value,
+                      principal_component_ratio,
                       fused_sensor_value);
 }
 
@@ -290,6 +299,8 @@ void write_output_file(char *file_name,
                        int use_stuck,
                        int stuck_range,
                        int current_time,
+                       int q_support_value,
+                       int principal_component_ratio,
                        float fused_sensor_value)
 {
     Node_t *node;
@@ -329,9 +340,24 @@ void write_output_file(char *file_name,
 
     fprintf(fp, "Stuck Interval ----- ");
     use_stuck ? fprintf(fp, "%02d\n", stuck_range) : fprintf(fp, "N/A\n");
+    
+    fprintf(fp, "Q Support Value ---- %d%%\n", q_support_value);
+    
+    fprintf(fp, "P Component Ratio -- %d%%\n", principal_component_ratio);
 
     fprintf(fp, "Fused Sensor Value - ");
-    (fused_sensor_value == INVALID_SENSOR_FUSION_VALUE) ? fprintf(fp, "N/A\n") : fprintf(fp, "%0.4f\n", fused_sensor_value);
+    if (fused_sensor_value == INVALID_SENSOR_FUSION_VALUE)
+    {
+        fprintf(fp, "N/A\n");
+    }
+    else if (fused_sensor_value == INVALID_CONTRIBUTION_RATES)
+    {
+        fprintf(fp, "N/A (Invalid Contribution Rates)\n");
+    }
+    else
+    {
+        fprintf(fp, "%0.4f\n", fused_sensor_value);
+    }
 
     fprintf(fp, "\n");
     fprintf(fp, "Sensor Statistics:\n");
@@ -381,7 +407,8 @@ void write_output_file(char *file_name,
     return;
 }
 
-double do_sensor_fusion_algorithm(void)
+double do_sensor_fusion_algorithm(int q_support_value,
+                                  int principal_component_ratio)
 {
     Node_t *node = sensor_list_head_array[VALID_SENSOR_LIST];
     if (node == NULL)
@@ -397,7 +424,7 @@ double do_sensor_fusion_algorithm(void)
     {
         return INVALID_SENSOR_FUSION_VALUE;
     }
-
+    
     double *sd_matrix = calculate_support_degree_matrix(node, no_of_sensors, sensor_array);
     if (sd_matrix == NULL)
     {
@@ -430,7 +457,7 @@ double do_sensor_fusion_algorithm(void)
         return INVALID_SENSOR_FUSION_VALUE;
     }
 
-    int contribution_rates_to_use = determine_contribution_rates_to_use(contribution_rate, 0.5, no_of_sensors);
+    int contribution_rates_to_use = determine_contribution_rates_to_use(contribution_rate, ((float)q_support_value / 100.0), no_of_sensors);
     if (contribution_rates_to_use <= 0)
     {
         free(sensor_array);
@@ -446,7 +473,7 @@ double do_sensor_fusion_algorithm(void)
 
         free(contribution_rate);
 
-        return INVALID_SENSOR_FUSION_VALUE;
+        return INVALID_CONTRIBUTION_RATES;
     }
 
     double **principal_components_matrix = calculate_principal_components(sd_matrix, no_of_sensors, eigen->eigen_vector, contribution_rates_to_use);
@@ -500,7 +527,7 @@ double do_sensor_fusion_algorithm(void)
     }
 
     int result_eliminate = eliminate_incorrect_data(integrated_support_matrix,
-                                                    0.5, no_of_sensors);
+        ((float)principal_component_ratio / 100.0), no_of_sensors);
 
     if (result_eliminate < 0)
     {
