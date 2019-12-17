@@ -23,8 +23,7 @@
 #define INPUT_FILE_NAME "src/input.csv"
 #define OUTPUT_FILE_NAME "sensor_fusion_report.txt"
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     Boolean use_high_range = FALSE;
     Boolean use_low_range = FALSE;
     Boolean use_stuck = FALSE;
@@ -40,10 +39,8 @@ int main(int argc, char *argv[])
     strncpy(in_file_name, INPUT_FILE_NAME, MAX_FILE_NAME_SIZE);
     strncpy(out_file_name, OUTPUT_FILE_NAME, MAX_FILE_NAME_SIZE);
 
-    while ((opt = getopt(argc, argv, "htl:u:s:f:q:p:")) != -1)
-    {
-        switch (opt)
-        {
+    while ((opt = getopt(argc, argv, "htl:u:s:f:q:p:")) != -1) {
+        switch (opt) {
         case 'h':
             printf("\n\n");
             printf("Usage: sensorfusion.exe [-f] [-h] [-l] [-p] [-q] [-s] [-t]"
@@ -120,21 +117,19 @@ int main(int argc, char *argv[])
              * then no sensors need to agree.
              */
             q_support_value = strtod(optarg, NULL);
-            if ((q_support_value < 0) || (q_support_value > 100))
-            {
+            if ((q_support_value < 0) || (q_support_value > 100)) {
                 printf("Error, q_support (-q) must be between 0 - 100\n");
                 exit(EXIT_FAILURE);
             }
             break;
         case 'p':
             /*
-             * Specifies the p-ratio - this ratio is used to determine how many 
+             * Specifies the p-ratio - this ratio is used to determine how many
              * principal components are to be used.
              */
             principal_component_ratio = strtod(optarg, NULL);
             if ((principal_component_ratio < 0) ||
-                (principal_component_ratio > 100))
-            {
+                    (principal_component_ratio > 100)) {
                 printf("Error, principal ratio (-p) must be between 0 - 100\n");
                 exit(EXIT_FAILURE);
             }

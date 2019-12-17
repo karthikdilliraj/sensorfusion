@@ -18,8 +18,7 @@
  *
  * @details Structure eigen_systems stores pointer to double of eigen_value and pointer to pointer to double of eigen_vector
  */
-struct eigen_systems
-{
+struct eigen_systems {
     double *eigen_value;
     double **eigen_vector;
 };
@@ -29,9 +28,9 @@ struct eigen_systems
  *
  *  @param[in]   Node_t *node Linked list containing sensor values, int no_of_sensors
  *  @param[out]  double *sensor_array containing sensor values
- * 
+ *
  *  @return pointer to double of support_degree_matrix, if no node is found, returns NULL.
- * 
+ *
  */
 
 double *calculate_support_degree_matrix(Node_t *node, int no_of_sensors, double *sensor_array);

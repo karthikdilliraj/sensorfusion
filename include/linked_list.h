@@ -8,7 +8,7 @@
  * @author Nhat Hieu Le - nhathieule@cmail.carleton.ca - Carleton University
  * @author Jason Miller - jasonmiller@cmail.carleton.ca - Carleton University
  */
- 
+
 #ifndef LINKED_LIST_H
 #define LINKED_LIST_H
 
@@ -35,7 +35,7 @@
 /**
  * @brief Stuck sensor list.
  *
- * Sensors that have not been updated within a given time, specified by the 
+ * Sensors that have not been updated within a given time, specified by the
  * user, are placed into this list.
  */
 #define STUCK_SENSOR_LIST   2
@@ -43,23 +43,23 @@
 /**
  * @brief Linked list implementation
  */
-typedef struct Linked_List_Node
-{
-    int     time_in_minutes;   
+typedef struct Linked_List_Node {
+    int     time_in_minutes;
     /**< Time converted from 24 hour clock to minutes */
-                                     
+
     char    sensor_name[MAX_SENSOR_NAME_SIZE];
     /**< Name of the sensor */
-    
-    float   sensor_value; 
+
+    float   sensor_value;
     /**< Value being reported by the sensor */
-    
-    struct Linked_List_Node *next; 
+
+    struct Linked_List_Node *next;
     /**< Pointer to the next node in the linked list (NULL if no more nodes) */
-} Node_t;
+}
+Node_t;
 
 
-/** 
+/**
  * @brief Creates a node
  *
  * @param[in] time      The time in minutes
@@ -67,7 +67,7 @@ typedef struct Linked_List_Node
  * @param[in] value     Sensor value of the node
  * @param[in] *next     Pointer to the next node in the linked list
  *
- * @details Creates a node with the specified information and assigns its next 
+ * @details Creates a node with the specified information and assigns its next
  * pointer to the passed in *next
  *
  * @return The newly created node object
@@ -83,7 +83,7 @@ Node_t* create(int time, char *name, float value, Node_t *next);
  * @param[in] *name     Sensor name of the node
  * @param[in] value     Sensor value of the node
  *
- * @details Appends a node with the specified information and places it at the 
+ * @details Appends a node with the specified information and places it at the
  * end of the linked list chain specified by *head.
  *
  * @return Pointer to the head node
@@ -99,8 +99,8 @@ Node_t* append(Node_t *head, int time, char *name, float value);
  * @param[in] *name     Sensor name of the node
  * @param[in] value     Sensor value of the node
  *
- * @details Searches the linked list chain pointed to by *head for the sensor 
- * named *name, if found it updates the node, otherwise it appends a new node 
+ * @details Searches the linked list chain pointed to by *head for the sensor
+ * named *name, if found it updates the node, otherwise it appends a new node
  * with the specified data to the end of the list.
  *
  * @return Pointer to the head node
@@ -166,14 +166,14 @@ Node_t* remove_node(Node_t *head, Node_t *to_be_removed);
  * @brief Move a node between two linked lists
  *
  * @param[in]       *node               Pointer to the node to move
- * @param[in,out]   **head_move_from    Pointer to the pointer of the head of 
+ * @param[in,out]   **head_move_from    Pointer to the pointer of the head of
  *                                      the linked list chain to move the node
  *                                      from
- * @param[in,out]   **head_move_to      Pointer to the pointer of the head of 
- *                                      the linked list chain to move the node 
+ * @param[in,out]   **head_move_to      Pointer to the pointer of the head of
+ *                                      the linked list chain to move the node
  *                                      to
  *
- * @details Moves *node from the linked list chain pointed to by 
+ * @details Moves *node from the linked list chain pointed to by
  * **head_move_from to the linked list chain pointed to by **head_move_to.
  *
  * @return
@@ -188,7 +188,7 @@ Boolean move_node(Node_t *node, Node_t **head_move_from, Node_t **head_move_to);
  *
  * @param[in] *node     Pointer to the node to be displayed
  *
- * @details Displays the time stamp, the sensor name and sensor value of the 
+ * @details Displays the time stamp, the sensor name and sensor value of the
  * specified node.
  */
 void display_node(Node_t *node);

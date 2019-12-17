@@ -14,8 +14,7 @@ Boolean parser_parse_csv_file(char *file_name,
                               int lines_to_skip,
                               int *time_in_minutes,
                               char *sensor_name,
-                              float *sensor_value)
-{
+                              float *sensor_value) {
     Boolean end_of_file;
     FILE *ifp;
     char buf[MAX_ROW_LIMIT];
@@ -30,8 +29,7 @@ Boolean parser_parse_csv_file(char *file_name,
     int hours;
 
     ifp = fopen(file_name, INPUT_MODE);
-    if (ifp == NULL)
-    {
+    if (ifp == NULL) {
         /*
          * If we fail to open the file, then we need to abort the program,
          * there is nothing to be done.
@@ -41,13 +39,11 @@ Boolean parser_parse_csv_file(char *file_name,
         exit(EXIT_FAILURE);
     }
 
-    while (fgets(buf, MAX_ROW_LIMIT, ifp))
-    {
+    while (fgets(buf, MAX_ROW_LIMIT, ifp)) {
         field_count = 0;
         row_count++;
 
-        if (row_count <= lines_to_skip)
-        {
+        if (row_count <= lines_to_skip) {
             /*
              * We will have already parsed these lines, so we can skip them
              * from here on out.
@@ -56,40 +52,36 @@ Boolean parser_parse_csv_file(char *file_name,
         }
 
         field = strtok_r(buf, ",", &save_ptr_line);
-        while (field)
-        {
-            switch (field_count)
-            {
-                case 0: /* Timestamp */
-                    time_field_count = 0;
+        while (field) {
+            switch (field_count) {
+            case 0: /* Timestamp */
+                time_field_count = 0;
 
-                    time_field = strtok_r(field, ".", &save_ptr_time);
-                    while (time_field)
-                    {
-                        switch (time_field_count)
-                        {
-                            case 0: /* Hours */
-                                hours = strtod(time_field, NULL);
-                                break;
-                            case 1: /* Minutes */
-                                minutes = strtod(time_field, NULL);
-                                break;
-                        }
-
-                        time_field = strtok_r(NULL, ",", &save_ptr_time);
-                        time_field_count++;
+                time_field = strtok_r(field, ".", &save_ptr_time);
+                while (time_field) {
+                    switch (time_field_count) {
+                    case 0: /* Hours */
+                        hours = strtod(time_field, NULL);
+                        break;
+                    case 1: /* Minutes */
+                        minutes = strtod(time_field, NULL);
+                        break;
                     }
 
-                    (*time_in_minutes) = (hours * 60) + minutes;
+                    time_field = strtok_r(NULL, ",", &save_ptr_time);
+                    time_field_count++;
+                }
+
+                (*time_in_minutes) = (hours * 60) + minutes;
                 break;
 
-                case 1: /* Sensor Name */
-                    strncpy(sensor_name, field, MAX_SENSOR_NAME_SIZE);
-                    break;
-    
-                case 2: /* Sensor Value*/
-                    (*sensor_value) = strtod(field, NULL);
-                    break;
+            case 1: /* Sensor Name */
+                strncpy(sensor_name, field, MAX_SENSOR_NAME_SIZE);
+                break;
+
+            case 2: /* Sensor Value*/
+                (*sensor_value) = strtod(field, NULL);
+                break;
             }
 
             field = strtok_r(NULL, ",", &save_ptr_line);

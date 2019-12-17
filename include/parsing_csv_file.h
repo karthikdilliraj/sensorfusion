@@ -68,14 +68,14 @@
  *
  * @param[in]  *file_name       Pointer to file name of CSV to be parsed
  * @param[in]  lines_to_skip    Number of lines that have already been parsed
- * @param[out] *time_in_minutes Time stamp parsed from CSV converted into   
+ * @param[out] *time_in_minutes Time stamp parsed from CSV converted into
  *                              minutes (hours * 60) + minutes
  * @param[out] *sensor_name     Name of the sensor that has been parsed from
  *                              CSV
  * @param[out] *sensor_value    Value of the sensor parsed from the CSV
  *
- * @details Parses a CSV, one line at a time and returns the time, name and 
- * value of that parsed line. Can also skip lines that have been previously 
+ * @details Parses a CSV, one line at a time and returns the time, name and
+ * value of that parsed line. Can also skip lines that have been previously
  * parsed.
  *
  * @return Whether or not the parser has hit the end of the file
