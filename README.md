@@ -32,7 +32,7 @@ The correct file structure (after installing GSL library should be follow and ru
 ├── README.md 									-> Readme file
 ├── bin 									-> Binary directory
 ├── doc
-│   └── html 								-> Doxygen document
+│   └── html 									-> Doxygen document
 ├── include 									-> Header files
 │   ├── calculate_fusion.h 	
 │   ├── linked_list.h
@@ -40,11 +40,11 @@ The correct file structure (after installing GSL library should be follow and ru
 │   └── sensor.h
 ├── install.sh 									-> Installation script
 ├── lib
-│   ├── gsl 								-> GSL binary
+│   ├── gsl 									-> GSL binary
 │   └── gsl-2.6 								-> GSL source
 ├── obj 									-> Object files
-├── sensor_fusion_config 									-> Doxygen Configuration files
-├── sensor_fusion_report.txt 									-> Report data
+├── sensor_fusion_config 						-> Doxygen Configuration files
+├── sensor_fusion_report.txt 						-> Report data
 ├── src 									-> Source files for sensorfusion
 │   ├── calculate_fusion.c
 │   ├── input.csv 								-> Input raw data
@@ -53,9 +53,9 @@ The correct file structure (after installing GSL library should be follow and ru
 │   ├── parsing_csv_file.c
 │   └── sensor.c
 └── test 
-    ├── include									-> Header file for unittest
+    ├── include							-> Header file for unittest
     │   └── test.h
-    ├── input_test.csv 								-> Test data
+    ├── input_test.csv 						-> Test data
     └── test.c
 ```
 
