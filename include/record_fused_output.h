@@ -1,1 +1,0 @@
-int record_fused_output(float fused_sum, char *fileName, int timestamp);
