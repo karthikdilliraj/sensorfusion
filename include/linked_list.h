@@ -17,12 +17,12 @@
 /**
  * @brief Maximum number of linked lists implemented by the program.
  */
-#define MAX_SENSOR_LISTS    3
+#define MAX_SENSOR_LISTS 3
 
 /**
  * @brief Valid sensors go into this list.
  */
-#define VALID_SENSOR_LIST   0
+#define VALID_SENSOR_LIST 0
 
 /**
  * @brief Out of range sensor list.
@@ -30,7 +30,7 @@
  * Sensors that are not within a valid range, specified by the user are placed
  * into this list.
  */
-#define OOR_SENSOR_LIST     1
+#define OOR_SENSOR_LIST 1
 
 /**
  * @brief Stuck sensor list.
@@ -38,26 +38,25 @@
  * Sensors that have not been updated within a given time, specified by the
  * user, are placed into this list.
  */
-#define STUCK_SENSOR_LIST   2
+#define STUCK_SENSOR_LIST 2
 
 /**
  * @brief Linked list implementation
  */
-typedef struct Linked_List_Node {
-    int     time_in_minutes;
+typedef struct Linked_List_Node
+{
+    int time_in_minutes;
     /**< Time converted from 24 hour clock to minutes */
 
-    char    sensor_name[MAX_SENSOR_NAME_SIZE];
+    char sensor_name[MAX_SENSOR_NAME_SIZE];
     /**< Name of the sensor */
 
-    float   sensor_value;
+    float sensor_value;
     /**< Value being reported by the sensor */
 
     struct Linked_List_Node *next;
     /**< Pointer to the next node in the linked list (NULL if no more nodes) */
-}
-Node_t;
-
+} Node_t;
 
 /**
  * @brief Creates a node
@@ -72,8 +71,7 @@ Node_t;
  *
  * @return The newly created node object
  */
-Node_t* create(int time, char *name, float value, Node_t *next);
-
+Node_t *create(int time, char *name, float value, Node_t *next);
 
 /**
  * @brief Appends a node to the end of a linked list
@@ -88,8 +86,7 @@ Node_t* create(int time, char *name, float value, Node_t *next);
  *
  * @return Pointer to the head node
  */
-Node_t* append(Node_t *head, int time, char *name, float value);
-
+Node_t *append(Node_t *head, int time, char *name, float value);
 
 /**
  * @brief Updates an existing node, or appends a new node
@@ -105,8 +102,7 @@ Node_t* append(Node_t *head, int time, char *name, float value);
  *
  * @return Pointer to the head node
  */
-Node_t* update(Node_t *head, int time, char *name, float value);
-
+Node_t *update(Node_t *head, int time, char *name, float value);
 
 /**
  * @brief Searches for a node within a linked list
@@ -114,14 +110,12 @@ Node_t* update(Node_t *head, int time, char *name, float value);
  * @param[in] *head     Pointer to the head of a linked list chain
  * @param[in] *str      Name of the sensor to search for
  *
- * Iterate over the linked list chain pointed to by head until it finds the
+ * @details Iterate over the linked list chain pointed to by head until it finds the
  * node that contains the sensor name that matches the passed in str.
  *
- * Return:
- *  Pointer to the matching node, if no node is found, returns NULL.
+ * @return Pointer to the matching node, if no node is found, returns NULL.
  */
-Node_t* search_sensor_name(Node_t *head, char *str);
-
+Node_t *search_sensor_name(Node_t *head, char *str);
 
 /**
  * @brief Removes a node from the front of a linked list chain
@@ -133,8 +127,7 @@ Node_t* search_sensor_name(Node_t *head, char *str);
  *
  * @return Pointer to the head node.
  */
-Node_t* remove_from_front(Node_t *head);
-
+Node_t *remove_from_front(Node_t *head);
 
 /**
  * @brief Removes a node from the end of a linked list chain
@@ -145,8 +138,7 @@ Node_t* remove_from_front(Node_t *head);
  *
  * @return Pointer to the head node.
  */
-Node_t* remove_from_back(Node_t *head);
-
+Node_t *remove_from_back(Node_t *head);
 
 /**
  * @brief Removes a node specified by *to_be_removed
@@ -159,8 +151,7 @@ Node_t* remove_from_back(Node_t *head);
  *
  * @return Pointer to the head node.
  */
-Node_t* remove_node(Node_t *head, Node_t *to_be_removed);
-
+Node_t *remove_node(Node_t *head, Node_t *to_be_removed);
 
 /**
  * @brief Move a node between two linked lists
@@ -182,7 +173,6 @@ Node_t* remove_node(Node_t *head, Node_t *to_be_removed);
  */
 Boolean move_node(Node_t *node, Node_t **head_move_from, Node_t **head_move_to);
 
-
 /**
  * @brief Display the contents of a single node to the screen
  *
@@ -193,7 +183,6 @@ Boolean move_node(Node_t *node, Node_t **head_move_from, Node_t **head_move_to);
  */
 void display_node(Node_t *node);
 
-
 /**
  * @brief Display the contents of all nodes in a linked list
  *
@@ -203,7 +192,6 @@ void display_node(Node_t *node);
  * nodes in the linked list chain pointed to by head.
  */
 void display(Node_t *head);
-
 
 /**
  * @brief Count how many nodes are in a linked list

@@ -19,12 +19,13 @@
  * @details Structure eigen_systems stores pointer to double of eigen_value 
  * and pointer to pointer to double of eigen_vector
  */
-struct eigen_systems {
-    double *eigen_value;
-    /**< Pointer to Eigen Value */
+struct eigen_systems
+{
+	double *eigen_value;
+	/**< Pointer to Eigen Value */
 
-    double **eigen_vector;
-    /**< Pointer to multidimensional array of Eigen Vector */
+	double **eigen_vector;
+	/**< Pointer to multidimensional array of Eigen Vector */
 };
 
 /**
@@ -34,11 +35,13 @@ struct eigen_systems {
  *	@param[in]	no_of_sensors	Number of sensor in the Linked list		
  *  @param[out]	*sensor_array 	Array contains sensor values
  *
- *  @return pointer to double of support_degree_matrix, if no, returns NULL.
- *
+ * @details Support degree matrix is calculated using the Sensor values taken
+ * a given time interval
+ * 
+ * @return pointer to double of support_degree_matrix, if no, returns NULL.
  */
 double *calculate_support_degree_matrix(Node_t *node, int no_of_sensors,
-	double *sensor_array);
+										double *sensor_array);
 
 /**
  * @brief Calculate eigen values and eigen vectors of the support degree matrix
@@ -46,16 +49,23 @@ double *calculate_support_degree_matrix(Node_t *node, int no_of_sensors,
  * @param[in]	*sd_matrix 		Pointer to support degree matrix
  * @param[in]	no_of_sensors	Number of sensors	
  *
+ * @details Eigen values and eigen vectors of the support degree
+ * matrix is calculated using GSL Library and stored in a
+ * pointer to structure eigen
+ * 
  * @return pointer to Structure eigen_systems, if no, returns NULL.
  */
 struct eigen_systems *calculate_eigensystem(double *sd_matrix,
-	int no_of_sensors);
+											int no_of_sensors);
 
 /**
  * @brief Calculate contribute rate of Principal Component
  *
  * @param[in]	*eigen_value	Pointer to Eigen Value
  * @param[in]	no_of_sensors	Number of sensors
+ * 
+ * @details Individual contribute rate has been calculated from the
+ * eigen values
  *
  * @return pointer to double of contribution_rate array, if no, returns NULL.
  */
@@ -68,10 +78,13 @@ double *calculate_contribution_rate(double *eigen_value, int no_of_sensors);
  * @param[in] parameter		Parameter of algorithm
  * @param[in] no_of_sensors	Number of sensors	
  *
+ * @details Number of contribution rates to use determined by taking the 
+ * first m number of rates which is greater than parmater p
+ * 
  * @return number of contribution rate to use, if no, returns -1.
  */
 int determine_contribution_rates_to_use(double *contribution_rate,
-	float parameter, int no_of_sensors);
+										float parameter, int no_of_sensors);
 
 /**
  * @brief Calculate the Principal components of the D Matrix
@@ -81,12 +94,15 @@ int determine_contribution_rates_to_use(double *contribution_rate,
  * @param[in]	**eigen_vector	Pointer to multi-dimensional Eigen Vector
  * @param[in]	no_of_contribution_rates_to_use Number of contribution rate
  *
+ * @details Principal component matrix is determined by multiplying transpose
+ * Eigen vector with the support degree matrix
+ * 
  * @return
  *	Pointer to pointer to double of principal_components_matrix
  *	If no, returns NULL.
  */
 double **calculate_principal_components(double *sd_matrix, int no_of_sensors,
-	double **eigen_vector, int no_of_contribution_rates_to_use);
+										double **eigen_vector, int no_of_contribution_rates_to_use);
 
 /**
  * @brief Calculate the Integrated Support Degree Score for all sensors
@@ -96,6 +112,9 @@ double **calculate_principal_components(double *sd_matrix, int no_of_sensors,
  * @param[in] no_of_contribution_rates_to_use	Number of contribuation rate
  * @param[in] no_of_sensors				Number of sensors
  *
+ * @details Integrated support degree of each sensor is calculated using
+ * the principal components and contribution rate
+ * 
  * @return 
  *	Pointer to Integrated Support Degree Matrix.
  *	If no, returns NULL.
@@ -112,10 +131,13 @@ double *calculate_integrated_support_degree_matrix(
  * @param[in] fault_tolerance	Parameter to remove incorrect data
  * @param[in] no_of_sensors		Number of sensors
  *
+ * @details Incorrect data are determined by the fault tolerance q, where a 
+ * sensor which is not supported by q% of the sensors is invalid 
+ * 
  * @return  0 if success, else return negativ.
  */
 int eliminate_incorrect_data(double *integrate_support_degree_matrix,
-	double fault_tolerance, int no_of_sensors);
+							 double fault_tolerance, int no_of_sensors);
 
 /**
  * @brief Calculate the weight coefficients for all sensors
@@ -123,11 +145,14 @@ int eliminate_incorrect_data(double *integrate_support_degree_matrix,
  * @param[in] *integrate_support_degree_matrix 	Pointer to
  												Integrated Support Degree Matrix
  * @param[in] no_of_sensors		Number of sensors
+ * 
+ * @details Weight coefficient of each sensor is calculated
+ * using the integrated support degree score of each sensor
  *
  * @return pointer weight coefficient matrix, if no, returns NULL.
  */
 double *calculate_weight_coefficient(double *integrate_support_degree_matrix,
-	int no_of_sensors);
+									 int no_of_sensors);
 
 /**
  * @brief Calculate the fused output
@@ -137,9 +162,12 @@ double *calculate_weight_coefficient(double *integrate_support_degree_matrix,
  * @param[in] 	no_of_sensors			Number of sensors 
  * @param[out]	*fused_value containing fused sensor values
  *
+ * @details Fused output is calculated by the summation of
+ * weight coefficient * sensor data
+ * 
  * @return 0 if success, else returns negative.
  */
 double calculate_fused_output(double *weight_coefficient, double *sensor_data,
-	int no_of_sensors, double *fused_value);
+							  int no_of_sensors, double *fused_value);
 
 #endif // CALCULATE_FUSION_H
