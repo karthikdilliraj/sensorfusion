@@ -19,11 +19,12 @@ Installation steps are mentioned in [INSTALL.md](https://github.com/karthikdilli
 # Usage
 
 To run, you must first install it. Then you can follow instructions mention in
-[DOCS.md](https://github.com/karthikdilliraj/sensorfusion/blob/dev/DOCS.md).
+[DOCS.md](https://github.com/karthikdilliraj/sensorfusion/blob/dev/doc/DOCS.md).
 
 # File Structure
 
 The correct file structure (after installing GSL library should be follow and run the binary)
+
 ```
 ├── DOCS.md 	-> Usage file
 ├── INSTALL.md 	-> Installation Guide
@@ -34,7 +35,7 @@ The correct file structure (after installing GSL library should be follow and ru
 ├── doc
 │   └── html 	-> Doxygen document
 ├── include 	-> Header files
-│   ├── calculate_fusion.h 	
+│   ├── calculate_fusion.h
 │   ├── linked_list.h
 │   ├── parsing_csv_file.h
 │   └── sensor.h
@@ -52,7 +53,7 @@ The correct file structure (after installing GSL library should be follow and ru
 │   ├── main.c
 │   ├── parsing_csv_file.c
 │   └── sensor.c
-└── test 
+└── test
     ├── include		-> Header file for unittest
     │   └── test.h
     ├── input_test.csv 	-> Test data
