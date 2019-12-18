@@ -19,7 +19,7 @@ Installation steps are mentioned in [INSTALL.md](https://github.com/karthikdilli
 # Usage
 
 To run, you must first install it. Then you can follow instructions mention in
-[DOCS.md](https://github.com/karthikdilliraj/sensorfusion/blob/master/DOCS.md).
+[DOCS.md](https://github.com/karthikdilliraj/sensorfusion/blob/dev/DOCS.md).
 
 # File Structure
 
