@@ -102,7 +102,8 @@ int determine_contribution_rates_to_use(double *contribution_rate,
  *	If no, returns NULL.
  */
 double **calculate_principal_components(double *sd_matrix, int no_of_sensors,
-										double **eigen_vector, int no_of_contribution_rates_to_use);
+										double **eigen_vector,
+										int no_of_contribution_rates_to_use);
 
 /**
  * @brief Calculate the Integrated Support Degree Score for all sensors

@@ -12,7 +12,7 @@ GCC Compiler, GNU make, download ultilities such as wget or curl.
 
 To run the project, you have to install the [GSL](https://www.gnu.org/software/gsl/doc/html/index.html#) library
 
-To install run the follwing command:
+Note that during the installation, GSL will be installed in `lib` directory. To start automatically install process, please the follwing command:
 
 ```
 ./install.sh

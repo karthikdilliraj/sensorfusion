@@ -58,4 +58,5 @@ dkms.conf
 # Files within lib, bin and doc directory
 /lib/*
 /bin/*
-/doc/*
+
+add_test.patch

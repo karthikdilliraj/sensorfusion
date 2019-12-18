@@ -28,8 +28,10 @@ Example:
 
 The below command will conduct sensor fusion algorithm with Stuck Time Interval as 10 minutes with sensor values range from 1 to 10. The data input is from sensor_fusion_input.csv file, Parameter p is set to 50% and Support q is 70%.
 
+Please note that the binary is located within `bin` folder
+
 ```
-./sensorfusion -s 10 -l 1 -u 10 -p 50 -q 70 -f ./sensor_fusion_input.csv
+./bin/sensorfusion -s 10 -l 1 -u 10 -p 50 -q 70 -f ./sensor_fusion_input.csv
 ```
 
 # Testing
@@ -37,7 +39,7 @@ The below command will conduct sensor fusion algorithm with Stuck Time Interval 
 Unit testing is done for each functions defined in the software. The test cases can be run using the command below:
 
 ```
-./sensorfusion -t
+./bin/sensorfusion -t
 ```
 
 # Help
@@ -45,9 +47,17 @@ Unit testing is done for each functions defined in the software. The test cases 
 User can run the below command to know the details about input parameters.
 
 ```
-./sensorfusion -h
+./bin/sensorfusion -h
 ```
 
 # Report Generation
 
 Report will be generated after running the sensorfusion execution file. The report provides the fused output values for each time interval and also the statistics about the status of the sensor, whether it is valid or stuck.
+
+Report is saved as `sensor_fusion_report.txt` file. The report will keep track of all the past run. That means it will append the report of each run into the above file. To generate a clean report, you need to:
+
+```
+make clean && make
+```
+
+Then run the `sensorfusion` binary again
