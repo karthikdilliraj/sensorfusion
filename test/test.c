@@ -519,7 +519,7 @@ void automated_determine_contribution_rates_to_use(void) {
     printf("-------------------\n");
     printf("CALCULATE NUMBER OF CONTRIBUTION RATES TO USE TESTING\n");
     printf("-------------------\n");
-    int expected_contribution_rates_to_use = 2;
+    int expected_contribution_rates_to_use = 1;
     double contribution_rate[] = {0.500023,
                                   0.499977};
     int no_of_sensors = 2;
@@ -545,7 +545,7 @@ void automated_determine_contribution_rates_to_use(void) {
     printf("\tInput Contribution rate: {0.500023,0.499977}\n");
     printf("\tParameter = 0.5 \n");
     printf("\tNo_of_sensors = 2 \n");
-    printf("\tExpected No of Contribution rates to use : 2\n");
+    printf("\tExpected No of Contribution rates to use : 1\n");
     determined_contribution_rates_to_use = determine_contribution_rates_to_use(contribution_rate, parameter, no_of_sensors);
     if (determined_contribution_rates_to_use != expected_contribution_rates_to_use) {
         ASSERT_TEST(determined_contribution_rates_to_use == expected_contribution_rates_to_use);
