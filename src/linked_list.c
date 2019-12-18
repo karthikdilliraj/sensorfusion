@@ -3,9 +3,9 @@
  *
  * @brief Implementation of the linked list.
  *
- * @author Karthik Dilliraj - karthikdilliraj@cmail.carleton.ca - Carleton University
- * @author Nhat Hieu Le - nhathieule@cmail.carleton.ca - Carleton University
- * @author Jason Miller - jasonmiller@cmail.carleton.ca - Carleton University
+ * @author Karthik Dilliraj - karthikdilliraj@cmail.carleton.ca
+ * @author Nhat Hieu Le - nhathieule@cmail.carleton.ca
+ * @author Jason Miller - jasonmiller@cmail.carleton.ca
  */
 
 #include "linked_list.h"
@@ -180,7 +180,8 @@ Node_t *remove_node(Node_t *head, Node_t *to_be_removed) {
     return head;
 }
 
-Boolean move_node(Node_t *node, Node_t **head_move_from, Node_t **head_move_to) {
+Boolean move_node(Node_t *node, Node_t **head_move_from,
+    Node_t **head_move_to) {
     if (node) {
         *head_move_to = append(*head_move_to,
                                node->time_in_minutes,

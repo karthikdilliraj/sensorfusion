@@ -3,9 +3,9 @@
  *
  * @brief Implementation of the CSV parser.
  *
- * @author Karthik Dilliraj - karthikdilliraj@cmail.carleton.ca - Carleton University
- * @author Nhat Hieu Le - nhathieule@cmail.carleton.ca - Carleton University
- * @author Jason Miller - jasonmiller@cmail.carleton.ca - Carleton University
+ * @author Karthik Dilliraj - karthikdilliraj@cmail.carleton.ca
+ * @author Nhat Hieu Le - nhathieule@cmail.carleton.ca
+ * @author Jason Miller - jasonmiller@cmail.carleton.ca
  */
 
 #include "parsing_csv_file.h"
