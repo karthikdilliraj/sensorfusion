@@ -21,21 +21,21 @@
  * @brief Define a boolean data type.
  */
 #ifndef Boolean
-    #define Boolean int
+#define Boolean int
 #endif
 
 /**
  * @brief Define a boolean True.
  */
 #ifndef TRUE
-    #define TRUE 1
+#define TRUE 1
 #endif
 
 /**
  * @brief Define a boolean False.
  */
 #ifndef FALSE
-    #define FALSE 0
+#define FALSE 0
 #endif
 
 /**
