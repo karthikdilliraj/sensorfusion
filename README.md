@@ -24,7 +24,7 @@ To run, you must first install it. Then you can follow instructions mention in
 # File Structure
 
 The correct file structure (after installing GSL library should be follow and run the binary)
-
+```
 ├── DOCS.md 					-> Usage file
 ├── INSTALL.md 					-> Installation Guide
 ├── LICENSE 					-> License file
@@ -57,6 +57,7 @@ The correct file structure (after installing GSL library should be follow and ru
     │   └── test.h
     ├── input_test.csv 			-> Test data
     └── test.c
+```
 
 # License
 
