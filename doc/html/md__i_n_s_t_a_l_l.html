@@ -65,20 +65,29 @@ $(function() {
 <div class="title">Installation </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><h1><a class="anchor" id="autotoc_md7"></a>
+<div class="textblock"><h1><a class="anchor" id="autotoc_md1"></a>
 Supported Platforms:</h1>
 <p>Unix, Cygwin and MacOS.</p>
-<h1><a class="anchor" id="autotoc_md8"></a>
+<h1><a class="anchor" id="autotoc_md2"></a>
 Prerequisite</h1>
-<p>GCC Compiler, GNU make, download ultilities such as wget or curl.</p>
-<h1><a class="anchor" id="autotoc_md9"></a>
+<p>GCC Compiler, GNU make, download utilities such as wget or curl. If using Cygwin, dos2unix will be required</p>
+<h1><a class="anchor" id="autotoc_md3"></a>
 Dependency Library</h1>
 <p>To run the project, you have to install the <a href="https://www.gnu.org/software/gsl/doc/html/index.html#">GSL</a> library</p>
 <p>Note that during the installation, GSL will be installed in <code>lib</code> directory. To start automatically install process, please the follwing command:</p>
 <div class="fragment"><div class="line">./install.sh</div>
+</div><!-- fragment --><p>Please note that if the following errors are seen: </p><div class="fragment"><div class="line">./install.sh: line 2: $&#39;\r&#39;: command not found</div>
+<div class="line">./install.sh: line 5: $&#39;\r&#39;: command not found</div>
+<div class="line">./install.sh: line 6: cd: $&#39;./lib/\r&#39;: No such file or directory</div>
+<div class="line">./install.sh: line 7: $&#39;\r&#39;: command not found</div>
+<div class="line">./install.sh: line 61: syntax error near unexpected token `$&#39;in\r&#39;&#39;</div>
+<div class="line">&#39;/install.sh: line 61: `case &quot;$(uname -s)&quot; in</div>
+</div><!-- fragment --><p>The following will need to be executed:</p>
+<div class="fragment"><div class="line">dos2unix install.sh</div>
+<div class="line">./install.sh</div>
 </div><!-- fragment --><p>Execute below command to append GSL library into PATH environment:</p>
 <div class="fragment"><div class="line">source ~/.bashrc</div>
-</div><!-- fragment --><h1><a class="anchor" id="autotoc_md10"></a>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md4"></a>
 Build Project:</h1>
 <div class="fragment"><div class="line">make</div>
 </div><!-- fragment --><p>Excutable binary sensorfusion file will be placed at <code>bin</code> directory. </p>

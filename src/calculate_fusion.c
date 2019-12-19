@@ -236,7 +236,8 @@ double **calculate_principal_components(double *sd_matrix, int no_of_sensors,
     return principal_components_matrix;
 }
 
-double *calculate_integrated_support_degree_matrix(double **principle_components,
+double *calculate_integrated_support_degree_matrix(
+        double **principle_components,
         double *contribution_rate, int no_of_contribution_rates_to_use,
         int no_of_sensors) {
     int n_contribute = no_of_contribution_rates_to_use;

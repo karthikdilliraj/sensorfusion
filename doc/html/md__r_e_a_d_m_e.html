@@ -68,28 +68,61 @@ $(function() {
 <div class="textblock"><p>SensorFusion is a software that measures sensor data from different sensors in order to assure precise estimates of value.</p>
 <p>SensorFusion implements the algorithm described in:</p>
 <p>G. Hongyan, “A simple multi-sensor data fusion algorithm based on principal component analysis,” in 2009 ISECS International Colloquium on Computing, Communication, Control, and Management, Sanya, China, 2009, pp. 423–426.</p>
-<h1><a class="anchor" id="autotoc_md12"></a>
+<h1><a class="anchor" id="autotoc_md6"></a>
 Authors</h1>
 <ul>
 <li>Karthik Dilliraj - <a href="#" onclick="location.href='mai'+'lto:'+'kar'+'th'+'ikd'+'il'+'lir'+'aj'+'@cm'+'ai'+'l.c'+'ar'+'let'+'on'+'.ca'; return false;">karth<span style="display: none;">.nosp@m.</span>ikdi<span style="display: none;">.nosp@m.</span>llira<span style="display: none;">.nosp@m.</span>j@cm<span style="display: none;">.nosp@m.</span>ail.c<span style="display: none;">.nosp@m.</span>arle<span style="display: none;">.nosp@m.</span>ton.c<span style="display: none;">.nosp@m.</span>a</a> - Carleton University</li>
 <li>Nhat Hieu Le - <a href="#" onclick="location.href='mai'+'lto:'+'nha'+'th'+'ieu'+'le'+'@cm'+'ai'+'l.c'+'ar'+'let'+'on'+'.ca'; return false;">nhath<span style="display: none;">.nosp@m.</span>ieul<span style="display: none;">.nosp@m.</span>e@cma<span style="display: none;">.nosp@m.</span>il.c<span style="display: none;">.nosp@m.</span>arlet<span style="display: none;">.nosp@m.</span>on.c<span style="display: none;">.nosp@m.</span>a</a> - Carleton University</li>
 <li>Jason Miller - <a href="#" onclick="location.href='mai'+'lto:'+'jas'+'on'+'mil'+'le'+'r@c'+'ma'+'il.'+'ca'+'rle'+'to'+'n.c'+'a'; return false;">jason<span style="display: none;">.nosp@m.</span>mill<span style="display: none;">.nosp@m.</span>er@cm<span style="display: none;">.nosp@m.</span>ail.<span style="display: none;">.nosp@m.</span>carle<span style="display: none;">.nosp@m.</span>ton.<span style="display: none;">.nosp@m.</span>ca</a> - Carleton University</li>
 </ul>
-<h1><a class="anchor" id="autotoc_md13"></a>
+<h1><a class="anchor" id="autotoc_md7"></a>
 Installation</h1>
 <p>Installation steps are mentioned in <a href="https://github.com/karthikdilliraj/sensorfusion/blob/dev/INSTALL.md">INSTALL.md</a></p>
-<h1><a class="anchor" id="autotoc_md14"></a>
+<h1><a class="anchor" id="autotoc_md8"></a>
 Usage</h1>
-<p>To run, you must first install it. Then you can follow instructions mention in <a href="https://github.com/karthikdilliraj/sensorfusion/blob/master/DOCS.md">DOCS.md</a>.</p>
-<h1><a class="anchor" id="autotoc_md15"></a>
+<p>To run, you must first install it. Then you can follow instructions mentioned in <a href="https://github.com/karthikdilliraj/sensorfusion/blob/dev/doc/User_Manual.md">User_Manual.md</a>.</p>
+<h1><a class="anchor" id="autotoc_md9"></a>
 File Structure</h1>
 <p>The correct file structure (after installing GSL library should be follow and run the binary)</p>
-<p>├── DOCS.md -&gt; Usage file ├── INSTALL.md -&gt; Installation Guide ├── LICENSE -&gt; License file ├── Makefile -&gt; Makefile ├── README.md -&gt; Readme file ├── bin -&gt; Binary directory ├── doc │&#160;&#160; └── html -&gt; Doxygen document ├── include -&gt; Header files │&#160;&#160; ├── <a class="el" href="calculate__fusion_8h.html" title="A collection of functions related to the calculation of fused output.">calculate_fusion.h</a> <br  />
- │&#160;&#160; ├── <a class="el" href="linked__list_8h.html" title="Implementation of the linked list data structure. Implements a linked-list for the purpose of storing...">linked_list.h</a> │&#160;&#160; ├── <a class="el" href="parsing__csv__file_8h.html" title="Implementation of the CSV parser.">parsing_csv_file.h</a> │&#160;&#160; └── <a class="el" href="sensor_8h.html" title="A collection of functions related to the manipulation of sensors.">sensor.h</a> ├── install.sh -&gt; Installation script ├── lib │&#160;&#160; ├── gsl -&gt; GSL binary │&#160;&#160; └── gsl-2.6 -&gt; GSL source ├── obj -&gt; Object files ├── sensor_fusion_config -&gt; Doxygen Configuration files ├── sensor_fusion_report.txt -&gt; Report data ├── src -&gt; Source files for sensorfusion │&#160;&#160; ├── calculate_fusion.c │&#160;&#160; ├── input.csv -&gt; Input raw data │&#160;&#160; ├── linked_list.c │&#160;&#160; ├── main.c │&#160;&#160; ├── parsing_csv_file.c │&#160;&#160; └── sensor.c └── test ├── include -&gt; Header file for unittest │&#160;&#160; └── <a class="el" href="test_8h.html" title="Collections of declaration function of automated unit tests.">test.h</a> ├── input_test.csv -&gt; Test data └── test.c</p>
-<h1><a class="anchor" id="autotoc_md16"></a>
+<div class="fragment"><div class="line">├── DOCS.md     -&gt; Usage file</div>
+<div class="line">├── INSTALL.md  -&gt; Installation Guide</div>
+<div class="line">├── LICENSE     -&gt; License file</div>
+<div class="line">├── Makefile    -&gt; Makefile</div>
+<div class="line">├── README.md   -&gt; Readme file</div>
+<div class="line">├── bin     -&gt; Binary directory</div>
+<div class="line">├── doc</div>
+<div class="line">│&amp;nbsp;&amp;nbsp; └── html    -&gt; Doxygen document</div>
+<div class="line">├── include     -&gt; Header files</div>
+<div class="line">│&amp;nbsp;&amp;nbsp; ├── calculate_fusion.h</div>
+<div class="line">│&amp;nbsp;&amp;nbsp; ├── linked_list.h</div>
+<div class="line">│&amp;nbsp;&amp;nbsp; ├── parsing_csv_file.h</div>
+<div class="line">│&amp;nbsp;&amp;nbsp; └── sensor.h</div>
+<div class="line">├── install.sh  -&gt; Installation script</div>
+<div class="line">├── lib</div>
+<div class="line">│&amp;nbsp;&amp;nbsp; ├── gsl     -&gt; GSL binary</div>
+<div class="line">│&amp;nbsp;&amp;nbsp; └── gsl-2.6     -&gt; GSL source</div>
+<div class="line">├── obj     -&gt; Object files</div>
+<div class="line">├── sensor_fusion_config    -&gt; Doxygen Configuration files</div>
+<div class="line">├── sensor_fusion_report.txt    -&gt; Report data</div>
+<div class="line">├── src     -&gt; Source files for sensorfusion</div>
+<div class="line">│&amp;nbsp;&amp;nbsp; ├── calculate_fusion.c</div>
+<div class="line">│&amp;nbsp;&amp;nbsp; ├── input.csv   -&gt; Input raw data</div>
+<div class="line">│&amp;nbsp;&amp;nbsp; ├── linked_list.c</div>
+<div class="line">│&amp;nbsp;&amp;nbsp; ├── main.c</div>
+<div class="line">│&amp;nbsp;&amp;nbsp; ├── parsing_csv_file.c</div>
+<div class="line">│&amp;nbsp;&amp;nbsp; └── sensor.c</div>
+<div class="line">└── test</div>
+<div class="line">    ├── include     -&gt; Header file for unittest</div>
+<div class="line">    │&amp;nbsp;&amp;nbsp; └── test.h</div>
+<div class="line">    ├── input_test.csv  -&gt; Test data</div>
+<div class="line">    └── test.c</div>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md10"></a>
+For Developers</h1>
+<p>The developer manual is available <a href="https://github.com/karthikdilliraj/sensorfusion/blob/dev/doc/Developer_Manual.md">here</a>.</p>
+<h1><a class="anchor" id="autotoc_md11"></a>
 License</h1>
 <p>This project is licensed under the GPL 2.0 License - see the LICENSE.md file for details</p>
-<h1><a class="anchor" id="autotoc_md17"></a>
+<h1><a class="anchor" id="autotoc_md12"></a>
 Acknowledgements</h1>
 <p>Thank to Dr. Cristina Ruiz Martin for providing guidance on how to develop the software. </p>
 </div></div><!-- contents -->
