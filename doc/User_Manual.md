@@ -35,10 +35,10 @@ Please note that the binary is located within `bin` folder
 ```
 
 > Note: Default values are:
-
-    - p = 100
-    - q = 0
-    - s = 0
+>
+> > p = 100
+> > q = 0
+> > s = 0
 
 # Testing
 
