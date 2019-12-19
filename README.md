@@ -18,8 +18,8 @@ Installation steps are mentioned in [INSTALL.md](https://github.com/karthikdilli
 
 # Usage
 
-To run, you must first install it. Then you can follow instructions mention in
-[DOCS.md](https://github.com/karthikdilliraj/sensorfusion/blob/dev/doc/DOCS.md).
+To run, you must first install it. Then you can follow instructions mentioned in
+[Use_Manual.md](https://github.com/karthikdilliraj/sensorfusion/blob/dev/doc/User_Manual.md).
 
 # File Structure
 
@@ -59,6 +59,10 @@ The correct file structure (after installing GSL library should be follow and ru
     ├── input_test.csv 	-> Test data
     └── test.c
 ```
+
+# For Developers
+
+The developer manual is available [here](https://github.com/karthikdilliraj/sensorfusion/blob/dev/doc/Developer_Manual.md)
 
 # License
 
