@@ -434,7 +434,9 @@ double do_sensor_fusion_algorithm(int q_support_value,
         for (int i = 0; i < no_of_sensors; i++) {
             free(eigen->eigen_vector[i]);
         }
+        free(eigen->eigen_vector);
         free(eigen);
+        
         return INVALID_SENSOR_FUSION_VALUE;
     }
 
@@ -455,6 +457,7 @@ double do_sensor_fusion_algorithm(int q_support_value,
         for (int i = 0; i < no_of_sensors; i++) {
             free(eigen->eigen_vector[i]);
         }
+        free(eigen->eigen_vector);
         free(eigen);
 
         free(contribution_rate);
@@ -478,6 +481,7 @@ double do_sensor_fusion_algorithm(int q_support_value,
         for (int i = 0; i < no_of_sensors; i++) {
             free(eigen->eigen_vector[i]);
         }
+        free(eigen->eigen_vector);
         free(eigen);
 
         free(contribution_rate);
@@ -504,6 +508,7 @@ double do_sensor_fusion_algorithm(int q_support_value,
         for (int i = 0; i < no_of_sensors; i++) {
             free(eigen->eigen_vector[i]);
         }
+        free(eigen->eigen_vector);
         free(eigen);
 
         free(contribution_rate);
@@ -533,6 +538,7 @@ double do_sensor_fusion_algorithm(int q_support_value,
         for (int i = 0; i < no_of_sensors; i++) {
             free(eigen->eigen_vector[i]);
         }
+        free(eigen->eigen_vector);
         free(eigen);
 
         free(contribution_rate);
@@ -564,6 +570,7 @@ double do_sensor_fusion_algorithm(int q_support_value,
         for (int i = 0; i < no_of_sensors; i++) {
             free(eigen->eigen_vector[i]);
         }
+        free(eigen->eigen_vector);
         free(eigen);
 
         free(contribution_rate);
@@ -587,28 +594,30 @@ double do_sensor_fusion_algorithm(int q_support_value,
     /*
     * Pointer Memory freed
     */
-    if (result_fused < 0) {
-        free(sensor_array);
-        free(sd_matrix);
 
-        free(eigen->eigen_value);
-        for (int i = 0; i < no_of_sensors; i++) {
-            free(eigen->eigen_vector[i]);
-        }
-        free(eigen);
+    free(sensor_array);
+    free(sd_matrix);
 
-        free(contribution_rate);
-
-        for (int i = 0; i < contribution_rates_to_use; i++) {
-            free(principal_components_matrix[i]);
-        }
-        free(principal_components_matrix);
-
-        free(integrated_support_matrix);
-        free(weight_coeff);
-
-        return INVALID_SENSOR_FUSION_VALUE;
+    free(eigen->eigen_value);
+    for (int i = 0; i < no_of_sensors; i++) {
+        free(eigen->eigen_vector[i]);
     }
+    free(eigen->eigen_vector);
+    free(eigen);
 
-    return sensed_value;
+    free(contribution_rate);
+
+    for (int i = 0; i < contribution_rates_to_use; i++) {
+        free(principal_components_matrix[i]);
+    }
+    free(principal_components_matrix);
+
+    free(integrated_support_matrix);
+    free(weight_coeff);
+   
+    if (result_fused < 0) {
+      return INVALID_SENSOR_FUSION_VALUE;
+    } else {
+      return sensed_value;
+    }
 }
