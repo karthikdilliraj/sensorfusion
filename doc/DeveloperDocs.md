@@ -16,6 +16,4 @@ Software needs to calculate and store fused value provided by the algorithm for 
 
 The program flow for the application is as follows:
 
-<!-- ![Diagram](http://jgraph.github.io/drawio-github/diagram.png)
-
-<div align="center"><img src="https://github.com/flexplicateur/PerfectSense/blob/master/assets/perfectsense_logo.png?raw=true" /></div> -->
+![Diagram](https://github.com/karthikdilliraj/sensorfusion/blob/dev/assets/c.png)
