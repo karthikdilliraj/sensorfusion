@@ -34,6 +34,12 @@ Please note that the binary is located within `bin` folder
 ./bin/sensorfusion -s 10 -l 1 -u 10 -p 50 -q 70 -f ./sensor_fusion_input.csv
 ```
 
+> Note: Default values are:
+
+    - p = 100
+    - q = 0
+    - s = 0
+
 # Testing
 
 Unit testing is done for each functions defined in the software. The test cases can be run using the command below:
