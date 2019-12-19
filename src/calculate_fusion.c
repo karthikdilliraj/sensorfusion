@@ -83,7 +83,7 @@ struct eigen_systems *calculate_eigensystem(double *sd_matrix,
         return NULL;
     }
     /* Creating a copy of sd_matrix as gsl destructs
-     * the value 
+     * the value
      */
     double *local_sd_matrix = (double *)malloc(sizeof(double) * no_of_sensors *
         no_of_sensors);
@@ -160,17 +160,21 @@ int determine_contribution_rates_to_use(double *contribution_rate,
         printf("%s: Incorrect Input\n", __func__);
         return -1;
     }
+
     double sum = 0;
-    int num_principal_components = 0;
-    /*
-     * When paramter is greater than sum, then will return the
-     * num_principal_components
-     */
-    for (int i = 0; sum < parameter; i++){
-        sum += contribution_rate[i];
-        num_principal_components += 1;
+    for (int k = 0; k < no_of_sensors; k++) {
+        sum += contribution_rate[k];
+
+        if (sum >= parameter) {
+            /*
+             * We are at or above our desired contribution rate. We will return
+             * this number of contributions so that we always have something
+             * to fuse.
+             */
+            return (k + 1);
+        }
     }
-    return num_principal_components;
+    return no_of_sensors;
 }
 
 double **calculate_principal_components(double *sd_matrix, int no_of_sensors,
@@ -221,6 +225,7 @@ double **calculate_principal_components(double *sd_matrix, int no_of_sensors,
             }
         }
     }
+
     /*
     * Pointer Memory freed
     */
@@ -231,7 +236,8 @@ double **calculate_principal_components(double *sd_matrix, int no_of_sensors,
     return principal_components_matrix;
 }
 
-double *calculate_integrated_support_degree_matrix(double **principle_components,
+double *calculate_integrated_support_degree_matrix(
+        double **principle_components,
         double *contribution_rate, int no_of_contribution_rates_to_use,
         int no_of_sensors) {
     int n_contribute = no_of_contribution_rates_to_use;
@@ -329,6 +335,7 @@ double calculate_fused_output(double *weight_coefficient, double *sensor_data,
         return -1;
     }
 
+    *fused_value = 0;
     for (int i = 0; i < n_sensors; i++) {
         *fused_value += weight_coefficient[i] * sensor_data[i];
     }

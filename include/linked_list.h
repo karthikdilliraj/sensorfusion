@@ -110,8 +110,8 @@ Node_t *update(Node_t *head, int time, char *name, float value);
  * @param[in] *head     Pointer to the head of a linked list chain
  * @param[in] *str      Name of the sensor to search for
  *
- * @details Iterate over the linked list chain pointed to by head until it finds the
- * node that contains the sensor name that matches the passed in str.
+ * @details Iterate over the linked list chain pointed to by head until it 
+ * finds the node that contains the sensor name that matches the passed in str.
  *
  * @return Pointer to the matching node, if no node is found, returns NULL.
  */

@@ -3,9 +3,9 @@
  *
  * @brief Collections of declaration function of automated unit tests.
  *
- * @author Karthik Dilliraj - karthikdilliraj@cmail.carleton.ca - Carleton University
- * @author Nhat Hieu Le - nhathieule@cmail.carleton.ca - Carleton University
- * @author Jason Miller - jasonmiller@cmail.carleton.ca - Carleton University
+ * @author Karthik Dilliraj - karthikdilliraj@cmail.carleton.ca
+ * @author Nhat Hieu Le - nhathieule@cmail.carleton.ca
+ * @author Jason Miller - jasonmiller@cmail.carleton.ca
  */
 
 #ifndef TEST_H
@@ -66,8 +66,8 @@ void automated_sensor_manipulation(void);
 /**
  * @brief Automated unit testing of calculate_support_degree_matrix
  *
- * @details Automatically tests the support degree matrix calculation by parsing the
- * the sensor values
+ * @details Automatically tests the support degree matrix calculation by 
+ * parsing the the sensor values
  */
 void automated_calculate_support_degree_matrix(void);
 
@@ -90,16 +90,17 @@ void automated_calculate_contribution_rate(void);
 /**
  * @brief Automated unit testing of determine_contribution_rates_to_use
  *
- * @details Automatically tests the contribute rates to be used calculation by the input of
- * contribution rate, parameter and number of sensors
+ * @details Automatically tests the contribute rates to be used calculation by 
+ * the input of contribution rate, parameter and number of sensors
  */
 void automated_determine_contribution_rates_to_use(void);
 
 /**
  * @brief Automated unit testing of calculate_principal_components
  *
- * @details Automatically tests the principal components calculation by the input of
- * support_degree_matrix, eigenvector and number of contribution rates to use
+ * @details Automatically tests the principal components calculation by the 
+ * input of support_degree_matrix, eigenvector and number of contribution rates
+ * to use
  */
 void automated_calculate_principal_components(void);
 
@@ -107,8 +108,8 @@ void automated_calculate_principal_components(void);
  * @brief Automated unit testing of calculate_integrated_support_degree_matrix
  *
  * @details Automatically tests the integrated support degree matrix calculation
- * by the input of principal_components_matrix, number of contribution rates to use
- * and number of sensors
+ * by the input of principal_components_matrix, number of contribution rates to 
+ * use and number of sensors
  */
 void automated_calculate_integrated_support_degree_matrix(void);
 
@@ -116,8 +117,8 @@ void automated_calculate_integrated_support_degree_matrix(void);
  * @brief Automated unit testing of eliminate_incorrect_data
  *
  * @details Automatically tests elimination of incorrect data within integrate
- * support degree matrix by the input of integrated_support_degree_matrix, number of
- * sensors and the fault tolerance parameters
+ * support degree matrix by the input of integrated_support_degree_matrix, 
+ * number of sensors and the fault tolerance parameters
  */
 void automated_eliminate_incorrect_data(void);
 
