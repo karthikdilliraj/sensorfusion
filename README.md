@@ -14,12 +14,12 @@ G. Hongyan, “A simple multi-sensor data fusion algorithm based on principal co
 
 # Installation
 
-Installation steps are mentioned in [INSTALL.md](https://github.com/karthikdilliraj/sensorfusion/blob/dev/INSTALL.md)
+Installation steps are mentioned in [INSTALL.md](https://github.com/karthikdilliraj/sensorfusion/blob/master/INSTALL.md)
 
 # Usage
 
 To run, you must first install it. Then you can follow instructions mentioned in
-[User_Manual.md](https://github.com/karthikdilliraj/sensorfusion/blob/dev/doc/User_Manual.md).
+[User_Manual.md](https://github.com/karthikdilliraj/sensorfusion/blob/master/doc/User_Manual.md).
 
 # File Structure
 
@@ -62,7 +62,7 @@ The correct file structure (after installing GSL library should be follow and ru
 
 # For Developers
 
-The developer manual is available [here](https://github.com/karthikdilliraj/sensorfusion/blob/dev/doc/Developer_Manual.md).
+The developer manual is available [here](https://github.com/karthikdilliraj/sensorfusion/blob/master/doc/Developer_Manual.md).
 
 # License
 
