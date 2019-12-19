@@ -205,7 +205,7 @@ double **calculate_principal_components(double *sd_matrix, int no_of_sensors,
 
     double **principal_components_matrix = (double **)malloc(m *
         sizeof(double *));
-    for (int i = 0; i < n; i++) {
+    for (int i = 0; i < m; i++) {
         principal_components_matrix[i] = (double *)malloc(n * sizeof(double));
     }
     if (principal_components_matrix == NULL) {
